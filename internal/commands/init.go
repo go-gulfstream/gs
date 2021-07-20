@@ -57,22 +57,6 @@ func runInitCommand() error {
 		return err
 	}
 
-	// stream name
-	prompt = promptui.Prompt{
-		Label:   "Stream name",
-		Default: projectName,
-		Validate: func(s string) error {
-			if len(s) > 3 {
-				return nil
-			}
-			return fmt.Errorf("stream name to short")
-		},
-	}
-	streamName, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
 	// go mod
 	prompt = promptui.Prompt{
 		Label:   "Go module (go.mod)",
@@ -117,7 +101,6 @@ func runInitCommand() error {
 	}
 
 	_ = projectName
-	_ = streamName
 	_ = goMod
 	_ = author
 	_ = email
