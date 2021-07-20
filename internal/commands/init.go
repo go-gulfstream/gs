@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
+
 	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/spf13/cobra"
@@ -37,8 +39,15 @@ func validateArgsInitCommand(args []string) error {
 		return err
 	}
 	manifest := filepath.Join(args[0], manifestFilename)
-	if _, err := os.Stat(manifest); os.IsExist(err) {
-		return err
+	fi, err := os.Stat(manifest)
+	if err != nil {
+		if os.IsExist(err) {
+			return fmt.Errorf("project already exists")
+		}
+		return nil
+	}
+	if fi.Size() > 0 {
+		return fmt.Errorf("project already exists")
 	}
 	return nil
 }
@@ -49,15 +58,26 @@ func runInitCommand(path string) error {
 		return err
 	}
 
+	yellowColor := color.New(color.FgYellow).SprintFunc()
+	redColor := color.New(color.FgRed).SprintFunc()
+	greenColor := color.New(color.FgGreen).SprintfFunc()
+
 	if err := schema.Walk(path, wizard.Manifest(),
 		func(file schema.File) (err error) {
 			if file.IsDir {
 				err = os.Mkdir(file.Path, 0755)
 			} else {
-				err = ioutil.WriteFile(file.Path, file.TemplateData, 0777)
+				err = ioutil.WriteFile(file.Path, file.TemplateData, 0755)
 			}
 			if os.IsExist(err) {
+				fmt.Printf("%s - %s\n", yellowColor("[SKIP]"), file.Path)
 				return nil
+			}
+
+			if err == nil {
+				fmt.Printf("%s - %s\n", greenColor("[OK]"), file.Path)
+			} else {
+				fmt.Printf("%s - %s\n", redColor("[ERR]"), file.Path)
 			}
 			return
 		}); err != nil {

@@ -167,7 +167,7 @@ func (w *Wizard) setupProjectInfo() error {
 	prompt := promptui.Prompt{
 		Label: "Project name",
 		Validate: func(s string) error {
-			if len(s) > 5 {
+			if len(s) > 3 {
 				return nil
 			}
 			return fmt.Errorf("project name to short")
@@ -182,7 +182,7 @@ func (w *Wizard) setupProjectInfo() error {
 		Label:   "Go module (go.mod)",
 		Default: projectName,
 		Validate: func(s string) error {
-			if len(s) > 5 {
+			if len(s) > 3 {
 				return nil
 			}
 			return fmt.Errorf("go.mod module to short")
