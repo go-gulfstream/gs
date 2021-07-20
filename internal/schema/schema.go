@@ -1,14 +1,30 @@
 package schema
 
+import "fmt"
+
 type File struct {
-	IsDir    bool
-	Path     string
-	Template string
+	IsDir        bool
+	Path         string
+	Template     string
+	TemplateData []byte
+	HasTemplate  bool
 }
 
-var Files = []File{
+func (f File) String() string {
+	return fmt.Sprintf("File{Path:%s, IsDir:%v}", f.Path, f.IsDir)
+}
+
+var files = []File{
 	{
 		Path:  "/cmd",
+		IsDir: true,
+	},
+	{
+		Path:  "/cmd/%s",
+		IsDir: true,
+	},
+	{
+		Path:  "/cmd/%s-projection",
 		IsDir: true,
 	},
 	{
@@ -18,6 +34,10 @@ var Files = []File{
 	{
 		Path:     "/cmd/%s-projection/main.go",
 		Template: "cmd_proj_main.go.tpl",
+	},
+	{
+		Path:  "/internal",
+		IsDir: true,
 	},
 	{
 		Path:  "/internal/stream",
@@ -60,6 +80,10 @@ var Files = []File{
 		Template: "projection_types.go.tpl",
 	},
 	{
+		Path:  "/pkg",
+		IsDir: true,
+	},
+	{
 		Path:  "/pkg/commands",
 		IsDir: true,
 	},
@@ -68,11 +92,11 @@ var Files = []File{
 		IsDir: true,
 	},
 	{
-		Path:  "/pkg/%s",
+		Path:  "/pkg/stream",
 		IsDir: true,
 	},
 	{
-		Path:     "/pkg/%s/%s",
+		Path:     "/pkg/stream/%s",
 		Template: "pkg_stream.go.tpl",
 	},
 	{

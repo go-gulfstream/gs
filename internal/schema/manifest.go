@@ -1,25 +1,62 @@
 package schema
 
-import "time"
+import (
+	"time"
+
+	"gopkg.in/yaml.v2"
+)
 
 type Manifest struct {
-	CreatedAt        time.Time         `yml:"created_at"`
-	ProjectName      string            `yml:"project_name"`
-	GoMod            string            `yml:"go_mod"`
-	CommandMutations []CommandMutation `yml:"command_mutations"`
-	EventMutations   []EventMutation   `yml:"event_mutations"`
-	Author           string            `yml:"author"`
-	Email            string            `yml:"email"`
-	Description      string            `yml:"description"`
+	Project       project       `yaml:"project"`
+	Contributor   contributor   `yaml:"contributor"`
+	Mutations     mutations     `yaml:"mutations"`
+	StreamStorage streamStorage `yaml:"storage"`
+	Publisher     publisher     `yaml:"publisher"`
 }
 
-type CommandMutation struct {
-	Name    string `yml:"name"`
-	Command string `yml:"command"`
-	Event   string `yml:"event"`
+func (m *Manifest) MarshalBinary() ([]byte, error) {
+	return yaml.Marshal(&m)
 }
 
-type EventMutation struct {
-	Name  string `yml:"name"`
-	Event string `yml:"event"`
+func (m *Manifest) UnmarshalBinary(data []byte) error {
+	return yaml.Unmarshal(data, &m)
+}
+
+type publisher struct {
+	AdapterName string           `yaml:"adapter_name"`
+	AdapterID   publisherAdapter `yaml:"adapter_id"`
+}
+
+type mutations struct {
+	Commands []commandMutation `yaml:"from_commands"`
+	Events   []eventMutation   `yaml:"from_events"`
+}
+
+type project struct {
+	Name      string    `yaml:"name"`
+	CreatedAt time.Time `yaml:"created_at"`
+	GoModules string    `yaml:"go_modules"`
+}
+
+type contributor struct {
+	Author      string `yaml:"author"`
+	Email       string `yaml:"email"`
+	Description string `yaml:"description"`
+}
+
+type streamStorage struct {
+	AdapterID     storageAdapter `yaml:"adapter_id"`
+	AdapterName   string         `yaml:"adapter_name"`
+	EnableJournal bool           `yaml:"enable_journal"`
+}
+
+type commandMutation struct {
+	Name    string `yaml:"name"`
+	Command string `yaml:"command"`
+	Event   string `yaml:"event"`
+}
+
+type eventMutation struct {
+	Name  string `yaml:"name"`
+	Event string `yaml:"event"`
 }
