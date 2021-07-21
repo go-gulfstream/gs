@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-gulfstream/gs/internal/format"
+
 	"github.com/fatih/color"
 
 	"github.com/go-gulfstream/gs/internal/schema"
@@ -65,8 +67,18 @@ func runInitCommand(path string) error {
 	if err := schema.Walk(path, wizard.Manifest(),
 		func(file schema.File) (err error) {
 			if file.IsDir {
+				// make dir
 				err = os.Mkdir(file.Path, 0755)
 			} else {
+				// fix imports and code format.
+				if file.IsGo() {
+					source, err := format.Source(file.TemplateData)
+					if err != nil {
+						return err
+					}
+					file.TemplateData = source
+				}
+				// make file
 				err = ioutil.WriteFile(file.Path, file.TemplateData, 0755)
 			}
 			if os.IsExist(err) {

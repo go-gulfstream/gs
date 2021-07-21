@@ -1,6 +1,9 @@
 package schema
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type File struct {
 	IsDir        bool
@@ -12,6 +15,10 @@ type File struct {
 
 func (f File) String() string {
 	return fmt.Sprintf("File{Path:%s, IsDir:%v}", f.Path, f.IsDir)
+}
+
+func (f File) IsGo() bool {
+	return strings.HasSuffix(f.Path, ".go")
 }
 
 var files = []File{

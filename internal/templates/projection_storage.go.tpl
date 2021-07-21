@@ -32,5 +32,6 @@ func (s *Storage) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (s *Storage) Update(ctx context.Context, id uuid.UUID) error {
+    panic("not implemented")
     return nil
 }
