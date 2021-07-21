@@ -28,8 +28,8 @@ type publisher struct {
 }
 
 type mutations struct {
-	Commands []commandMutation `yaml:"from_commands"`
-	Events   []eventMutation   `yaml:"from_events"`
+	Commands []CommandMutation `yaml:"from_commands"`
+	Events   []EventMutation   `yaml:"from_events"`
 }
 
 type project struct {
@@ -50,13 +50,13 @@ type streamStorage struct {
 	EnableJournal bool           `yaml:"enable_journal"`
 }
 
-type commandMutation struct {
+type CommandMutation struct {
 	Name    string `yaml:"name"`
 	Command string `yaml:"command"`
 	Event   string `yaml:"event"`
 }
 
-type eventMutation struct {
+type EventMutation struct {
 	Name  string `yaml:"name"`
 	Event string `yaml:"event"`
 }

@@ -11,6 +11,7 @@ func New() (*cobra.Command, error) {
 	}
 
 	root.AddCommand(initCommand())
+	root.AddCommand(manifestCommand())
 
 	return root, nil
 }

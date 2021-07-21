@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const manifestFilename = ".gulfstream.yml"
+const manifestFilename = "gulfstream.yml"
 
 func initCommand() *cobra.Command {
 	command := &cobra.Command{

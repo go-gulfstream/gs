@@ -34,9 +34,9 @@ func (a storageAdapter) IsPostgreSQL() bool {
 func (a storageAdapter) String() string {
 	switch a {
 	case postgresStreamStorageAdapter:
-		return "PostgreSQL - Stream storage adapter"
+		return fmt.Sprintf("%d. PostgreSQL - Stream storage adapter", a)
 	case redisStreamStorageAdapter:
-		return "Redis - Stream storage adapter"
+		return fmt.Sprintf("%d. Redis - Stream storage adapter", a)
 	}
 	return "Unknown"
 }
@@ -44,9 +44,9 @@ func (a storageAdapter) String() string {
 func (a publisherAdapter) String() string {
 	switch a {
 	case kafkaStreamPublisherAdapter:
-		return "Kafka publisher - Stream publisher adapter"
+		return fmt.Sprintf("%d. Kafka publisher - Stream publisher adapter", a)
 	case connectorStreamPublisherAdapter:
-		return "WAL Connector - Stream publisher adapter"
+		return fmt.Sprintf("%d. WAL Connector - Stream publisher adapter", a)
 	}
 	return "Unknown"
 }
@@ -57,6 +57,15 @@ func (a publisherAdapter) IsKafka() bool {
 
 func (a publisherAdapter) IsConnector() bool {
 	return connectorStreamPublisherAdapter == a
+}
+
+func Adapters() []string {
+	return []string{
+		redisStreamStorageAdapter.String(),
+		postgresStreamStorageAdapter.String(),
+		kafkaStreamPublisherAdapter.String(),
+		connectorStreamPublisherAdapter.String(),
+	}
 }
 
 type Wizard struct {
