@@ -5,5 +5,6 @@ import (
 )
 
 type Stream struct {
-   ID uuid.UUID
+   ID        uuid.UUID        `json:"id"`
+   Version   int              `json:"version"`
 }
