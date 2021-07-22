@@ -129,12 +129,11 @@ func (w *Wizard) setupStreamPublisher() error {
 		Label: "Select stream publisher adapter",
 		Items: adapters,
 	}
-	adapterID, adapterName, err := prompt.Run()
+	adapterID, _, err := prompt.Run()
 	if err != nil {
 		return err
 	}
 
-	w.manifest.Publisher.AdapterName = adapterName
 	w.manifest.Publisher.AdapterID = publisherAdapter(adapterID)
 
 	return nil
@@ -154,7 +153,6 @@ func (w *Wizard) setupStreamStorage() error {
 	}
 
 	w.manifest.StreamStorage.AdapterID = storageAdapter(adapterID)
-	w.manifest.StreamStorage.AdapterName = adapterName
 
 	if !w.manifest.StreamStorage.AdapterID.IsPostgreSQL() {
 		return nil

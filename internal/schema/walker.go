@@ -9,6 +9,9 @@ import (
 )
 
 func Walk(path string, m *Manifest, fn func(File) error) error {
+	if m == nil {
+		return nil
+	}
 	for _, file := range files {
 		file.Path = strings.ReplaceAll(file.Path, "%s", m.Project.Name)
 		file.Path = filepath.Join(path, file.Path)

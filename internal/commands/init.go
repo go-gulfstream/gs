@@ -40,31 +40,60 @@ func validateArgsInitCommand(args []string) error {
 	if _, err := os.Stat(args[0]); err != nil {
 		return err
 	}
+	files, err := ioutil.ReadDir(args[0])
+	if err != nil {
+		return err
+	}
+	errAlreadyExists := fmt.Errorf("project already exists")
 	manifest := filepath.Join(args[0], manifestFilename)
 	fi, err := os.Stat(manifest)
 	if err != nil {
-		if os.IsExist(err) {
-			return fmt.Errorf("project already exists")
+		if os.IsExist(err) && len(files) > 1 {
+			return errAlreadyExists
+		} else if os.IsNotExist(err) && len(files) > 0 {
+			return fmt.Errorf("directory not empty %s", args[0])
 		}
-		return nil
-	}
-	if fi.Size() > 0 {
-		return fmt.Errorf("project already exists")
+	} else if fi.Size() > 0 && len(files) > 1 {
+		return errAlreadyExists
 	}
 	return nil
 }
 
 func runInitCommand(path string) error {
-	wizard := schema.NewSetupWizard()
-	if err := wizard.Run(); err != nil {
-		return err
+	var (
+		manifest *schema.Manifest
+		nof      bool
+	)
+
+	// from manifest file
+	manifestFile := filepath.Join(path, manifestFilename)
+	if _, err := os.Stat(manifestFile); err == nil {
+		data, err := ioutil.ReadFile(manifestFile)
+		if err != nil {
+			return err
+		}
+		manifest = new(schema.Manifest)
+		if err := manifest.UnmarshalBinary(data); err != nil {
+			return err
+		}
+		if err := manifest.Validate(); err != nil {
+			return err
+		}
+	} else {
+		// from setup wizard
+		wizard := schema.NewSetupWizard()
+		if err := wizard.Run(); err != nil {
+			return err
+		}
+		manifest = wizard.Manifest()
+		nof = true
 	}
 
 	yellowColor := color.New(color.FgYellow).SprintFunc()
 	redColor := color.New(color.FgRed).SprintFunc()
 	greenColor := color.New(color.FgGreen).SprintfFunc()
 
-	if err := schema.Walk(path, wizard.Manifest(),
+	if err := schema.Walk(path, manifest,
 		func(file schema.File) (err error) {
 			if file.IsDir {
 				// make dir
@@ -96,10 +125,14 @@ func runInitCommand(path string) error {
 		return err
 	}
 
-	data, err := wizard.Manifest().MarshalBinary()
-	if err != nil {
-		return err
+	if nof {
+		data, err := manifest.MarshalBinary()
+		if err != nil {
+			return err
+		}
+		manifest := filepath.Join(path, manifestFilename)
+		return ioutil.WriteFile(manifest, data, 0777)
 	}
-	manifest := filepath.Join(path, manifestFilename)
-	return ioutil.WriteFile(manifest, data, 0777)
+
+	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-playground/validator"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -14,6 +16,11 @@ type Manifest struct {
 	Mutations     mutations     `yaml:"mutations"`
 	StreamStorage streamStorage `yaml:"storage"`
 	Publisher     publisher     `yaml:"publisher"`
+}
+
+func (m *Manifest) Validate() error {
+	v := validator.New()
+	return v.Struct(m)
 }
 
 func (m *Manifest) MarshalBinary() ([]byte, error) {
@@ -48,8 +55,7 @@ func MarshalBlankManifest() ([]byte, error) {
 }
 
 type publisher struct {
-	AdapterName string           `yaml:"adapter_name"`
-	AdapterID   publisherAdapter `yaml:"adapter_id"`
+	AdapterID publisherAdapter `yaml:"id"`
 }
 
 type mutations struct {
@@ -58,9 +64,9 @@ type mutations struct {
 }
 
 type project struct {
-	Name      string    `yaml:"name"`
+	Name      string    `yaml:"name" validate:"gte=3"`
 	CreatedAt time.Time `yaml:"created_at"`
-	GoModules string    `yaml:"go_modules"`
+	GoModules string    `yaml:"go_modules" validate:"gte=3"`
 }
 
 type contributor struct {
@@ -70,8 +76,7 @@ type contributor struct {
 }
 
 type streamStorage struct {
-	AdapterID     storageAdapter `yaml:"adapter_id"`
-	AdapterName   string         `yaml:"adapter_name"`
+	AdapterID     storageAdapter `yaml:"id"`
 	EnableJournal bool           `yaml:"enable_journal"`
 }
 
