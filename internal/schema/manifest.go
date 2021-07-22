@@ -3,6 +3,7 @@ package schema
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -19,8 +20,7 @@ type Manifest struct {
 }
 
 func (m *Manifest) Validate() error {
-	v := validator.New()
-	return v.Struct(m)
+	return validator.New().Struct(m)
 }
 
 func (m *Manifest) MarshalBinary() ([]byte, error) {
@@ -29,6 +29,32 @@ func (m *Manifest) MarshalBinary() ([]byte, error) {
 
 func (m *Manifest) UnmarshalBinary(data []byte) error {
 	return yaml.Unmarshal(data, &m)
+}
+
+func (m *Manifest) Sanitize() {
+	commands := make([]CommandMutation, 0)
+	for _, mc := range m.Mutations.Commands {
+		if len(mc.Name) < 2 || len(mc.Command) < 2 {
+			continue
+		}
+		mc.Event = strings.Title(mc.Event)
+		mc.Command = strings.Title(mc.Command)
+		mc.Name = strings.Title(mc.Name)
+		commands = append(commands, mc)
+	}
+	m.Mutations.Commands = commands
+
+	events := make([]EventMutation, 0)
+	for _, ec := range m.Mutations.Events {
+		if len(ec.Name) < 2 || len(ec.Event) < 2 {
+			continue
+		}
+		ec.Name = strings.Title(ec.Name)
+		ec.Event = strings.Title(ec.Event)
+		ec.Package = strings.ToUpper(ec.Package)
+		events = append(events, ec)
+	}
+	m.Mutations.Events = events
 }
 
 func MarshalBlankManifest() ([]byte, error) {
@@ -63,6 +89,10 @@ type mutations struct {
 	Events   []EventMutation   `yaml:"from_events"`
 }
 
+func (m mutations) HasCommand() bool {
+	return false
+}
+
 type project struct {
 	Name      string    `yaml:"name" validate:"gte=3"`
 	CreatedAt time.Time `yaml:"created_at"`
@@ -87,6 +117,7 @@ type CommandMutation struct {
 }
 
 type EventMutation struct {
-	Name  string `yaml:"name"`
-	Event string `yaml:"event"`
+	Package string `yaml:"pkg"`
+	Name    string `yaml:"name"`
+	Event   string `yaml:"event"`
 }

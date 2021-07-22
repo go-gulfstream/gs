@@ -1,7 +1,6 @@
 package projection
 
 type Projection interface {
-    // For example:
     // SessionRegistered(ctx context.Context, e *event.Event) error
     // SessionUnregistered(ctx context.Context, e *event.Event) error
 }

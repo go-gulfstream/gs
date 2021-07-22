@@ -79,6 +79,7 @@ func runInitCommand(path string) error {
 		if err := manifest.Validate(); err != nil {
 			return err
 		}
+		manifest.Sanitize()
 	} else {
 		// from setup wizard
 		wizard := schema.NewSetupWizard()
