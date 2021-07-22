@@ -20,7 +20,7 @@ const manifestFilename = "gulfstream.yml"
 func initCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "init [PATH]",
-		Short: "Init a new gulfstream project",
+		Short: "Create a new Gulfstream project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := validateArgsInitCommand(args); err != nil {
 				return err
