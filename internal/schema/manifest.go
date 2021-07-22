@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"bytes"
+	"fmt"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -20,6 +22,29 @@ func (m *Manifest) MarshalBinary() ([]byte, error) {
 
 func (m *Manifest) UnmarshalBinary(data []byte) error {
 	return yaml.Unmarshal(data, &m)
+}
+
+func MarshalBlankManifest() ([]byte, error) {
+	emptyManifest := new(Manifest)
+	emptyManifest.Project.Name = "myproject"
+	emptyManifest.Project.CreatedAt = time.Now()
+	emptyManifest.Project.GoModules = "github.com/go-gulfstream/myproject"
+	emptyManifest.Mutations.Commands = []CommandMutation{{}}
+	emptyManifest.Mutations.Events = []EventMutation{{}}
+	data, err := emptyManifest.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+	buf := bytes.NewBuffer(data)
+	buf.WriteString("\n# available storage adapters:\n")
+	for id, adapter := range storageAdapters {
+		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
+	}
+	buf.WriteString("\n# available publisher adapters:\n")
+	for id, adapter := range publisherAdapters {
+		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
+	}
+	return buf.Bytes(), nil
 }
 
 type publisher struct {
