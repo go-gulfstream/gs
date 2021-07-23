@@ -10,16 +10,36 @@ import (
 
 func TestTemplate_RenderProjectionInterface(t *testing.T) {
 	manifest := new(Manifest)
+	manifest.Project.Name = "myproject"
+	manifest.Project.GoModules = "modules"
 	manifest.Mutations.Commands = []CommandMutation{
 		{
-			Name:    "myMethod",
-			Command: "Add",
-			Event:   "Added",
+			Mutation: "myMethod",
+			Command: Command{
+				Name:    "Add",
+				Payload: "AddPayload",
+			},
+			Event: Event{
+				Name:    "Added",
+				Payload: "AddedPayload",
+			},
 		},
 		{
-			Name:    "myMethod2",
-			Command: "Mul",
-			Event:   "Completed",
+			Mutation: "myMethod2",
+			Command: Command{
+				Name:    "Mul",
+				Payload: "MulPayload",
+			},
+			Event: Event{
+				Name:    "Completed",
+				Payload: "CompletedPayload",
+			},
+		},
+		{
+			Mutation: "myMethod3",
+			Command: Command{
+				Name: "Sub",
+			},
 		},
 	}
 	manifest.Sanitize()
@@ -28,6 +48,7 @@ func TestTemplate_RenderProjectionInterface(t *testing.T) {
 	assert.NoError(t, err)
 	buf := bytes.NewBuffer(nil)
 	assert.NoError(t, tpl.Funcs(funcMap).Execute(buf, manifest))
-	assert.Contains(t, buf.String(), "MyMethod(ctx context.Context, e *event.Event) error")
-	assert.Contains(t, buf.String(), "MyMethod2(ctx context.Context, e *event.Event) error")
+	assert.Contains(t, buf.String(), "MyMethod(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *events.AddedPayload) error")
+	assert.Contains(t, buf.String(), "MyMethod2(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *events.CompletedPayload) error")
+	assert.Contains(t, buf.String(), "MyMethod3(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int) error")
 }

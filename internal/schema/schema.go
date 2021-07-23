@@ -87,6 +87,14 @@ var files = []File{
 		Template: "projection_types.go.tpl",
 	},
 	{
+		Path:  "/docs",
+		IsDir: true,
+	},
+	{
+		Path:     "/docs/README.md",
+		Template: "docs_readme.tpl",
+	},
+	{
 		Path:  "/pkg",
 		IsDir: true,
 	},
@@ -95,15 +103,23 @@ var files = []File{
 		IsDir: true,
 	},
 	{
+		Path:     "/pkg/commands/commands.go",
+		Template: "pkg_commands.go.tpl",
+	},
+	{
 		Path:  "/pkg/events",
 		IsDir: true,
+	},
+	{
+		Path:     "/pkg/events/events.go",
+		Template: "pkg_events.go.tpl",
 	},
 	{
 		Path:  "/pkg/stream",
 		IsDir: true,
 	},
 	{
-		Path:     "/pkg/stream/%s",
+		Path:     "/pkg/stream/stream.go",
 		Template: "pkg_stream.go.tpl",
 	},
 	{

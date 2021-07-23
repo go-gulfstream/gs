@@ -11,7 +11,7 @@ func NewStorage() *Storage {
     return &Storage{}
 }
 
-func (s *Storage) Insert(ctx context.Context,  view *Stream) error {
+func (s *Storage) Insert(ctx context.Context,  stream *Stream) error {
     panic("not implemented")
     return nil
 }
@@ -31,7 +31,7 @@ func (s *Storage) Delete(ctx context.Context, id uuid.UUID) error {
     return nil
 }
 
-func (s *Storage) Update(ctx context.Context, id uuid.UUID) error {
+func (s *Storage) Update(ctx context.Context, stream *Stream) error {
     panic("not implemented")
     return nil
 }

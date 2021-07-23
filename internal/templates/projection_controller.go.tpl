@@ -5,35 +5,34 @@ import (
 
 	"github.com/go-gulfstream/gulfstream/pkg/event"
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
-	"{{$.Project.GoModules}}/{{$.Project.Name}}/pkg/events"
+	{{$.Project.Name}}events "{{$.Project.GoModules}}/pkg/events"
 )
 
 func NewController(p Projection) *gulfstream.Projection {
 	projection := gulfstream.NewProjection()
 
-    // For example:
-	// projection.AddEventController(
-	//	events.SessionRegistered,
-	//	sessionRegisteredController(p),
-	// )
-
-    // For example:
-	// projection.AddEventController(
-	//	events.SessionUnregisteredEvent,
-	//	sessionUnregisteredController(p),
-	// )
+    {{range $.Mutations.Commands -}}
+        projection.AddEventController(
+       	   {{$.Project.Name}}events.{{.Event.Name}},
+       	   {{.Event.Name}}Controller(p),
+       	)
+    {{end}}
 
 	return projection
 }
 
-// func sessionRegisteredController(p Projection) gulfstream.EventHandlerFunc {
-//	return func(ctx context.Context, e *event.Event) error {
-//		return p.SessionRegistered(ctx, e)
-//	}
-// }
-//
-// func sessionUnregisteredController(p Projection) gulfstream.EventHandlerFunc {
-//	return func(ctx context.Context, e *event.Event) error {
-//		return p.SessionUnregistered(ctx, e)
-//	}
-// }
+{{range $.Mutations.Commands -}}
+   {{if .Event.Payload}}
+   func {{.Event.Name}}Controller(p Projection) gulfstream.EventHandlerFunc {
+       return func(ctx context.Context, e *event.Event) error {
+           return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version(), e.Payload().(*{{$.Project.Name}}events.{{.Event.Payload}}))
+       }
+   }
+   {{else}}
+   func {{.Event.Name}}Controller(p Projection) gulfstream.EventHandlerFunc {
+          return func(ctx context.Context, e *event.Event) error {
+              return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version())
+          }
+      }
+   {{end}}
+{{end}}

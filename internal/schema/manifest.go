@@ -32,25 +32,40 @@ func (m *Manifest) UnmarshalBinary(data []byte) error {
 }
 
 func (m *Manifest) Sanitize() {
+	dupcommand := make(map[string]struct{})
+	dupevent := make(map[string]struct{})
 	commands := make([]CommandMutation, 0)
 	for _, mc := range m.Mutations.Commands {
-		if len(mc.Name) < 2 || len(mc.Command) < 2 {
+		if len(mc.Mutation) == 0 || !mc.Command.Validate() {
 			continue
 		}
-		mc.Event = strings.Title(mc.Event)
-		mc.Command = strings.Title(mc.Command)
-		mc.Name = strings.Title(mc.Name)
+		_, foundCommand := dupcommand[mc.Mutation]
+		if foundCommand {
+			continue
+		}
+		dupcommand[mc.Mutation] = struct{}{}
+		mc.Event.Name = strings.Title(mc.Event.Name)
+		mc.Event.Payload = strings.Title(mc.Event.Payload)
+		mc.Command.Name = strings.Title(mc.Command.Name)
+		mc.Command.Payload = strings.Title(mc.Command.Payload)
+		mc.Mutation = strings.Title(mc.Mutation)
 		commands = append(commands, mc)
 	}
 	m.Mutations.Commands = commands
 
 	events := make([]EventMutation, 0)
 	for _, ec := range m.Mutations.Events {
-		if len(ec.Name) < 2 || len(ec.Event) < 2 {
+		if len(ec.Mutation) == 0 || ec.Event.Validate() {
 			continue
 		}
-		ec.Name = strings.Title(ec.Name)
-		ec.Event = strings.Title(ec.Event)
+		_, foundEvent := dupcommand[ec.Mutation]
+		if foundEvent {
+			continue
+		}
+		dupevent[ec.Mutation] = struct{}{}
+		ec.Mutation = strings.Title(ec.Mutation)
+		ec.Event.Name = strings.Title(ec.Event.Name)
+		ec.Event.Payload = strings.Title(ec.Event.Payload)
 		ec.Package = strings.ToUpper(ec.Package)
 		events = append(events, ec)
 	}
@@ -90,7 +105,11 @@ type mutations struct {
 }
 
 func (m mutations) HasCommand() bool {
-	return false
+	return len(m.Commands) > 0
+}
+
+func (m mutations) HasEvents() bool {
+	return len(m.Events) > 0
 }
 
 type project struct {
@@ -111,13 +130,31 @@ type streamStorage struct {
 }
 
 type CommandMutation struct {
-	Name    string `yaml:"name"`
-	Command string `yaml:"command"`
-	Event   string `yaml:"event"`
+	Mutation string  `yaml:"mutation"`
+	Command  Command `yml:"command"`
+	Event    Event   `yml:"event"`
+}
+
+type Command struct {
+	Name    string `yml:"name"`
+	Payload string `yml:"payload"`
+}
+
+func (c Command) Validate() bool {
+	return len(c.Name) > 0
+}
+
+type Event struct {
+	Name    string `yml:"name"`
+	Payload string `yml:"payload"`
+}
+
+func (e Event) Validate() bool {
+	return len(e.Name) > 0
 }
 
 type EventMutation struct {
-	Package string `yaml:"pkg"`
-	Name    string `yaml:"name"`
-	Event   string `yaml:"event"`
+	Mutation string `yaml:"mutation"`
+	Package  string `yaml:"pkg"`
+	Event    Event  `yaml:"event"`
 }
