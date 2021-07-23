@@ -130,10 +130,10 @@ type streamStorage struct {
 }
 
 type CommandMutation struct {
-	Mutation string  `yaml:"mutation"`
-	Command  Command `yml:"command"`
-	Event    Event   `yml:"event"`
-	Create   bool    `yml:"create"`
+	Mutation   string     `yaml:"mutation"`
+	Command    Command    `yml:"command"`
+	Event      Event      `yml:"event"`
+	Operations Operations `yml:"operations"`
 }
 
 type Command struct {
@@ -155,8 +155,13 @@ func (e Event) Validate() bool {
 }
 
 type EventMutation struct {
-	Mutation string `yaml:"mutation"`
-	Package  string `yaml:"pkg"`
-	Event    Event  `yaml:"event"`
-	Create   bool   `yml:"create"`
+	Mutation   string     `yml:"mutation"`
+	Package    string     `yml:"pkg"`
+	Event      Event      `yml:"event"`
+	Operations Operations `yml:"operations"`
+}
+
+type Operations struct {
+	Create bool `yml:"create"`
+	Delete bool `yaml:"delete"`
 }

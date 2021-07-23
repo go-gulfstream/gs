@@ -41,5 +41,3 @@ func (s *root) MarshalBinary() ([]byte, error) {
 func (s *root) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, s)
 }
-
-
