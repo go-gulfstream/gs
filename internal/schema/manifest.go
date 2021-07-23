@@ -133,6 +133,7 @@ type CommandMutation struct {
 	Mutation string  `yaml:"mutation"`
 	Command  Command `yml:"command"`
 	Event    Event   `yml:"event"`
+	Create   bool    `yml:"create"`
 }
 
 type Command struct {
@@ -157,4 +158,5 @@ type EventMutation struct {
 	Mutation string `yaml:"mutation"`
 	Package  string `yaml:"pkg"`
 	Event    Event  `yaml:"event"`
+	Create   bool   `yml:"create"`
 }

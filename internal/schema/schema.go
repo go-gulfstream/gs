@@ -59,10 +59,6 @@ var files = []File{
 		Template: "stream_state.go.tpl",
 	},
 	{
-		Path:     "/internal/stream/state_encoding.go",
-		Template: "stream_state_encoding.go.tpl",
-	},
-	{
 		Path:     "/internal/stream/controller.go",
 		Template: "stream_controller.go.tpl",
 	},
@@ -85,6 +81,18 @@ var files = []File{
 	{
 		Path:     "/internal/projection/types.go",
 		Template: "projection_types.go.tpl",
+	},
+	{
+		Path:  "/internal/config",
+		IsDir: true,
+	},
+	{
+		Path:     "/internal/config/config.go",
+		Template: "config_config.go.tpl",
+	},
+	{
+		Path:  "/api",
+		IsDir: true,
 	},
 	{
 		Path:  "/docs",
