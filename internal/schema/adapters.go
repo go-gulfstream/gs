@@ -1,12 +1,12 @@
 package schema
 
 const (
-	RedisStreamStorageAdapter storageAdapter = iota
+	RedisStreamStorageAdapter storageAdapter = iota + 1
 	PostgresStreamStorageAdapter
 )
 
 const (
-	KafkaStreamPublisherAdapter publisherAdapter = iota
+	KafkaStreamPublisherAdapter publisherAdapter = iota + 1
 	ConnectorStreamPublisherAdapter
 )
 

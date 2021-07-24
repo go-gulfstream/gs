@@ -58,7 +58,11 @@ func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {
 
 func blankManifest(withData bool) *schema.Manifest {
 	if !withData {
-		return new(schema.Manifest)
+		manifest := new(schema.Manifest)
+		manifest.Contributors = []schema.Contributor{{}}
+		manifest.Mutations.Commands = []schema.CommandMutation{{}}
+		manifest.Mutations.Events = []schema.EventMutation{{}}
+		return manifest
 	}
 
 	manifest := new(schema.Manifest)
