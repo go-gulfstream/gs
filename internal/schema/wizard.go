@@ -3,7 +3,6 @@ package schema
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/manifoldco/promptui"
 )
@@ -51,12 +50,12 @@ func (a publisherAdapter) String() string {
 	return "Unknown"
 }
 
-var storageAdapters = map[storageAdapter]string{
+var StorageAdapters = map[storageAdapter]string{
 	redisStreamStorageAdapter:    redisStreamStorageAdapter.String(),
 	postgresStreamStorageAdapter: postgresStreamStorageAdapter.String(),
 }
 
-var publisherAdapters = map[publisherAdapter]string{
+var PublisherAdapters = map[publisherAdapter]string{
 	kafkaStreamPublisherAdapter:     kafkaStreamPublisherAdapter.String(),
 	connectorStreamPublisherAdapter: connectorStreamPublisherAdapter.String(),
 }
@@ -81,33 +80,33 @@ func NewSetupWizard() *Wizard {
 }
 
 func (w *Wizard) setupContributor() error {
-	prompt := promptui.Prompt{
-		Label: "Author",
-	}
-	author, err := prompt.Run()
-	if err != nil {
-		return err
-	}
+	//prompt := promptui.Prompt{
+	//	Label: "Author",
+	//}
+	//author, err := prompt.Run()
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//prompt = promptui.Prompt{
+	//	Label: "Email",
+	//}
+	//email, err := prompt.Run()
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//prompt = promptui.Prompt{
+	//	Label: "Description",
+	//}
+	//desc, err := prompt.Run()
+	//if err != nil {
+	//	return err
+	//}
 
-	prompt = promptui.Prompt{
-		Label: "Email",
-	}
-	email, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
-	prompt = promptui.Prompt{
-		Label: "Description",
-	}
-	desc, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
-	w.manifest.Contributor.Author = author
-	w.manifest.Contributor.Email = email
-	w.manifest.Contributor.Description = desc
+	//w.manifest.Contributor.Author = author
+	//w.manifest.Contributor.Email = email
+	//w.manifest.Contributor.Description = desc
 
 	return nil
 }
@@ -134,7 +133,7 @@ func (w *Wizard) setupStreamPublisher() error {
 		return err
 	}
 
-	w.manifest.Publisher.AdapterID = publisherAdapter(adapterID)
+	w.manifest.StreamPublisher.AdapterID = publisherAdapter(adapterID)
 
 	return nil
 }
@@ -201,9 +200,9 @@ func (w *Wizard) setupProjectInfo() error {
 		return err
 	}
 
-	w.manifest.Project.Name = strings.ToLower(projectName)
-	w.manifest.Project.CreatedAt = time.Now().UTC()
-	w.manifest.Project.GoModules = strings.ToLower(goMod)
+	w.manifest.Name = strings.ToLower(projectName)
+	//w.manifest.Project.CreatedAt = time.Now().UTC()
+	w.manifest.GoModules = strings.ToLower(goMod)
 
 	return nil
 }

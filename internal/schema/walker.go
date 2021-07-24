@@ -10,7 +10,7 @@ func Walk(path string, m *Manifest, fn func(File) error) error {
 		return nil
 	}
 	for _, file := range files {
-		file.Path = strings.ReplaceAll(file.Path, "%s", m.Project.Name)
+		file.Path = strings.ReplaceAll(file.Path, "%s", m.PackageName)
 		file.Path = filepath.Join(path, file.Path)
 		if len(file.Template) > 0 {
 			file.HasTemplate = true

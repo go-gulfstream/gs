@@ -8,6 +8,13 @@ import (
 	   {{$.Project.Name}}events "{{$.Project.GoModules}}/pkg/events"
 	{{end}}
 
+	{{if $.Mutations.HasEvent}}
+	   "github.com/go-gulfstream/gulfstream/pkg/event"
+	   {{range $.EventExternalPackages}}
+	       "{{.}}"
+	   {{end}}
+	{{end}}
+
 	gulfstreamcommand "github.com/go-gulfstream/gulfstream/pkg/command"
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
 )
@@ -40,6 +47,29 @@ func NewController(
          )
         {{end -}}
     {{end -}}
+
+    {{if $.Mutations.HasEvent}}
+        {{range $.Mutations.Commands -}}
+            {{if .Operations.Create -}}
+            controller.AddEventController(
+            	events.{{.Event.Name}},
+            	{{.Mutation}}EventController(m),
+            	stream.WithEventControllerCreateIfNotExists(),
+            )
+            {{ else if .Operations.Delete -}}
+            controller.AddEventController(
+                events.{{.Event.Name}},
+                {{.Mutation}}EventController(m),
+                stream.WithEventControllerDropStream(),
+            )
+            {{else}}
+            controller.AddEventController(
+                 events.{{.Event.Name}},
+                 {{.Mutation}}EventController(m),
+            )
+            {{end}}
+        {{end}}
+    {{end}}
 
 	return controller
 }
@@ -85,3 +115,18 @@ func NewController(
          }
     {{end -}}
 {{end -}}
+
+{{if $.Mutations.HasEvent}}
+   {{range $.Mutations.Events -}}
+      func {{.Mutation}}EventController(m Mutation) gulfstream.EventController {
+      	return gulfstream.EventControllerFunc(
+      		func(event *event.Event) stream.Picker {
+      			return gulfstream.Picker{}
+      		},
+      		func(ctx context.Context, s *gulfstream.Stream, e *event.Event) error {
+      			return nil
+      		})
+      }
+   {{end}}
+{{end}}
+

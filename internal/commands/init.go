@@ -72,14 +72,15 @@ func runInitCommand(path string) error {
 		if err != nil {
 			return err
 		}
+		_ = data
 		manifest = new(schema.Manifest)
-		if err := manifest.UnmarshalBinary(data); err != nil {
-			return err
-		}
-		if err := manifest.Validate(); err != nil {
-			return err
-		}
-		manifest.Sanitize()
+		//if err := manifest.UnmarshalBinary(data); err != nil {
+		//	return err
+		//}
+		//if err := schema.ValidateManifest(manifest); err != nil {
+		//	return err
+		//}
+		//schema.SanitizeManifest(manifest)
 	} else {
 		// from setup wizard
 		wizard := schema.NewSetupWizard()
@@ -127,12 +128,12 @@ func runInitCommand(path string) error {
 	}
 
 	if nof {
-		data, err := manifest.MarshalBinary()
-		if err != nil {
-			return err
-		}
-		manifest := filepath.Join(path, manifestFilename)
-		return ioutil.WriteFile(manifest, data, 0777)
+		//data, err := manifest.MarshalBinary()
+		//if err != nil {
+		//	return err
+		//}
+		//manifest := filepath.Join(path, manifestFilename)
+		//return ioutil.WriteFile(manifest, data, 0777)
 	}
 
 	return nil
