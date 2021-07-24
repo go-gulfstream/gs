@@ -35,17 +35,13 @@ func manifestCommand() *cobra.Command {
 				return fmt.Errorf("directory %s not empty. found files: %d",
 					args[0], len(files))
 			}
-			data, err := blankManifest()
-			if err != nil {
-				return err
-			}
-			manifestFile := filepath.Join(args[0], manifestFilename)
-			if _, err := os.Stat(manifestFile); err == nil {
-				return fmt.Errorf("manifest file already exists")
-			}
-			return ioutil.WriteFile(manifestFile, data, 0755)
+			dataFlag := cmd.Flag("data")
+			withData := dataFlag.Value.String() == "true"
+			manifest := blankManifest(withData)
+			return writeManifestFile(args[0], manifest)
 		},
 	}
+	command.Flags().BoolP("data", "d", false, "generate with data example")
 	return command
 }
 
@@ -60,23 +56,27 @@ func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {
 	return filtered
 }
 
-func blankManifest() ([]byte, error) {
-	emptyManifest := new(schema.Manifest)
-	emptyManifest.Name = "My project name"
-	emptyManifest.PackageName = "myproject"
-	emptyManifest.StreamName = "Myproject"
-	emptyManifest.GoModules = "github.com/go-gulfstream/myproject"
-	emptyManifest.Description = "My project short description"
-	emptyManifest.Contributors = []schema.Contributor{
+func blankManifest(withData bool) *schema.Manifest {
+	if !withData {
+		return new(schema.Manifest)
+	}
+
+	manifest := new(schema.Manifest)
+	manifest.Name = "My project name"
+	manifest.PackageName = "myproject"
+	manifest.StreamName = "Myproject"
+	manifest.GoModules = "github.com/go-gulfstream/myproject"
+	manifest.Description = "My project short description"
+	manifest.Contributors = []schema.Contributor{
 		{
 			Author: "author",
 			Email:  "author@gmail.com",
 		},
 	}
-	emptyManifest.EventsPkgName = "myprojectevents"
-	emptyManifest.CommandsPkgName = "myprojectcommands"
-	emptyManifest.StreamPkgName = "myprojectstream"
-	emptyManifest.Mutations.Commands = []schema.CommandMutation{
+	manifest.EventsPkgName = "myprojectevents"
+	manifest.CommandsPkgName = "myprojectcommands"
+	manifest.StreamPkgName = "myprojectstream"
+	manifest.Mutations.Commands = []schema.CommandMutation{
 		{
 			Mutation: "CreateTreeMutation",
 			Command: schema.Command{
@@ -87,9 +87,7 @@ func blankManifest() ([]byte, error) {
 				Name:    "TreeCreated",
 				Payload: "TreeCreatedPayload",
 			},
-			Operations: schema.Operations{
-				Create: true,
-			},
+			Create: schema.YesOp,
 		},
 		{
 			Mutation: "UpdateTreeMutation",
@@ -112,12 +110,14 @@ func blankManifest() ([]byte, error) {
 				Name:    "TreeRemoved",
 				Payload: "TreeRemovedPayload",
 			},
-			Operations: schema.Operations{
-				Delete: true,
-			},
+			Delete: schema.YesOp,
 		},
 	}
-	emptyManifest.Mutations.Events = []schema.EventMutation{{
+	manifest.StreamStorage.Name = schema.RedisStreamStorageAdapter.String()
+	manifest.StreamStorage.AdapterID = schema.RedisStreamStorageAdapter
+	manifest.StreamPublisher.Name = schema.KafkaStreamPublisherAdapter.String()
+	manifest.StreamPublisher.AdapterID = schema.KafkaStreamPublisherAdapter
+	manifest.Mutations.Events = []schema.EventMutation{{
 		Mutation: "UpdateCounterMutation",
 		InEvent: schema.Event{
 			Name:    "counterevents.CounterUpdated",
@@ -128,12 +128,16 @@ func blankManifest() ([]byte, error) {
 			Payload: "TreeCounterUpdatedPayload",
 		},
 	}}
-	emptyManifest.ImportEvents = []string{
+	manifest.ImportEvents = []string{
 		"github.com/go-gulfstream/counterevents",
 	}
-	data, err := schema.EncodeManifest(emptyManifest)
+	return manifest
+}
+
+func writeManifestFile(path string, manifest *schema.Manifest) error {
+	data, err := schema.EncodeManifest(manifest)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	buf := bytes.NewBuffer(data)
 	buf.WriteString("\n# available storage adapters:\n")
@@ -144,5 +148,9 @@ func blankManifest() ([]byte, error) {
 	for id, adapter := range schema.PublisherAdapters {
 		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
 	}
-	return buf.Bytes(), nil
+	manifestFile := filepath.Join(path, manifestFilename)
+	if _, err := os.Stat(manifestFile); err == nil {
+		return fmt.Errorf("manifest file already exists")
+	}
+	return ioutil.WriteFile(manifestFile, buf.Bytes(), 0755)
 }

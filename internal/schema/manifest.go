@@ -1,5 +1,10 @@
 package schema
 
+const (
+	YesOp = "yes"
+	NoOp  = "no"
+)
+
 type Manifest struct {
 	Name            string        `yaml:"name"`
 	PackageName     string        `yaml:"go_package_name"`
@@ -17,6 +22,7 @@ type Manifest struct {
 }
 
 type publisher struct {
+	Name      string           `yaml:"name,omitempty"`
 	AdapterID publisherAdapter `yaml:"id"`
 }
 
@@ -33,36 +39,31 @@ func (m mutations) HasEvents() bool {
 	return len(m.Events) > 0
 }
 
-//type project struct {
-//}
-//
-//func (p project) StreamPkg() string {
-//	return p.PackageName + "stream"
-//}
-//
-//func (p project) EventsPkg() string {
-//	return p.PackageName + "events"
-//}
-//
-//func (p project) CommandsPkg() string {
-//	return p.PackageName + "commands"
-//}
-
 type Contributor struct {
 	Author string `yaml:"author"`
 	Email  string `yaml:"email"`
 }
 
 type streamStorage struct {
+	Name          string         `yaml:"name,omitempty"`
 	AdapterID     storageAdapter `yaml:"id"`
 	EnableJournal bool           `yaml:"enable_journal"`
 }
 
 type CommandMutation struct {
-	Mutation   string     `yaml:"mutation"`
-	Command    Command    `yaml:"in_command"`
-	Event      Event      `yaml:"out_event"`
-	Operations Operations `yaml:"operations"`
+	Mutation string  `yaml:"name"`
+	Command  Command `yaml:"in_command"`
+	Event    Event   `yaml:"out_event"`
+	Create   string  `yaml:"allow_create_stream,omitempty"`
+	Delete   string  `yaml:"allow_delete_stream,omitempty"`
+}
+
+type EventMutation struct {
+	Mutation string `yaml:"name"`
+	InEvent  Event  `yaml:"in_event"`
+	OutEvent Event  `yaml:"out_event"`
+	Create   string `yaml:"allow_create_stream,omitempty"`
+	Delete   string `yaml:"allow_delete_stream,omitempty"`
 }
 
 type Command struct {
@@ -73,16 +74,4 @@ type Command struct {
 type Event struct {
 	Name    string `yaml:"name"`
 	Payload string `yaml:"payload"`
-}
-
-type EventMutation struct {
-	Mutation   string     `yaml:"mutation"`
-	InEvent    Event      `yaml:"in_event"`
-	OutEvent   Event      `yaml:"out_event"`
-	Operations Operations `yaml:"operations"`
-}
-
-type Operations struct {
-	Create bool `yaml:"allow_create_stream"`
-	Delete bool `yaml:"allow_delete_stream"`
 }

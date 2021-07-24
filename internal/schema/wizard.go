@@ -7,67 +7,6 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-const (
-	redisStreamStorageAdapter storageAdapter = iota
-	postgresStreamStorageAdapter
-)
-
-const (
-	kafkaStreamPublisherAdapter publisherAdapter = iota
-	connectorStreamPublisherAdapter
-)
-
-type (
-	storageAdapter   int
-	publisherAdapter int
-)
-
-func (a storageAdapter) IsRedis() bool {
-	return redisStreamStorageAdapter == a
-}
-
-func (a storageAdapter) IsPostgreSQL() bool {
-	return postgresStreamStorageAdapter == a
-}
-
-func (a storageAdapter) String() string {
-	switch a {
-	case postgresStreamStorageAdapter:
-		return "PostgreSQL - Stream storage adapter"
-	case redisStreamStorageAdapter:
-		return "Redis - Stream storage adapter"
-	}
-	return "Unknown"
-}
-
-func (a publisherAdapter) String() string {
-	switch a {
-	case kafkaStreamPublisherAdapter:
-		return "Kafka publisher - Stream publisher adapter"
-	case connectorStreamPublisherAdapter:
-		return "WAL Connector - Stream publisher adapter"
-	}
-	return "Unknown"
-}
-
-var StorageAdapters = map[storageAdapter]string{
-	redisStreamStorageAdapter:    redisStreamStorageAdapter.String(),
-	postgresStreamStorageAdapter: postgresStreamStorageAdapter.String(),
-}
-
-var PublisherAdapters = map[publisherAdapter]string{
-	kafkaStreamPublisherAdapter:     kafkaStreamPublisherAdapter.String(),
-	connectorStreamPublisherAdapter: connectorStreamPublisherAdapter.String(),
-}
-
-func (a publisherAdapter) IsKafka() bool {
-	return kafkaStreamPublisherAdapter == a
-}
-
-func (a publisherAdapter) IsConnector() bool {
-	return connectorStreamPublisherAdapter == a
-}
-
 type Wizard struct {
 	manifest *Manifest
 }
@@ -115,13 +54,13 @@ func (w *Wizard) setupStreamPublisher() error {
 	var adapters []string
 	if w.manifest.StreamStorage.AdapterID.IsPostgreSQL() {
 		adapters = []string{
-			kafkaStreamPublisherAdapter.String(),
-			connectorStreamPublisherAdapter.String(),
+			KafkaStreamPublisherAdapter.String(),
+			ConnectorStreamPublisherAdapter.String(),
 		}
 	}
 	if w.manifest.StreamStorage.AdapterID.IsRedis() {
 		adapters = []string{
-			kafkaStreamPublisherAdapter.String(),
+			KafkaStreamPublisherAdapter.String(),
 		}
 	}
 	prompt := promptui.Select{
@@ -142,8 +81,8 @@ func (w *Wizard) setupStreamStorage() error {
 	prompt := promptui.Select{
 		Label: "Select stream storage adapter",
 		Items: []string{
-			redisStreamStorageAdapter.String(),
-			postgresStreamStorageAdapter.String(),
+			RedisStreamStorageAdapter.String(),
+			PostgresStreamStorageAdapter.String(),
 		},
 	}
 	adapterID, adapterName, err := prompt.Run()

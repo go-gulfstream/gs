@@ -71,8 +71,8 @@ func validateProjectName(m *Manifest) error {
 
 func validatePublisherAdapter(m *Manifest) error {
 	switch m.StreamPublisher.AdapterID {
-	case kafkaStreamPublisherAdapter,
-		connectorStreamPublisherAdapter:
+	case KafkaStreamPublisherAdapter,
+		ConnectorStreamPublisherAdapter:
 		return nil
 	default:
 		return fmt.Errorf("invalid publisher adapter id. got %s, expected %v",
@@ -82,8 +82,8 @@ func validatePublisherAdapter(m *Manifest) error {
 
 func validateStorageAdapter(m *Manifest) error {
 	switch m.StreamStorage.AdapterID {
-	case redisStreamStorageAdapter,
-		postgresStreamStorageAdapter:
+	case RedisStreamStorageAdapter,
+		PostgresStreamStorageAdapter:
 		return nil
 	default:
 		return fmt.Errorf("invalid stream storage adapter id. got %s, expected %v",
