@@ -105,7 +105,7 @@ func runInitCommand(path string) (err error) {
 			} else {
 				// fix imports and code format.
 				if file.IsGo() {
-					source, err := format.Source(file.TemplateData)
+					source, err := format.Source(file.Path, file.TemplateData)
 					if err != nil {
 						return err
 					}

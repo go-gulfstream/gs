@@ -6,15 +6,21 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+
+	"golang.org/x/tools/imports"
 )
 
-func Source(data []byte) ([]byte, error) {
+func Source(filepath string, data []byte) ([]byte, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", data, parser.ParseComments)
 	if err != nil {
 		return nil, err
 	}
-	return gofmtFile(file, fset)
+	formatted, err := gofmtFile(file, fset)
+	if err != nil {
+		return nil, err
+	}
+	return imports.Process(filepath, formatted, &imports.Options{})
 }
 
 func gofmtFile(f *ast.File, fset *token.FileSet) ([]byte, error) {
