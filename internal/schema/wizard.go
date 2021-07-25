@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/manifoldco/promptui"
 )
@@ -18,34 +17,140 @@ func NewSetupWizard() *Wizard {
 	return wiz
 }
 
-func (w *Wizard) setupContributor() error {
-	//prompt := promptui.Prompt{
-	//	Label: "Author",
-	//}
-	//author, err := prompt.Run()
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//prompt = promptui.Prompt{
-	//	Label: "Email",
-	//}
-	//email, err := prompt.Run()
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//prompt = promptui.Prompt{
-	//	Label: "Description",
-	//}
-	//desc, err := prompt.Run()
-	//if err != nil {
-	//	return err
-	//}
+func (w *Wizard) setupName() error {
+	prompt := promptui.Prompt{
+		Label:     "ProjectName [for example: My Project] :",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
 
-	//w.manifest.Contributor.Author = author
-	//w.manifest.Contributor.Email = email
-	//w.manifest.Contributor.Description = desc
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.Name = res
+
+	return nil
+}
+
+func (w *Wizard) setupPackageName() error {
+	prompt := promptui.Prompt{
+		Label:     "GoPackageName [for example: myproject] :",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.PackageName = sanitizePackageName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupStreamName() error {
+	prompt := promptui.Prompt{
+		Label:     "GoStreamName [for example: Myproject] :",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.StreamName = sanitizeStreamName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupGoModules() error {
+	prompt := promptui.Prompt{
+		Label:     "GoModules [for example: github.com/go-gulfstream/myproject] :",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.GoModules = sanitizeName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupGoEventsPkg() error {
+	prompt := promptui.Prompt{
+		Label:     "GoEventsPkg [for example: myprojectevents] :",
+		Default:   w.manifest.PackageName + "events",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.EventsPkgName = sanitizePackageName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupGoCommandsPkg() error {
+	prompt := promptui.Prompt{
+		Label:     "GoCommandsPkg [for example: myprojectcommands] :",
+		Default:   w.manifest.PackageName + "commands",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.CommandsPkgName = sanitizePackageName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupGoStreamPkg() error {
+	prompt := promptui.Prompt{
+		Label:     "GoStreamPkg [for example: myprojectstream] :",
+		Default:   w.manifest.PackageName + "stream",
+		Templates: inputTpl(),
+		Validate:  validateInput,
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.StreamPkgName = sanitizePackageName(res)
+
+	return nil
+}
+
+func (w *Wizard) setupDescription() error {
+	prompt := promptui.Prompt{
+		Label:     "Description :",
+		Templates: inputTpl(),
+	}
+
+	res, err := prompt.Run()
+	if err != nil {
+		return err
+	}
+
+	w.manifest.Description = res
 
 	return nil
 }
@@ -71,6 +176,7 @@ func (w *Wizard) setupStreamPublisher() error {
 	if err != nil {
 		return err
 	}
+	adapterID++
 
 	w.manifest.StreamPublisher.AdapterID = publisherAdapter(adapterID)
 
@@ -89,6 +195,7 @@ func (w *Wizard) setupStreamStorage() error {
 	if err != nil {
 		return err
 	}
+	adapterID++
 
 	w.manifest.StreamStorage.AdapterID = storageAdapter(adapterID)
 
@@ -109,57 +216,42 @@ func (w *Wizard) setupStreamStorage() error {
 	return nil
 }
 
-func (w *Wizard) setupProjectInfo() error {
-	prompt := promptui.Prompt{
-		Label: "Project name",
-		Validate: func(s string) error {
-			if len(s) > 3 {
-				return nil
-			}
-			return fmt.Errorf("project name to short")
-		},
-	}
-	projectName, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
-	prompt = promptui.Prompt{
-		Label:   "Go module (go.mod)",
-		Default: projectName,
-		Validate: func(s string) error {
-			if len(s) > 3 {
-				return nil
-			}
-			return fmt.Errorf("go.mod module to short")
-		},
-	}
-	goMod, err := prompt.Run()
-	if err != nil {
-		return err
-	}
-
-	w.manifest.Name = strings.ToLower(projectName)
-	//w.manifest.Project.CreatedAt = time.Now().UTC()
-	w.manifest.GoModules = strings.ToLower(goMod)
-
-	return nil
-}
-
 func (w *Wizard) Manifest() *Manifest {
 	return w.manifest
 }
 
 func (w *Wizard) Run() error {
 	for _, wizardFunc := range []func() error{
-		w.setupProjectInfo,
+		w.setupName,
+		w.setupPackageName,
+		w.setupStreamName,
+		w.setupGoModules,
+		w.setupGoCommandsPkg,
+		w.setupGoStreamPkg,
+		w.setupGoEventsPkg,
+		w.setupDescription,
 		w.setupStreamStorage,
 		w.setupStreamPublisher,
-		w.setupContributor,
 	} {
 		if err := wizardFunc(); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func inputTpl() *promptui.PromptTemplates {
+	return &promptui.PromptTemplates{
+		Prompt:  "{{ . }} ",
+		Valid:   "{{ . | green }} ",
+		Invalid: "{{ . | red }} ",
+		Success: "{{ . | bold }} ",
+	}
+}
+
+func validateInput(s string) error {
+	if len(s) < 3 {
+		return fmt.Errorf("too short value")
 	}
 	return nil
 }

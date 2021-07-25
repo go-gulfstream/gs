@@ -16,6 +16,8 @@ var (
 func ValidateManifest(m *Manifest) error {
 	for _, fn := range []func(m *Manifest) error{
 		validatePackageName,
+		validateGoModules,
+		validateGoVersion,
 		validateStreamName,
 		validateProjectName,
 		validateCommands,
@@ -28,6 +30,25 @@ func ValidateManifest(m *Manifest) error {
 		}
 	}
 	return validator.New().Struct(m)
+}
+
+func validateGoModules(m *Manifest) error {
+	if len(m.GoModules) < 2 {
+		return fmt.Errorf("go modules too short. got %d, expected > 2 symbols",
+			len(m.GoModules))
+	}
+	if len(m.PackageName) > 128 {
+		return fmt.Errorf("go modules too long. got %d, expected <= 128 symbols",
+			len(m.GoModules))
+	}
+	return nil
+}
+
+func validateGoVersion(m *Manifest) error {
+	if len(m.GoVersion) < 0 {
+		return fmt.Errorf("undefined go version")
+	}
+	return nil
 }
 
 func validatePackageName(m *Manifest) error {

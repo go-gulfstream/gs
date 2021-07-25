@@ -82,10 +82,6 @@ func runInitCommand(path string) (err error) {
 		if err != nil {
 			return err
 		}
-		schema.SanitizeManifest(manifest)
-		if err := schema.ValidateManifest(manifest); err != nil {
-			return err
-		}
 	} else {
 		// from setup wizard
 		wizard := schema.NewSetupWizard()
@@ -93,6 +89,12 @@ func runInitCommand(path string) (err error) {
 			return err
 		}
 		manifest = wizard.Manifest()
+		manifest.GoVersion = goutil.Version()
+	}
+
+	schema.SanitizeManifest(manifest)
+	if err := schema.ValidateManifest(manifest); err != nil {
+		return err
 	}
 
 	if err := schema.Walk(path, manifest,
@@ -153,7 +155,7 @@ func runGoTools(path string) {
 		return
 	}
 
-	fmt.Printf("======== go tools ========\n")
+	fmt.Printf("\n======== go tools ========\n")
 	fmt.Printf("go mod download:\n")
 	out, err := goutil.RunGoMod(path)
 	if err != nil {

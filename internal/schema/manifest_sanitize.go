@@ -6,6 +6,7 @@ import (
 
 func SanitizeManifest(m *Manifest) {
 	m.CommandsPkgName = sanitizePackageName(m.CommandsPkgName)
+	m.GoModules = sanitizePackageName(m.GoModules)
 	m.StreamPkgName = sanitizePackageName(m.StreamPkgName)
 	m.EventsPkgName = sanitizePackageName(m.EventsPkgName)
 	m.PackageName = sanitizePackageName(m.PackageName)
