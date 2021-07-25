@@ -10,6 +10,7 @@ type Manifest struct {
 	PackageName     string        `yaml:"go_package_name"`
 	StreamName      string        `yaml:"go_stream_name"`
 	GoModules       string        `yaml:"go_modules"`
+	GoVersion       string        `yaml:"go_version"`
 	EventsPkgName   string        `yaml:"go_events_pkg_name"`
 	CommandsPkgName string        `yaml:"go_commands_pkg_name"`
 	StreamPkgName   string        `yaml:"go_stream_pkg_name"`

@@ -6,16 +6,24 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/go-gulfstream/gs/internal/format"
+	"github.com/go-gulfstream/gs/internal/goutil"
+
+	storeagepostgres "github.com/go-gulfstream/gulfstream/pkg/storage/postgres"
 
 	"github.com/fatih/color"
-
+	"github.com/go-gulfstream/gs/internal/format"
 	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/spf13/cobra"
 )
 
 const manifestFilename = "gulfstream.yml"
+
+var (
+	yellowColor = color.New(color.FgYellow).SprintFunc()
+	redColor    = color.New(color.FgRed).SprintFunc()
+	greenColor  = color.New(color.FgGreen).SprintfFunc()
+)
 
 func initCommand() *cobra.Command {
 	command := &cobra.Command{
@@ -87,10 +95,6 @@ func runInitCommand(path string) (err error) {
 		manifest = wizard.Manifest()
 	}
 
-	yellowColor := color.New(color.FgYellow).SprintFunc()
-	redColor := color.New(color.FgRed).SprintFunc()
-	greenColor := color.New(color.FgGreen).SprintfFunc()
-
 	if err := schema.Walk(path, manifest,
 		func(file schema.File) (err error) {
 			if file.IsDir {
@@ -122,5 +126,55 @@ func runInitCommand(path string) (err error) {
 		}); err != nil {
 		return err
 	}
-	return writeManifestFile(path, manifest, true)
+
+	if err := writeManifestFile(path, manifest, true); err != nil {
+		return err
+	}
+
+	if err := writeSchema(path, manifest); err != nil {
+		return err
+	}
+
+	runGoTools(path)
+
+	return nil
+}
+
+func writeSchema(path string, m *schema.Manifest) error {
+	if m.StreamStorage.AdapterID.IsPostgreSQL() {
+		filename := filepath.Join(path, "gulfstream-schema.sql")
+		return ioutil.WriteFile(filename, []byte(storeagepostgres.Schema), 0755)
+	}
+	return nil
+}
+
+func runGoTools(path string) {
+	if !goutil.GoInstall() {
+		return
+	}
+
+	fmt.Printf("======== go tools ========\n")
+	fmt.Printf("go mod download:\n")
+	out, err := goutil.RunGoMod(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+
+	fmt.Printf("go mod tidy:\n")
+	out, err = goutil.RunGoModTidy(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+
+	fmt.Printf("go test ./...:\n")
+	out, err = goutil.RunGoTest(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 }

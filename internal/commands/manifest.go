@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-gulfstream/gs/internal/goutil"
+
 	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/spf13/cobra"
@@ -57,8 +59,11 @@ func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {
 }
 
 func blankManifest(withData bool) *schema.Manifest {
+	goVersion := goutil.Version()
+
 	if !withData {
 		manifest := new(schema.Manifest)
+		manifest.GoVersion = goVersion
 		manifest.Contributors = []schema.Contributor{{}}
 		manifest.Mutations.Commands = []schema.CommandMutation{{}}
 		manifest.Mutations.Events = []schema.EventMutation{{}}
@@ -66,7 +71,8 @@ func blankManifest(withData bool) *schema.Manifest {
 	}
 
 	manifest := new(schema.Manifest)
-	manifest.Name = "My project name"
+	manifest.GoVersion = goVersion
+	manifest.Name = "My project"
 	manifest.PackageName = "myproject"
 	manifest.StreamName = "Myproject"
 	manifest.GoModules = "github.com/go-gulfstream/myproject"
