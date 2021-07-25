@@ -1,3 +1,3 @@
-package stream
+package {{$.StreamPkgName}}
 
-const Name = "{{$.Project.Name}}"
+const Name = "{{$.StreamName}}"

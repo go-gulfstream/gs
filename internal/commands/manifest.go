@@ -38,7 +38,7 @@ func manifestCommand() *cobra.Command {
 			dataFlag := cmd.Flag("data")
 			withData := dataFlag.Value.String() == "true"
 			manifest := blankManifest(withData)
-			return writeManifestFile(args[0], manifest)
+			return writeManifestFile(args[0], manifest, false)
 		},
 	}
 	command.Flags().BoolP("data", "d", false, "generate with data example")
@@ -138,7 +138,7 @@ func blankManifest(withData bool) *schema.Manifest {
 	return manifest
 }
 
-func writeManifestFile(path string, manifest *schema.Manifest) error {
+func writeManifestFile(path string, manifest *schema.Manifest, force bool) error {
 	data, err := schema.EncodeManifest(manifest)
 	if err != nil {
 		return err
@@ -153,7 +153,7 @@ func writeManifestFile(path string, manifest *schema.Manifest) error {
 		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
 	}
 	manifestFile := filepath.Join(path, manifestFilename)
-	if _, err := os.Stat(manifestFile); err == nil {
+	if _, err := os.Stat(manifestFile); err == nil && !force {
 		return fmt.Errorf("manifest file already exists")
 	}
 	return ioutil.WriteFile(manifestFile, buf.Bytes(), 0755)

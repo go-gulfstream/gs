@@ -3,14 +3,14 @@ package stream
 import (
 	"context"
 
-    {{if $.Mutations.HasCommand}}
-	   {{$.Project.Name}}commands  "{{$.Project.GoModules}}/pkg/commands"
-	   {{$.Project.Name}}events "{{$.Project.GoModules}}/pkg/events"
+    {{if $.Mutations.HasCommands}}
+	   "{{$.GoModules}}/pkg/{{$.CommandsPkgName}}"
+	   "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
 	{{end}}
 
-	{{if $.Mutations.HasEvent}}
-	   "github.com/go-gulfstream/gulfstream/pkg/event"
-	   {{range $.EventExternalPackages}}
+	{{if $.Mutations.HasEvents}}
+	   gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
+	   {{range $.ImportEvents}}
 	       "{{.}}"
 	   {{end}}
 	{{end}}
@@ -28,43 +28,43 @@ func NewController(
 	controller := gulfstream.NewMutator(s, p, o...)
 
     {{range $.Mutations.Commands -}}
-        {{if .Operations.Create -}}
+        {{if eq .Create "yes" -}}
         controller.AddCommandController(
-        	{{$.Project.Name}}commands.{{.Command.Name}},
+        	{{$.CommandsPkgName}}.{{.Command.Name}},
         	{{.Mutation}}CommandController(m),
         	gulfstream.WithCommandControllerCreateIfNotExists(),
         )
-        {{else if .Operations.Delete}}
+        {{else if eq .Delete "yes" -}}
         controller.AddCommandController(
-            {{$.Project.Name}}commands.{{.Command.Name}},
+            {{$.CommandsPkgName}}.{{.Command.Name}},
             {{.Mutation}}CommandController(m),
             gulfstream.WithCommandControllerDropStream(),
         )
         {{else -}}
          controller.AddCommandController(
-             {{$.Project.Name}}commands.{{.Command.Name}},
+             {{$.CommandsPkgName}}.{{.Command.Name}},
              {{.Mutation}}CommandController(m),
          )
         {{end -}}
     {{end -}}
 
-    {{if $.Mutations.HasEvent}}
+    {{if $.Mutations.HasEvents}}
         {{range $.Mutations.Commands -}}
-            {{if .Operations.Create -}}
+            {{if eq .Create "yes" -}}
             controller.AddEventController(
-            	events.{{.Event.Name}},
+            	{{$.EventsPkgName}}.{{.Event.Name}},
             	{{.Mutation}}EventController(m),
-            	stream.WithEventControllerCreateIfNotExists(),
+            	gulfstream.WithEventControllerCreateIfNotExists(),
             )
-            {{ else if .Operations.Delete -}}
+            {{ else if eq .Delete "yes" -}}
             controller.AddEventController(
-                events.{{.Event.Name}},
+                {{$.EventsPkgName}}.{{.Event.Name}},
                 {{.Mutation}}EventController(m),
-                stream.WithEventControllerDropStream(),
+                gulfstream.WithEventControllerDropStream(),
             )
-            {{else}}
+            {{else -}}
             controller.AddEventController(
-                 events.{{.Event.Name}},
+                 {{$.EventsPkgName}}.{{.Event.Name}},
                  {{.Mutation}}EventController(m),
             )
             {{end}}
@@ -74,24 +74,24 @@ func NewController(
 	return controller
 }
 
-{{if $.Mutations.HasCommand}}
+{{if $.Mutations.HasCommands}}
     {{range $.Mutations.Commands -}}
          func {{.Mutation}}CommandController(m Mutation) gulfstream.ControllerFunc {
          	return func(ctx context.Context, s *gulfstream.Stream, c *gulfstreamcommand.Command) (*gulfstreamcommand.Reply, error) {
                 {{if .Command.Payload -}}
                     {{if .Event.Payload -}}
-                        e, err := m.{{.Mutation}}(ctx, c.StreamID(), c.ID(), s.State(), c.Payload().(*{{$.Project.Name}}commands.{{.Command.Payload}}))
+                        e, err := m.{{.Mutation}}(ctx, c.StreamID(), c.ID(), s.State(), c.Payload().(*{{$.CommandsPkgName}}.{{.Command.Payload}}))
                         if err != nil {
                            return c.ReplyErr(err), nil
                         }
-                        s.Mutate({{$.Project.Name}}events.{{.Event.Name}}, e)
+                        s.Mutate({{$.EventsPkgName}}.{{.Event.Name}}, e)
                         return c.ReplyOk(s.Version()), nil
                     {{else -}}
-                        err := m.{{.Mutation}}(ctx, c.StreamID(), c.ID(), s.State(), c.Payload().(*{{$.Project.Name}}commands.{{.Command.Payload}}))
+                        err := m.{{.Mutation}}(ctx, c.StreamID(), c.ID(), s.State(), c.Payload().(*{{$.CommandsPkgName}}.{{.Command.Payload}}))
                         if err != nil {
                            return c.ReplyErr(err), nil
                         }
-                        s.Mutate({{$.Project.Name}}events.{{.Event.Name}}, nil)
+                        s.Mutate({{$.EventsPkgName}}.{{.Event.Name}}, nil)
                         return c.ReplyOk(s.Version()), nil
                     {{end -}}
                 {{else -}}
@@ -100,14 +100,14 @@ func NewController(
                          if err != nil {
                              return c.ReplyErr(err), nil
                          }
-                         s.Mutate({{$.Project.Name}}events.{{.Event.Name}}, e)
+                         s.Mutate({{$.EventsPkgName}}.{{.Event.Name}}, e)
                          return c.ReplyOk(s.Version()), nil
                     {{else -}}
                         err := m.{{.Mutation}}(ctx, c.StreamID(), c.ID(), s.State())
                         if err != nil {
                             return c.ReplyErr(err), nil
                         }
-                        s.Mutate({{$.Project.Name}}events.{{.Event.Name}}, nil)
+                        s.Mutate({{$.EventsPkgName}}.{{.Event.Name}}, nil)
                         return c.ReplyOk(s.Version()), nil
                     {{end -}}
                 {{end -}}
@@ -116,14 +116,14 @@ func NewController(
     {{end -}}
 {{end -}}
 
-{{if $.Mutations.HasEvent}}
+{{if $.Mutations.HasEvents}}
    {{range $.Mutations.Events -}}
       func {{.Mutation}}EventController(m Mutation) gulfstream.EventController {
       	return gulfstream.EventControllerFunc(
-      		func(event *event.Event) stream.Picker {
+      		func(event *gulfstreamevent.Event) gulfstream.Picker {
       			return gulfstream.Picker{}
       		},
-      		func(ctx context.Context, s *gulfstream.Stream, e *event.Event) error {
+      		func(ctx context.Context, s *gulfstream.Stream, e *gulfstreamevent.Event) error {
       			return nil
       		})
       }

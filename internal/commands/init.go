@@ -44,6 +44,7 @@ func validateArgsInitCommand(args []string) error {
 	if err != nil {
 		return err
 	}
+	files = filterDotFiles(files)
 	errAlreadyExists := fmt.Errorf("project already exists")
 	manifest := filepath.Join(args[0], manifestFilename)
 	fi, err := os.Stat(manifest)
@@ -59,11 +60,8 @@ func validateArgsInitCommand(args []string) error {
 	return nil
 }
 
-func runInitCommand(path string) error {
-	var (
-		manifest *schema.Manifest
-		nof      bool
-	)
+func runInitCommand(path string) (err error) {
+	var manifest *schema.Manifest
 
 	// from manifest file
 	manifestFile := filepath.Join(path, manifestFilename)
@@ -72,15 +70,14 @@ func runInitCommand(path string) error {
 		if err != nil {
 			return err
 		}
-		_ = data
-		manifest = new(schema.Manifest)
-		//if err := manifest.UnmarshalBinary(data); err != nil {
-		//	return err
-		//}
-		//if err := schema.ValidateManifest(manifest); err != nil {
-		//	return err
-		//}
-		//schema.SanitizeManifest(manifest)
+		manifest, err = schema.DecodeManifest(data)
+		if err != nil {
+			return err
+		}
+		schema.SanitizeManifest(manifest)
+		if err := schema.ValidateManifest(manifest); err != nil {
+			return err
+		}
 	} else {
 		// from setup wizard
 		wizard := schema.NewSetupWizard()
@@ -88,7 +85,6 @@ func runInitCommand(path string) error {
 			return err
 		}
 		manifest = wizard.Manifest()
-		nof = true
 	}
 
 	yellowColor := color.New(color.FgYellow).SprintFunc()
@@ -126,15 +122,5 @@ func runInitCommand(path string) error {
 		}); err != nil {
 		return err
 	}
-
-	if nof {
-		//data, err := manifest.MarshalBinary()
-		//if err != nil {
-		//	return err
-		//}
-		//manifest := filepath.Join(path, manifestFilename)
-		//return ioutil.WriteFile(manifest, data, 0777)
-	}
-
-	return nil
+	return writeManifestFile(path, manifest, true)
 }

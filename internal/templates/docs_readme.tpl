@@ -1,1 +1,1 @@
-# {{$.Project.Name}}
+# {{$.Name}}

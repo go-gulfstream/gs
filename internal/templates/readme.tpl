@@ -1,1 +1,2 @@
-# {{$.Project.Name}}
+# {{$.Name}} - {{$.PackageName}}
+{{$.Description}}

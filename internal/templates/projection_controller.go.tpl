@@ -3,9 +3,9 @@ package projection
 import (
 	"context"
 
-	"github.com/go-gulfstream/gulfstream/pkg/event"
+	gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
-	{{$.Project.Name}}events "{{$.Project.GoModules}}/pkg/events"
+	"{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
 )
 
 func NewController(p Projection) *gulfstream.Projection {
@@ -13,7 +13,7 @@ func NewController(p Projection) *gulfstream.Projection {
 
     {{range $.Mutations.Commands -}}
         projection.AddEventController(
-       	   {{$.Project.Name}}events.{{.Event.Name}},
+       	   {{$.EventsPkgName}}.{{.Event.Name}},
        	   {{.Event.Name}}Controller(p),
        	)
     {{end}}
@@ -24,13 +24,13 @@ func NewController(p Projection) *gulfstream.Projection {
 {{range $.Mutations.Commands -}}
    {{if .Event.Payload}}
    func {{.Event.Name}}Controller(p Projection) gulfstream.EventHandlerFunc {
-       return func(ctx context.Context, e *event.Event) error {
-           return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version(), e.Payload().(*{{$.Project.Name}}events.{{.Event.Payload}}))
+       return func(ctx context.Context, e *gulfstreamevent.Event) error {
+           return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version(), e.Payload().(*{{$.EventsPkgName}}.{{.Event.Payload}}))
        }
    }
    {{else}}
    func {{.Event.Name}}Controller(p Projection) gulfstream.EventHandlerFunc {
-          return func(ctx context.Context, e *event.Event) error {
+          return func(ctx context.Context, e *gulfstreamevent.Event) error {
               return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version())
           }
       }

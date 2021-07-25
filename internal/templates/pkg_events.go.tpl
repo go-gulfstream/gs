@@ -1,9 +1,9 @@
-package events
+package {{$.EventsPkgName}}
 
-{{if $.Mutations.HasCommand }}
+{{if $.Mutations.HasCommands }}
 import (
 	"encoding/json"
-	"github.com/go-gulfstream/gulfstream/pkg/event"
+	gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 func init() {
     {{range $.Mutations.Commands -}}
         {{ if .Event.Payload -}}
-            event.RegisterCodec({{.Event.Name}}, &{{.Event.Payload}}{})
+            gulfstreamevent.RegisterCodec({{.Event.Name}}, &{{.Event.Payload}}{})
         {{end -}}
     {{end -}}
 }

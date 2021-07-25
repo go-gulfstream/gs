@@ -2,8 +2,8 @@ package projection
 
 import (
    "context"
-   {{ if $.Mutations.HasCommand -}}
-      "{{$.Project.GoModules}}/pkg/events"
+   {{ if $.Mutations.HasCommands -}}
+      "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
    {{end -}}
    "github.com/google/uuid"
 )
@@ -11,7 +11,7 @@ import (
 type Projection interface {
     {{range $.Mutations.Commands -}}
         {{ if .Event.Payload -}}
-           {{ .Mutation -}}(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *events.{{.Event.Payload}}) error
+           {{ .Mutation -}}(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *{{$.EventsPkgName}}.{{.Event.Payload}}) error
         {{else -}}
            {{ .Mutation -}}(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int) error
         {{end -}}
@@ -32,7 +32,7 @@ type projection struct {
 
 {{range $.Mutations.Commands -}}
    {{ if .Event.Payload -}}
-      func(p *projection){{.Mutation -}}(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *events.{{.Event.Payload}}) error {
+      func(p *projection){{.Mutation -}}(ctx context.Context, streamID uuid.UUID, eventID uuid.UUID, version int, e *{{$.EventsPkgName}}.{{.Event.Payload}}) error {
           return nil
       }
    {{else -}}

@@ -2,19 +2,12 @@ package schema
 
 import (
 	"bytes"
-	"fmt"
 	"text/template"
 
 	"github.com/go-gulfstream/gs/internal/templates"
 )
 
-var funcMap = template.FuncMap{
-	"renderProjectionMethod": renderProjectionMethod,
-}
-
-func renderProjectionMethod(m CommandMutation) string {
-	return fmt.Sprintf("")
-}
+var funcMap = template.FuncMap{}
 
 func renderTemplate(fileTpl string, m *Manifest) ([]byte, error) {
 	tpl, err := templates.Parse(fileTpl)

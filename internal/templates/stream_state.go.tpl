@@ -2,9 +2,9 @@ package stream
 
 import (
    gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
-   "github.com/go-gulfstream/gulfstream/pkg/event"
-   {{if $.Mutations.HasCommand}}
-       {{$.Project.Name}}events "{{$.Project.GoModules}}/pkg/events"
+   gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
+   {{if $.Mutations.HasCommands}}
+       "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
    {{end}}
    "encoding/json"
 )
@@ -20,13 +20,13 @@ func New() gulfstream.State {
 	return new(root)
 }
 
-func (s *root) Mutate(e *event.Event) {
-    {{if $.Mutations.HasCommand -}}
+func (s *root) Mutate(e *gulfstreamevent.Event) {
+    {{if $.Mutations.HasCommands -}}
         switch e.Name() {
         {{range $.Mutations.Commands -}}
-           case {{$.Project.Name}}events.{{.Event.Name}}:
+           case {{$.EventsPkgName}}.{{.Event.Name}}:
               {{if .Event.Payload -}}
-              payload := e.Payload().(*{{$.Project.Name}}events.{{.Event.Payload}})
+              payload := e.Payload().(*{{$.EventsPkgName}}.{{.Event.Payload}})
               _ = payload
               {{end -}}
         {{end -}}

@@ -1,6 +1,8 @@
 package schema
 
-import "strings"
+import (
+	"strings"
+)
 
 func SanitizeManifest(m *Manifest) {
 	m.CommandsPkgName = sanitizePackageName(m.CommandsPkgName)
@@ -8,6 +10,17 @@ func SanitizeManifest(m *Manifest) {
 	m.EventsPkgName = sanitizePackageName(m.EventsPkgName)
 	m.PackageName = sanitizePackageName(m.PackageName)
 	m.StreamName = sanitizeStreamName(m.StreamName)
+	if len(m.StreamPkgName) == 0 {
+		m.StreamPkgName = m.PackageName + "stream"
+	}
+	if len(m.EventsPkgName) == 0 {
+		m.EventsPkgName = m.PackageName + "events"
+	}
+	if len(m.CommandsPkgName) == 0 {
+		m.CommandsPkgName = m.PackageName + "commands"
+	}
+	sanitizeCommands(m.Mutations.Commands)
+	sanitizeEvents(m.Mutations.Events)
 }
 
 func sanitizePackageName(name string) string {
@@ -21,50 +34,37 @@ func sanitizeStreamName(name string) string {
 	return strings.Title(name)
 }
 
-//func sanitizeCommands(m *Manifest) {
-//	index := make(map[string]struct{})
-//	commands := make([]CommandMutation, 0)
-//	for _, mc := range m.Mutations.Commands {
-//		if len(mc.Mutation) == 0 || !mc.Command.Validate() {
-//			continue
-//		}
-//
-//		_, foundCommand := index[mc.Mutation]
-//		if foundCommand {
-//			continue
-//		}
-//
-//		index[mc.Mutation] = struct{}{}
-//
-//		mc.Event.Name = strings.Title(mc.Event.Name)
-//		mc.Event.Payload = strings.Title(mc.Event.Payload)
-//		mc.Command.Name = strings.Title(mc.Command.Name)
-//		mc.Command.Payload = strings.Title(mc.Command.Payload)
-//		mc.Mutation = strings.Title(mc.Mutation)
-//
-//		commands = append(commands, mc)
-//	}
-//	m.Mutations.Commands = commands
-//}
-//
-//func sanitizeEvents(m *Manifest) {
-//	index := make(map[string]struct{})
-//	events := make([]EventMutation, 0)
-//	for _, ec := range m.Mutations.Events {
-//		if len(ec.Mutation) == 0 || ec.Event.Validate() {
-//			continue
-//		}
-//		_, foundEvent := index[ec.Mutation]
-//		if foundEvent {
-//			continue
-//		}
-//
-//		index[ec.Mutation] = struct{}{}
-//
-//		ec.Mutation = strings.Title(ec.Mutation)
-//		ec.Event.Name = strings.Title(ec.Event.Name)
-//		ec.Event.Payload = strings.Title(ec.Event.Payload)
-//		events = append(events, ec)
-//	}
-//	m.Mutations.Events = events
-//}
+func sanitizeName(name string) string {
+	name = strings.ReplaceAll(name, " ", "")
+	return strings.Title(name)
+}
+
+func sanitizeCommands(commands []CommandMutation) {
+	for i, cmd := range commands {
+		if cmd.Delete == YesOp && cmd.Create == YesOp {
+			commands[i].Create = NoOp
+			commands[i].Delete = NoOp
+		}
+		cmd.Mutation = sanitizeName(cmd.Mutation)
+		cmd.Command.Name = sanitizeName(cmd.Command.Name)
+		cmd.Command.Payload = sanitizeName(cmd.Command.Payload)
+		cmd.Event.Name = sanitizeName(cmd.Event.Name)
+		cmd.Event.Payload = sanitizeName(cmd.Event.Payload)
+		commands[i] = cmd
+	}
+}
+
+func sanitizeEvents(events []EventMutation) {
+	for i, e := range events {
+		if e.Delete == YesOp && e.Create == YesOp {
+			events[i].Create = NoOp
+			events[i].Delete = NoOp
+		}
+		e.Mutation = sanitizeName(e.Mutation)
+		e.InEvent.Name = sanitizeName(e.InEvent.Name)
+		e.InEvent.Payload = sanitizeName(e.InEvent.Payload)
+		e.OutEvent.Name = sanitizeName(e.OutEvent.Name)
+		e.OutEvent.Payload = sanitizeName(e.OutEvent.Payload)
+		events[i] = e
+	}
+}

@@ -27,19 +27,19 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:  "/cmd/%s",
+		Path:  "/cmd/{package}",
 		IsDir: true,
 	},
 	{
-		Path:  "/cmd/%s-projection",
+		Path:  "/cmd/{package}-projection",
 		IsDir: true,
 	},
 	{
-		Path:     "/cmd/%s/main.go",
+		Path:     "/cmd/{package}/main.go",
 		Template: "cmd_main.go.tpl",
 	},
 	{
-		Path:     "/cmd/%s-projection/main.go",
+		Path:     "/cmd/{package}-projection/main.go",
 		Template: "cmd_proj_main.go.tpl",
 	},
 	{
@@ -91,7 +91,7 @@ var files = []File{
 		Template: "config_config.go.tpl",
 	},
 	{
-		Path:  "/api",
+		Path:  "/internal/api",
 		IsDir: true,
 	},
 	{
@@ -107,27 +107,27 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:  "/pkg/commands",
+		Path:  "/pkg/{commands_package}",
 		IsDir: true,
 	},
 	{
-		Path:     "/pkg/commands/commands.go",
+		Path:     "/pkg/{commands_package}/commands.go",
 		Template: "pkg_commands.go.tpl",
 	},
 	{
-		Path:  "/pkg/events",
+		Path:  "/pkg/{events_package}",
 		IsDir: true,
 	},
 	{
-		Path:     "/pkg/events/events.go",
+		Path:     "/pkg/{events_package}/events.go",
 		Template: "pkg_events.go.tpl",
 	},
 	{
-		Path:  "/pkg/stream",
+		Path:  "/pkg/{stream_package}",
 		IsDir: true,
 	},
 	{
-		Path:     "/pkg/stream/stream.go",
+		Path:     "/pkg/{stream_package}/stream.go",
 		Template: "pkg_stream.go.tpl",
 	},
 	{

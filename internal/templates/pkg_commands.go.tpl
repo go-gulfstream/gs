@@ -1,10 +1,10 @@
-package commands
+package {{$.CommandsPkgName}}
 
-{{if $.Mutations.HasCommand }}
+{{if $.Mutations.HasCommands }}
 import (
 	"encoding/json"
-	{{$.Project.Name}}stream "{{$.Project.GoModules}}/pkg/stream"
-	"github.com/go-gulfstream/gulfstream/pkg/command"
+	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
+	gulfstreamcommand "github.com/go-gulfstream/gulfstream/pkg/command"
 	"github.com/google/uuid"
 )
 
@@ -17,7 +17,7 @@ const (
 func init() {
     {{range $.Mutations.Commands -}}
         {{ if .Command.Payload -}}
-            command.RegisterCodec({{.Command.Name}}, &{{.Command.Payload}}{})
+           gulfstreamcommand.RegisterCodec({{.Command.Name}}, &{{.Command.Payload}}{})
         {{end -}}
     {{end -}}
 }
@@ -39,12 +39,12 @@ func init() {
 
 {{range $.Mutations.Commands -}}
     {{ if .Command.Payload -}}
-       func New{{.Command.Name}}(streamID uuid.UUID, c *{{.Command.Payload}}) *command.Command {
-       	   return command.New({{.Command.Name}}, {{$.Project.Name}}stream.Name, streamID, c)
+       func New{{.Command.Name}}(streamID uuid.UUID, c *{{.Command.Payload}}) *gulfstreamcommand.Command {
+       	   return command.New({{.Command.Name}}, {{$.StreamPkgName}}.Name, streamID, c)
        }
     {{else}}
-       func New{{.Command.Name}}(streamID uuid.UUID) *command.Command {
-           return command.New(RegisterSession, {{$.Project.Name}}stream.Name, streamID, nil)
+       func New{{.Command.Name}}(streamID uuid.UUID) *gulfstreamcommand.Command {
+           return gulfstreamcommand.New(RegisterSession, {{$.StreamPkgName}}.Name, streamID, nil)
        }
     {{end}}
 {{end}}

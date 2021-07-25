@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator"
 )
@@ -76,7 +77,11 @@ func validatePublisherAdapter(m *Manifest) error {
 		return nil
 	default:
 		return fmt.Errorf("invalid publisher adapter id. got %s, expected %v",
-			m.StreamPublisher.AdapterID, PublisherAdapters)
+			m.StreamPublisher.AdapterID,
+			strings.Join([]string{
+				KafkaStreamPublisherAdapter.String(),
+				ConnectorStreamPublisherAdapter.String(),
+			}, " OR "))
 	}
 }
 
@@ -87,30 +92,45 @@ func validateStorageAdapter(m *Manifest) error {
 		return nil
 	default:
 		return fmt.Errorf("invalid stream storage adapter id. got %s, expected %v",
-			m.StreamStorage.AdapterID, StorageAdapters)
+			m.StreamStorage.AdapterID, strings.Join([]string{
+				RedisStreamStorageAdapter.String(),
+				PostgresStreamStorageAdapter.String(),
+			}, " OR "))
 	}
 }
 
 func validateCommands(m *Manifest) error {
-	//if len(m.Mutations.Commands) == 0 {
-	//	return nil
-	//}
-	//for _, e := range m.Mutations.Events {
-	//	if err := e.Validate(); err != nil {
-	//		return err
-	//	}
-	//}
+	if len(m.Mutations.Commands) == 0 {
+		return nil
+	}
+	for i, cmd := range m.Mutations.Commands {
+		if len(cmd.Mutation) < 2 {
+			return fmt.Errorf("mutation name too short. index %d", i)
+		}
+		if len(cmd.Command.Name) < 2 {
+			return fmt.Errorf("command name too short. index %d", i)
+		}
+		if len(cmd.Event.Name) < 2 {
+			return fmt.Errorf("event name too short. index %d", i)
+		}
+	}
 	return nil
 }
 
 func validateEvents(m *Manifest) error {
-	//if len(m.Mutations.Events) == 0 {
-	//	return nil
-	//}
-	//for _, c := range m.Mutations.Commands {
-	//	if err := c.Validate(); err != nil {
-	//		return err
-	//	}
-	//}
+	if len(m.Mutations.Events) == 0 {
+		return nil
+	}
+	for i, e := range m.Mutations.Events {
+		if len(e.Mutation) < 2 {
+			return fmt.Errorf("mutation name too short. index %d", i)
+		}
+		if len(e.InEvent.Name) < 2 {
+			return fmt.Errorf("inEvent name too short. index %d", i)
+		}
+		if len(e.OutEvent.Name) < 2 {
+			return fmt.Errorf("outEvent name too short. index %d", i)
+		}
+	}
 	return nil
 }
