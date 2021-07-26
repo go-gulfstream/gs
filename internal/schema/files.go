@@ -51,16 +51,24 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:     "/internal/stream/mutation.go",
-		Template: "stream_mutation.go.tpl",
+		Path:     "/internal/stream/command_mutation.go",
+		Template: "stream_command_mutation.go.tpl",
+	},
+	{
+		Path:     "/internal/stream/command_controller.go",
+		Template: "stream_command_controller.go.tpl",
+	},
+	{
+		Path:     "/internal/stream/event_mutation.go",
+		Template: "stream_event_mutation.go.tpl",
+	},
+	{
+		Path:     "/internal/stream/event_controller.go",
+		Template: "stream_event_controller.go.tpl",
 	},
 	{
 		Path:     "/internal/stream/state.go",
 		Template: "stream_state.go.tpl",
-	},
-	{
-		Path:     "/internal/stream/controller.go",
-		Template: "stream_controller.go.tpl",
 	},
 	{
 		Path:  "/internal/projection",

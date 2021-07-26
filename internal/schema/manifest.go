@@ -1,5 +1,7 @@
 package schema
 
+import "unicode"
+
 const (
 	YesOp = "yes"
 	NoOp  = "no"
@@ -59,12 +61,20 @@ type CommandMutation struct {
 	Delete   string  `yaml:"allow_delete_stream,omitempty"`
 }
 
+func (c CommandMutation) ControllerName() string {
+	return lcFirst(c.Mutation) + "CommandController"
+}
+
 type EventMutation struct {
 	Mutation string `yaml:"name"`
 	InEvent  Event  `yaml:"in_event"`
 	OutEvent Event  `yaml:"out_event"`
 	Create   string `yaml:"allow_create_stream,omitempty"`
 	Delete   string `yaml:"allow_delete_stream,omitempty"`
+}
+
+func (c EventMutation) ControllerName() string {
+	return lcFirst(c.Mutation) + "EventController"
 }
 
 type Command struct {
@@ -75,4 +85,13 @@ type Command struct {
 type Event struct {
 	Name    string `yaml:"name"`
 	Payload string `yaml:"payload"`
+}
+
+func lcFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	r := []rune(s)
+	r[0] = unicode.ToLower(r[0])
+	return string(r)
 }

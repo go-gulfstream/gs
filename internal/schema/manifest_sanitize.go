@@ -40,6 +40,10 @@ func sanitizeName(name string) string {
 	return strings.Title(name)
 }
 
+func trim(name string) string {
+	return strings.ReplaceAll(name, " ", "")
+}
+
 func sanitizeCommands(commands []CommandMutation) {
 	for i, cmd := range commands {
 		if cmd.Delete == YesOp && cmd.Create == YesOp {
@@ -62,8 +66,8 @@ func sanitizeEvents(events []EventMutation) {
 			events[i].Delete = NoOp
 		}
 		e.Mutation = sanitizeName(e.Mutation)
-		e.InEvent.Name = sanitizeName(e.InEvent.Name)
-		e.InEvent.Payload = sanitizeName(e.InEvent.Payload)
+		e.InEvent.Name = trim(e.InEvent.Name)
+		e.InEvent.Payload = trim(e.InEvent.Payload)
 		e.OutEvent.Name = sanitizeName(e.OutEvent.Name)
 		e.OutEvent.Payload = sanitizeName(e.OutEvent.Payload)
 		events[i] = e

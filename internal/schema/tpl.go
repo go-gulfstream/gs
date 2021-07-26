@@ -2,12 +2,9 @@ package schema
 
 import (
 	"bytes"
-	"text/template"
 
 	"github.com/go-gulfstream/gs/internal/templates"
 )
-
-var funcMap = template.FuncMap{}
 
 func renderTemplate(fileTpl string, m *Manifest) ([]byte, error) {
 	tpl, err := templates.Parse(fileTpl)
@@ -15,7 +12,7 @@ func renderTemplate(fileTpl string, m *Manifest) ([]byte, error) {
 		return nil, err
 	}
 	buf := bytes.NewBuffer(nil)
-	if err := tpl.Funcs(funcMap).Execute(buf, m); err != nil {
+	if err := tpl.Execute(buf, m); err != nil {
 		return nil, err
 	}
 	return buf.Bytes(), nil

@@ -9,14 +9,14 @@ import (
    {{end}}
 )
 
-type Mutation interface {
+type CommandMutation interface {
     {{range $.Mutations.Commands -}}
-        {{if .Command.Payload}}
+        {{if .Command.Payload -}}
             {{if .Event.Payload -}}
                 {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State, c *{{$.CommandsPkgName}}.{{.Command.Payload}}) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error)
             {{else -}}
                 {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State, c *{{$.CommandsPkgName}}.{{.Command.Payload}})  error
-            {{end}}
+            {{end -}}
         {{else -}}
             {{if .Event.Payload -}}
                 {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error)
@@ -27,37 +27,55 @@ type Mutation interface {
     {{end -}}
 }
 
-func NewMutation() Mutation {
-	return &mutation{}
+func NewCommandMutation() CommandMutation {
+	return &commandMutation{}
 }
 
-type mutation struct {
+type commandMutation struct {
     // indexes, clients, etc...
 }
 
 {{range $.Mutations.Commands -}}
         {{if .Command.Payload}}
             {{if .Event.Payload -}}
-                func (m *mutation) {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State, c *{{$.CommandsPkgName}}.{{.Command.Payload}}) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error) {
+                func (m *commandMutation) {{.Mutation}}(
+                  ctx context.Context,
+                  streamID uuid.UUID,
+                  commandID uuid.UUID,
+                  s State, c *{{$.CommandsPkgName}}.{{.Command.Payload}},
+                  ) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error) {
                     return &{{$.EventsPkgName}}.{{.Event.Payload}}{}, nil
                 }
             {{else -}}
-                func (m *mutation) {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State, c *{{$.CommandsPkgName}}.{{.Command.Payload}})  error {
+                func (m *mutation) {{.Mutation}}(
+                ctx context.Context,
+                streamID uuid.UUID,
+                commandID uuid.UUID,
+                s State,
+                c *{{$.CommandsPkgName}}.{{.Command.Payload}},
+                )  error {
                     return nil
                 }
             {{end}}
         {{else -}}
             {{if .Event.Payload -}}
-                func (m *mutation) {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error) {
+                func (m *mutation) {{.Mutation}}(
+                ctx context.Context,
+                streamID uuid.UUID,
+                commandID uuid.UUID,
+                s State,
+                ) (*{{$.EventsPkgName}}.{{.Event.Payload}}, error) {
                     return &{{$.EventsPkgName}}.{{.Event.Payload}}{}, nil
                 }
             {{else -}}
-                func (m *mutation) {{.Mutation}}(ctx context.Context, streamID uuid.UUID, commandID uuid.UUID, s State)  error {
+                func (m *mutation) {{.Mutation}}(
+                 ctx context.Context,
+                 streamID uuid.UUID,
+                 commandID uuid.UUID,
+                 s State,
+                 )  error {
                     return nil
                 }
             {{end -}}
         {{end -}}
 {{end -}}
-
-
-
