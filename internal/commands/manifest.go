@@ -72,53 +72,53 @@ func blankManifest(withData bool) *schema.Manifest {
 
 	manifest := new(schema.Manifest)
 	manifest.GoVersion = goVersion
-	manifest.Name = "My project"
-	manifest.PackageName = "myproject"
-	manifest.StreamName = "Myproject"
-	manifest.GoModules = "github.com/go-gulfstream/myproject"
-	manifest.Description = "My project short description"
+	manifest.Name = "User sessions store"
+	manifest.PackageName = "session"
+	manifest.StreamName = "Session"
+	manifest.GoModules = "github.com/go-gulfstream/session"
+	manifest.Description = ""
 	manifest.Contributors = []schema.Contributor{
 		{
 			Author: "author",
 			Email:  "author@gmail.com",
 		},
 	}
-	manifest.EventsPkgName = "myprojectevents"
-	manifest.CommandsPkgName = "myprojectcommands"
-	manifest.StreamPkgName = "myprojectstream"
+	manifest.EventsPkgName = "sessionevents"
+	manifest.CommandsPkgName = "sessioncommands"
+	manifest.StreamPkgName = "sessionstream"
 	manifest.Mutations.Commands = []schema.CommandMutation{
 		{
-			Mutation: "CreateTreeMutation",
+			Mutation: "CreateSessionMutation",
 			Command: schema.Command{
-				Name:    "CreateTree",
-				Payload: "CreateTreePayload",
+				Name:    "CreateSession",
+				Payload: "CreateSessionPayload",
 			},
 			Event: schema.Event{
-				Name:    "TreeCreated",
-				Payload: "TreeCreatedPayload",
+				Name:    "SessionCreated",
+				Payload: "SessionCreatedPayload",
 			},
 			Create: schema.YesOp,
 		},
 		{
-			Mutation: "UpdateTreeMutation",
+			Mutation: "UpdateSessionMutation",
 			Command: schema.Command{
-				Name:    "UpdateTree",
-				Payload: "UpdateTreePayload",
+				Name:    "UpdateSession",
+				Payload: "UpdateSessionPayload",
 			},
 			Event: schema.Event{
-				Name:    "TreeUpdated",
-				Payload: "TreeUpdatedPayload",
+				Name:    "SessionUpdated",
+				Payload: "SessionUpdatedPayload",
 			},
 		},
 		{
-			Mutation: "RemoveTreeMutation",
+			Mutation: "RemoveSessionMutation",
 			Command: schema.Command{
-				Name:    "RemoveTree",
-				Payload: "RemoveTreePayload",
+				Name:    "RemoveSession",
+				Payload: "RemoveSessionPayload",
 			},
 			Event: schema.Event{
-				Name:    "TreeRemoved",
-				Payload: "TreeRemovedPayload",
+				Name:    "SessionRemoved",
+				Payload: "SessionRemovedPayload",
 			},
 			Delete: schema.YesOp,
 		},
