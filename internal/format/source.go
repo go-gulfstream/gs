@@ -25,7 +25,7 @@ func Source(filepath string, data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return imports.Process(filepath, formatted, &imports.Options{Comments: true})
+	return imports.Process(filepath, formatted, &imports.Options{})
 }
 
 func fixImport(file *ast.File) {

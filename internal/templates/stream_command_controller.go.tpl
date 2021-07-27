@@ -41,7 +41,7 @@ func MakeCommandControllers(
 
 {{if $.Mutations.HasCommands}}
     {{range $.Mutations.Commands -}}
-         func {{ .ControllerName }}(m Mutation) gulfstream.ControllerFunc {
+         func {{ .ControllerName }}(m CommandMutation) gulfstream.ControllerFunc {
          	return func(ctx context.Context, s *gulfstream.Stream, c *gulfstreamcommand.Command) (*gulfstreamcommand.Reply, error) {
                 {{if .Command.Payload -}}
                     {{if .Event.Payload -}}

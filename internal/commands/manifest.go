@@ -127,20 +127,7 @@ func blankManifest(withData bool) *schema.Manifest {
 	manifest.StreamStorage.AdapterID = schema.RedisStreamStorageAdapter
 	manifest.StreamPublisher.Name = schema.KafkaStreamPublisherAdapter.String()
 	manifest.StreamPublisher.AdapterID = schema.KafkaStreamPublisherAdapter
-	manifest.Mutations.Events = []schema.EventMutation{{
-		Mutation: "UpdateCounterMutation",
-		InEvent: schema.Event{
-			Name:    "counterevents.CounterUpdated",
-			Payload: "counterevents.CounterUpdatedPayload",
-		},
-		OutEvent: schema.Event{
-			Name:    "TreeCounterUpdated",
-			Payload: "TreeCounterUpdatedPayload",
-		},
-	}}
-	manifest.ImportEvents = []string{
-		"github.com/go-gulfstream/counterevents",
-	}
+	manifest.ImportEvents = []string{}
 	return manifest
 }
 
