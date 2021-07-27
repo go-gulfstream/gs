@@ -37,8 +37,8 @@ func MakeEventControllers(
                  {{.InEvent.Name}},
                  {{.ControllerName}}(mutation),
             )
-            {{end}}
-        {{end}}
+            {{end -}}
+        {{end -}}
     {{end -}}
 }
 
@@ -49,9 +49,13 @@ func MakeEventControllers(
       		func(event *gulfstreamevent.Event) gulfstream.Picker {
       			return gulfstream.Picker{}
       		},
-      		func(ctx context.Context, s *gulfstream.Stream, e *gulfstreamevent.Event) error {
-      			return nil
+      		func(ctx context.Context, s *gulfstream.Stream, e *gulfstreamevent.Event) (err error) {
+      		    {{if .InEvent.Payload -}}
+                    return m.{{.Mutation}}(ctx, s.StreamID(), e.ID(), s.State(), e.Payload().(*{{.InEvent.Payload}}))
+                {{else -}}
+                    return m.{{.Mutation}}(ctx, s.StreamID(), e.ID(), s.State())
+                {{end -}}
       		})
       }
-   {{end}}
+   {{end -}}
 {{end}}
