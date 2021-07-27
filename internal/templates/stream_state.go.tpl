@@ -9,7 +9,6 @@ import (
    {{if $.Mutations.HasEvents}}
           "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
     {{end}}
-   "encoding/json"
 )
 
 type State interface {
@@ -65,12 +64,4 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
         {{end -}}
         }
     {{end -}}
-}
-
-func (s *root) MarshalBinary() ([]byte, error) {
-	return json.Marshal(s)
-}
-
-func (s *root) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, s)
 }
