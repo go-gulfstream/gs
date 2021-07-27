@@ -88,7 +88,7 @@ func blankManifest(withData bool) *schema.Manifest {
 	manifest.StreamPkgName = "sessionstream"
 	manifest.Mutations.Commands = []schema.CommandMutation{
 		{
-			Mutation: "CreateSessionMutation",
+			Mutation: "CreateSession",
 			Command: schema.Command{
 				Name:    "CreateSession",
 				Payload: "CreateSessionPayload",
@@ -100,7 +100,7 @@ func blankManifest(withData bool) *schema.Manifest {
 			Create: schema.YesOp,
 		},
 		{
-			Mutation: "UpdateSessionMutation",
+			Mutation: "UpdateSession",
 			Command: schema.Command{
 				Name:    "UpdateSession",
 				Payload: "UpdateSessionPayload",
@@ -111,7 +111,7 @@ func blankManifest(withData bool) *schema.Manifest {
 			},
 		},
 		{
-			Mutation: "RemoveSessionMutation",
+			Mutation: "RemoveSession",
 			Command: schema.Command{
 				Name:    "RemoveSession",
 				Payload: "RemoveSessionPayload",
