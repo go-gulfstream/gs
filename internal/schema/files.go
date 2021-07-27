@@ -123,12 +123,20 @@ var files = []File{
 		Template: "pkg_commands.go.tpl",
 	},
 	{
+		Path:     "/pkg/{commands_package}/commands_encoding.go",
+		Template: "pkg_commands_encoding.go.tpl",
+	},
+	{
 		Path:  "/pkg/{events_package}",
 		IsDir: true,
 	},
 	{
 		Path:     "/pkg/{events_package}/events.go",
 		Template: "pkg_events.go.tpl",
+	},
+	{
+		Path:     "/pkg/{events_package}/events_encoding.go",
+		Template: "pkg_events_encoding.go.tpl",
 	},
 	{
 		Path:  "/pkg/{stream_package}",

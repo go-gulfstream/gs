@@ -2,7 +2,6 @@ package {{$.CommandsPkgName}}
 
 {{if $.Mutations.HasCommands }}
 import (
-	"encoding/json"
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 	gulfstreamcommand "github.com/go-gulfstream/gulfstream/pkg/command"
 	"github.com/google/uuid"
@@ -14,25 +13,9 @@ const (
    {{end}}
 )
 
-func init() {
-    {{range $.Mutations.Commands -}}
-        {{ if .Command.Payload -}}
-           gulfstreamcommand.RegisterCodec({{.Command.Name}}, &{{.Command.Payload}}{})
-        {{end -}}
-    {{end -}}
-}
-
 {{range $.Mutations.Commands -}}
    {{ if .Command.Payload -}}
      type {{.Command.Payload}} struct {
-     }
-
-     func (c *{{.Command.Payload}}) MarshalBinary() ([]byte, error) {
-     	return json.Marshal(c)
-     }
-
-     func (c *{{.Command.Payload}}) UnmarshalBinary(data []byte) error {
-     	return json.Unmarshal(data, c)
      }
    {{end}}
 {{end}}
@@ -40,7 +23,7 @@ func init() {
 {{range $.Mutations.Commands -}}
     {{ if .Command.Payload -}}
        func New{{.Command.Name}}(streamID uuid.UUID, c *{{.Command.Payload}}) *gulfstreamcommand.Command {
-       	   return command.New({{.Command.Name}}, {{$.StreamPkgName}}.Name, streamID, c)
+       	   return gulfstreamcommand.New({{.Command.Name}}, {{$.StreamPkgName}}.Name, streamID, c)
        }
     {{else}}
        func New{{.Command.Name}}(streamID uuid.UUID) *gulfstreamcommand.Command {
