@@ -87,6 +87,10 @@ type Event struct {
 	Payload string `yaml:"payload"`
 }
 
+func (e Event) LcFirstName() string {
+	return lcFirst(e.Name)
+}
+
 func lcFirst(s string) string {
 	if s == "" {
 		return ""
