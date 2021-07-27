@@ -61,17 +61,16 @@ func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {
 func blankManifest(withData bool) *schema.Manifest {
 	goVersion := goutil.Version()
 
+	manifest := new(schema.Manifest)
+	manifest.GoVersion = goVersion
+
 	if !withData {
-		manifest := new(schema.Manifest)
-		manifest.GoVersion = goVersion
 		manifest.Contributors = []schema.Contributor{{}}
 		manifest.Mutations.Commands = []schema.CommandMutation{{}}
 		manifest.Mutations.Events = []schema.EventMutation{{}}
 		return manifest
 	}
 
-	manifest := new(schema.Manifest)
-	manifest.GoVersion = goVersion
 	manifest.Name = "User sessions store"
 	manifest.PackageName = "session"
 	manifest.StreamName = "Session"
@@ -128,6 +127,7 @@ func blankManifest(withData bool) *schema.Manifest {
 	manifest.StreamPublisher.Name = schema.KafkaStreamPublisherAdapter.String()
 	manifest.StreamPublisher.AdapterID = schema.KafkaStreamPublisherAdapter
 	manifest.ImportEvents = []string{}
+
 	return manifest
 }
 

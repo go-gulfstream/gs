@@ -111,6 +111,18 @@ var files = []File{
 		IsDir: true,
 	},
 	{
+		Path:  "/config",
+		IsDir: true,
+	},
+	{
+		Path:     "/config/config.yml",
+		Template: "config_yml.tpl",
+	},
+	{
+		Path:     "/config/config.env",
+		Template: "config_env.tpl",
+	},
+	{
 		Path:     "/docs/README.md",
 		Template: "docs_readme.tpl",
 	},
