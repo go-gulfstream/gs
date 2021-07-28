@@ -54,7 +54,7 @@ type streamStorage struct {
 }
 
 type CommandMutation struct {
-	Mutation string  `yaml:"name"`
+	Mutation string  `yaml:"mutation"`
 	Command  Command `yaml:"in_command"`
 	Event    Event   `yaml:"out_event"`
 	Create   string  `yaml:"allow_create_stream,omitempty"`
@@ -66,7 +66,7 @@ func (c CommandMutation) ControllerName() string {
 }
 
 type EventMutation struct {
-	Mutation string `yaml:"name"`
+	Mutation string `yaml:"mutation"`
 	InEvent  Event  `yaml:"in_event"`
 	OutEvent Event  `yaml:"out_event"`
 	Create   string `yaml:"allow_create_stream,omitempty"`

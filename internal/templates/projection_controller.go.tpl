@@ -16,6 +16,7 @@ func NewController(p Projection) *gulfstream.Projection {
        	   {{$.EventsPkgName}}.{{.Event.Name}},
        	   {{.Event.LcFirstName}}Controller(p),
        	)
+
     {{end}}
 
     {{range $.Mutations.Events -}}
@@ -23,6 +24,7 @@ func NewController(p Projection) *gulfstream.Projection {
            {{$.EventsPkgName}}.{{.OutEvent.Name}},
            {{.OutEvent.LcFirstName}}Controller(p),
         )
+
     {{end}}
 
 	return projection
