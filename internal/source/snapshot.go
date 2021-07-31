@@ -1,6 +1,7 @@
 package source
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -55,6 +56,23 @@ func NewSnapshot(path string) (*Snapshot, error) {
 
 func (i *Snapshot) TotalFiles() int {
 	return len(i.byNames)
+}
+
+func (i *Snapshot) Find(filename string) (FileInfo, error) {
+	file, found := i.byNames[filename]
+	if !found {
+		return FileInfo{}, fmt.Errorf("file %s not found", filename)
+	}
+	pkg, found := i.packages[file]
+	if !found {
+		return FileInfo{}, fmt.Errorf("file %s not found", filename)
+	}
+	fi := FileInfo{
+		path: filename,
+		file: file,
+		pkg:  pkg,
+	}
+	return fi, nil
 }
 
 func (i *Snapshot) Walk(walkFn func(info FileInfo) error) error {

@@ -38,8 +38,8 @@ func MakeEventControllers(
                  {{.ControllerName}}(mutation),
             )
             {{end -}}
-        {{end -}}
-    {{end -}}
+        {{end}}
+    {{end}}
 }
 
 {{if $.Mutations.HasEvents}}
@@ -57,5 +57,6 @@ func MakeEventControllers(
                 {{end -}}
       		})
       }
-   {{end -}}
+
+   {{end}}
 {{end}}

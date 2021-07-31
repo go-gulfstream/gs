@@ -1,6 +1,10 @@
 package schema
 
-import "unicode"
+import (
+	"time"
+
+	"github.com/go-gulfstream/gs/internal/strutil"
+)
 
 const (
 	YesOp = "yes"
@@ -22,6 +26,8 @@ type Manifest struct {
 	StreamStorage   streamStorage `yaml:"storage_adapter"`
 	StreamPublisher publisher     `yaml:"publisher_adapter"`
 	Contributors    []Contributor `yaml:"contributors"`
+	CreatedAt       time.Time     `yaml:"created_at"`
+	UpdatedAt       time.Time     `yaml:"updated_at"`
 }
 
 type publisher struct {
@@ -62,7 +68,7 @@ type CommandMutation struct {
 }
 
 func (c CommandMutation) ControllerName() string {
-	return lcFirst(c.Mutation) + "CommandController"
+	return strutil.LcFirst(c.Mutation) + "CommandController"
 }
 
 type EventMutation struct {
@@ -74,7 +80,7 @@ type EventMutation struct {
 }
 
 func (c EventMutation) ControllerName() string {
-	return lcFirst(c.Mutation) + "EventController"
+	return strutil.LcFirst(c.Mutation) + "EventController"
 }
 
 type Command struct {
@@ -88,14 +94,5 @@ type Event struct {
 }
 
 func (e Event) LcFirstName() string {
-	return lcFirst(e.Name)
-}
-
-func lcFirst(s string) string {
-	if s == "" {
-		return ""
-	}
-	r := []rune(s)
-	r[0] = unicode.ToLower(r[0])
-	return string(r)
+	return strutil.LcFirst(e.Name)
 }

@@ -11,6 +11,7 @@ type File struct {
 	Template     string
 	TemplateData []byte
 	HasTemplate  bool
+	Addon        string
 }
 
 func (f File) String() string {
@@ -55,12 +56,20 @@ var files = []File{
 		Template: "stream_command_mutation.go.tpl",
 	},
 	{
+		Path:     "/internal/stream/command_mutation_test.go",
+		Template: "stream_command_mutation_test.go.tpl",
+	},
+	{
 		Path:     "/internal/stream/command_controller.go",
 		Template: "stream_command_controller.go.tpl",
 	},
 	{
 		Path:     "/internal/stream/event_mutation.go",
 		Template: "stream_event_mutation.go.tpl",
+	},
+	{
+		Path:     "/internal/stream/event_mutation_test.go",
+		Template: "stream_event_mutation_test.go.tpl",
 	},
 	{
 		Path:     "/internal/stream/event_controller.go",

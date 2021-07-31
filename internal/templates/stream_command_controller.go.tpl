@@ -35,7 +35,7 @@ func MakeCommandControllers(
              {{$.CommandsPkgName}}.{{.Command.Name}},
              {{.ControllerName}}(mutation),
          )
-        {{end -}}
+        {{end}}
     {{end -}}
 }
 
@@ -78,7 +78,8 @@ func MakeCommandControllers(
                 {{end -}}
          	}
          }
-    {{end -}}
+
+    {{end}}
 {{end}}
 
 

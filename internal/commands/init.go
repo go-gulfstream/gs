@@ -30,7 +30,7 @@ func initCommand() *cobra.Command {
 		Use:   "init [PATH]",
 		Short: "Create a new Gulfstream project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := validateArgsInitCommand(args); err != nil {
+			if err := validateInitCommandArgs(args); err != nil {
 				return err
 			}
 			drawBanner()
@@ -40,7 +40,7 @@ func initCommand() *cobra.Command {
 	return command
 }
 
-func validateArgsInitCommand(args []string) error {
+func validateInitCommandArgs(args []string) error {
 	lenArgs := len(args)
 	if lenArgs != 1 {
 		return fmt.Errorf("invalid number of arguments. got %d, expected 1", lenArgs)
