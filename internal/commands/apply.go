@@ -45,24 +45,8 @@ func validateApplyCommandArgs(args []string) error {
 	manifest := filepath.Join(args[0], manifestFilename)
 	_, err = os.Stat(manifest)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("the manifest file gulfstream.yml does not exist")
+		return fmt.Errorf("the manifest file %s/gulfstream.yml does not exist", args[0])
 	}
-	//index := make(map[string]struct{})
-	//for _, file := range files {
-	//	index[file.Name()] = struct{}{}
-	//}
-	//for name := range map[string]struct{}{
-	//	"pkg":      {},
-	//	"internal": {},
-	//	"go.mod":   {},
-	//	"cmd":      {},
-	//	"Makefile": {},
-	//} {
-	//	_, found := index[name]
-	//	if !found {
-	//		return fmt.Errorf("unknown project structure")
-	//	}
-	//}
 	return nil
 }
 
@@ -79,6 +63,10 @@ func runApplyCommand(path string) error {
 
 	schema.SanitizeManifest(manifest)
 	if err := schema.ValidateManifest(manifest); err != nil {
+		return err
+	}
+
+	if err := schema.Validate(path, manifest); err != nil {
 		return err
 	}
 

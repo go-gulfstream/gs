@@ -31,9 +31,6 @@ func ModifyFromAddon(dst *dstlib.File, addon string, addonSource []byte) error {
 	if len(addonSource) == 0 {
 		return nil
 	}
-	if schema.CommandControllerAddon == addon {
-		fmt.Println(string(addonSource))
-	}
 	src, err := decorator.Parse(addonSource)
 	if err != nil {
 		return err
