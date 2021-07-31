@@ -1,18 +1,18 @@
 package source
 
 import (
-	"go/ast"
-	"go/parser"
-	"go/token"
+	"bytes"
 	"io/ioutil"
 
-	"github.com/go-gulfstream/gs/internal/format"
+	"github.com/dave/dst/decorator"
+
+	"github.com/dave/dst"
 )
 
-var files = map[string]*ast.File{}
+var modifiedFiles = map[string]*dst.File{}
 
-func Load(filename string) (*ast.File, error) {
-	file, found := files[filename]
+func FromFile(filename string) (*dst.File, error) {
+	file, found := modifiedFiles[filename]
 	if found {
 		return file, nil
 	}
@@ -20,28 +20,24 @@ func Load(filename string) (*ast.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	file, err = parseSource(data)
+	file, err = decorator.Parse(data)
 	if err != nil {
 		return nil, err
 	}
-	files[filename] = file
+	modifiedFiles[filename] = file
 	return file, nil
 }
 
-func Save() error {
-	for filename, astFile := range files {
-		data, err := format.File(filename, astFile)
-		if err != nil {
+func FlushToDisk() error {
+	buf := &bytes.Buffer{}
+	for filename, src := range modifiedFiles {
+		buf.Reset()
+		if err := decorator.Fprint(buf, src); err != nil {
 			return err
 		}
-		if err := ioutil.WriteFile(filename, data, 0755); err != nil {
+		if err := ioutil.WriteFile(filename, buf.Bytes(), 0755); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func parseSource(src []byte) (*ast.File, error) {
-	fset := token.NewFileSet()
-	return parser.ParseFile(fset, "", src, parser.ParseComments)
 }

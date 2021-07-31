@@ -1,13 +1,14 @@
 package schema
 
 const (
-	CommandMutationAddon   = "CommandMutation"
-	CommandControllerAddon = "CommandController"
-	EventMutationAddon     = "EventMutation"
-	EventControllerAddon   = "EventController"
-	StateAddon             = "State"
-	CommandsAddon          = "Commands"
-	EventsAddon            = "Events"
+	CommandMutationAddon     = "CommandMutation"
+	CommandMutationImplAddon = "CommandMutationImpl"
+	CommandControllerAddon   = "CommandController"
+	EventMutationAddon       = "EventMutation"
+	EventControllerAddon     = "EventController"
+	StateAddon               = "State"
+	CommandsAddon            = "Commands"
+	EventsAddon              = "Events"
 )
 
 var commandMutationAddons = []File{
@@ -15,6 +16,11 @@ var commandMutationAddons = []File{
 		Path:     "/internal/stream/command_mutation.go",
 		Template: "stream_command_mutation_addon.go.tpl",
 		Addon:    CommandMutationAddon,
+	},
+	{
+		Path:     "/internal/stream/command_mutation.go",
+		Template: "stream_command_mutation_impl_addon.go.tpl",
+		Addon:    CommandMutationImplAddon,
 	},
 	{
 		Path:     "/internal/stream/command_mutation_test.go",

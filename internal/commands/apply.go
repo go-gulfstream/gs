@@ -88,31 +88,31 @@ func runApplyCommand(path string) error {
 	}
 	_ = snapshot
 
-	//if err := schema.WalkCommandMutationAddons(path, manifest,
-	//	func(m schema.CommandMutation, file schema.File) error {
-	//		astFile, err := source.Load(file.Path)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		return source.Append(astFile, file.Addon, file.TemplateData)
-	//	}); err != nil {
-	//	return err
-	//}
-	//
-	//if err := schema.WalkEventMutationAddons(path, manifest,
-	//	func(m schema.EventMutation, file schema.File) error {
-	//		astFile, err := source.Load(file.Path)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		return source.Append(astFile, file.Addon, file.TemplateData)
-	//	}); err != nil {
-	//	return err
-	//}
-	//
-	//if err := source.Save(); err != nil {
-	//	return err
-	//}
+	if err := schema.WalkCommandMutationAddons(path, manifest,
+		func(m schema.CommandMutation, file schema.File) error {
+			dst, err := source.FromFile(file.Path)
+			if err != nil {
+				return err
+			}
+			return source.ModifyFromAddon(dst, file.Addon, file.TemplateData)
+		}); err != nil {
+		return err
+	}
+
+	if err := schema.WalkEventMutationAddons(path, manifest,
+		func(m schema.EventMutation, file schema.File) error {
+			dst, err := source.FromFile(file.Path)
+			if err != nil {
+				return err
+			}
+			return source.ModifyFromAddon(dst, file.Addon, file.TemplateData)
+		}); err != nil {
+		return err
+	}
+
+	if err := source.FlushToDisk(); err != nil {
+		return err
+	}
 
 	return nil
 }
