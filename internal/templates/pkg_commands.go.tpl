@@ -27,7 +27,7 @@ const (
        }
     {{else}}
        func New{{.Command.Name}}(streamID uuid.UUID) *gulfstreamcommand.Command {
-           return gulfstreamcommand.New(RegisterSession, {{$.StreamPkgName}}.Name, streamID, nil)
+           return gulfstreamcommand.New({{.Command.Name}}, {{$.StreamPkgName}}.Name, streamID, nil)
        }
     {{end}}
 {{end}}

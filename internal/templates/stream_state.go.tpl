@@ -49,7 +49,7 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
               {{if .Event.Payload -}}
               payload := e.Payload().(*{{$.EventsPkgName}}.{{.Event.Payload}})
               s.apply{{.Event.Name}}(payload)
-              {{else}}
+              {{else -}}
               s.apply{{.Event.Name}}()
               {{end -}}
         {{end -}}
@@ -58,7 +58,7 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
                {{if .OutEvent.Payload -}}
                   payload := e.Payload().(*{{$.EventsPkgName}}.{{.OutEvent.Payload}})
                   s.apply{{.OutEvent.Name}}(payload)
-               {{else}}
+               {{else -}}
                   s.apply{{.OutEvent.Name}}()
                {{end -}}
         {{end -}}

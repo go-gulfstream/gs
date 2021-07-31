@@ -1,5 +1,6 @@
 package {{$.EventsPkgName}}
 
+{{if or $.Mutations.HasCommands $.Mutations.HasEvents }}
 import (
 	"encoding/json"
 	gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
@@ -26,4 +27,6 @@ const (
      type {{.OutEvent.Payload}} struct {
      }
    {{end}}
+{{end}}
+
 {{end}}

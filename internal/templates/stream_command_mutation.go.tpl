@@ -47,7 +47,7 @@ type commandMutation struct {
                     return &{{$.EventsPkgName}}.{{.Event.Payload}}{}, nil
                 }
             {{else -}}
-                func (m *mutation) {{.Mutation}}(
+                func (m *commandMutation) {{.Mutation}}(
                 ctx context.Context,
                 streamID uuid.UUID,
                 commandID uuid.UUID,
@@ -59,7 +59,7 @@ type commandMutation struct {
             {{end}}
         {{else -}}
             {{if .Event.Payload -}}
-                func (m *mutation) {{.Mutation}}(
+                func (m *commandMutation) {{.Mutation}}(
                 ctx context.Context,
                 streamID uuid.UUID,
                 commandID uuid.UUID,
@@ -68,7 +68,7 @@ type commandMutation struct {
                     return &{{$.EventsPkgName}}.{{.Event.Payload}}{}, nil
                 }
             {{else -}}
-                func (m *mutation) {{.Mutation}}(
+                func (m *commandMutation) {{.Mutation}}(
                  ctx context.Context,
                  streamID uuid.UUID,
                  commandID uuid.UUID,

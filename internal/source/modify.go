@@ -183,7 +183,7 @@ func findFuncDeclByName(file *dstlib.File, name string) (res *dstlib.FuncDecl, e
 		return true
 	})
 	if res == nil {
-		err = fmt.Errorf("source: can't find func declaration %s by name", name)
+		err = fmt.Errorf("source: can't find %s func declaration by name", name)
 	}
 	return
 }
