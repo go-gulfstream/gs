@@ -22,11 +22,18 @@ var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	schema.CommandMutationImplAddon: commandMutationImplAddon,
 }
 
+const (
+	commandMutationSelector       = "commandMutation"
+	makeCommandControllerSelector = "MakeCommandControllers"
+)
+
 func ModifyFromAddon(dst *dstlib.File, addon string, addonSource []byte) error {
 	if len(addonSource) == 0 {
 		return nil
 	}
-	fmt.Println(string(addonSource))
+	if schema.CommandControllerAddon == addon {
+		fmt.Println(string(addonSource))
+	}
 	src, err := decorator.Parse(addonSource)
 	if err != nil {
 		return err
@@ -59,6 +66,33 @@ func commandsAddon(dst *dstlib.File, src *dstlib.File) error {
 }
 
 func commandControllerAddon(dst *dst.File, src *dst.File) error {
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	var exprStmt *dstlib.ExprStmt
+	var method *dstlib.FuncDecl
+	dstlib.Inspect(src, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.FuncDecl:
+			if typ.Name.Name == "render" {
+				exprStmt = typ.Body.List[0].(*dstlib.ExprStmt)
+			} else {
+				method = typ
+			}
+			return false
+		}
+		return true
+	})
+
+	method.Decorations().After = dstlib.EmptyLine
+	dst.Decls = append(dst.Decls, method)
+	funcDecl, err := findFuncDeclByName(dst, makeCommandControllerSelector)
+	if err != nil {
+		return err
+	}
+	funcDecl.Body.List = append(funcDecl.Body.List, exprStmt)
+
 	return nil
 }
 
@@ -78,7 +112,7 @@ func commandMutationImplAddon(dst *dst.File, src *dst.File) error {
 	})
 
 	method.Decorations().After = dstlib.EmptyLine
-	index := findIndexRecvByName(dst.Decls, "commandMutation")
+	index := findRecvByName(dst.Decls, commandMutationSelector)
 
 	if index == 0 {
 		dst.Decls = append(dst.Decls, method)
@@ -120,7 +154,7 @@ func insertFuncDecl(a []dstlib.Decl, method *dstlib.FuncDecl, index int) []dstli
 	return append(a[:index], append([]dstlib.Decl{method}, a[index:]...)...)
 }
 
-func findIndexRecvByName(decls []dstlib.Decl, recvName string) (index int) {
+func findRecvByName(decls []dstlib.Decl, recvName string) (index int) {
 	for i, decl := range decls {
 		fn, ok := decl.(*dstlib.FuncDecl)
 		if !ok || fn.Recv == nil {
@@ -133,6 +167,23 @@ func findIndexRecvByName(decls []dstlib.Decl, recvName string) (index int) {
 		if name == recvName {
 			index = i
 		}
+	}
+	return
+}
+
+func findFuncDeclByName(file *dstlib.File, name string) (res *dstlib.FuncDecl, err error) {
+	dstlib.Inspect(file, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.FuncDecl:
+			if typ.Name.Name == name {
+				res = typ
+				return false
+			}
+		}
+		return true
+	})
+	if res == nil {
+		err = fmt.Errorf("source: can't find func declaration %s by name", name)
 	}
 	return
 }
