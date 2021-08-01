@@ -69,6 +69,9 @@ func runApplyCommand(path string) error {
 	if err := schema.Validate(path, manifest); err != nil {
 		return err
 	}
+	if err := source.Validate(path, manifest); err != nil {
+		return err
+	}
 
 	snapshot, err := source.NewSnapshot(path)
 	if err != nil {
@@ -78,22 +81,26 @@ func runApplyCommand(path string) error {
 
 	if err := schema.WalkCommandMutationAddons(path, manifest,
 		func(m schema.CommandMutation, file schema.File) error {
+			fmt.Printf("%s - CommmandMutation.%s{InCommand: %s, OutEvent: %s}, %s => %s\n", greenColor("[ADD]"),
+				m.Mutation, m.Command.Name, m.Event.Name, file.Addon, file.Path)
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err
 			}
-			return source.ModifyFromAddon(dst, file.Addon, file.TemplateData)
+			return source.Modify(dst, file.Addon, file.TemplateData)
 		}); err != nil {
 		return err
 	}
 
 	if err := schema.WalkEventMutationAddons(path, manifest,
 		func(m schema.EventMutation, file schema.File) error {
+			fmt.Printf("%s - EventMutation.%s{InEvent: %s, OutEvent: %s} => %s\n", greenColor("[ADD]"),
+				m.Mutation, m.InEvent.Name, m.OutEvent.Name, file.Path)
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err
 			}
-			return source.ModifyFromAddon(dst, file.Addon, file.TemplateData)
+			return source.Modify(dst, file.Addon, file.TemplateData)
 		}); err != nil {
 		return err
 	}

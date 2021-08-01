@@ -22,12 +22,7 @@ var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	schema.CommandMutationImplAddon: commandMutationImplAddon,
 }
 
-const (
-	commandMutationSelector       = "commandMutation"
-	makeCommandControllerSelector = "MakeCommandControllers"
-)
-
-func ModifyFromAddon(dst *dstlib.File, addon string, addonSource []byte) error {
+func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
 	if len(addonSource) == 0 {
 		return nil
 	}
@@ -37,7 +32,7 @@ func ModifyFromAddon(dst *dstlib.File, addon string, addonSource []byte) error {
 	}
 	fn, found := addonsFunc[addon]
 	if !found {
-		return fmt.Errorf("source: ModifyFromAddon(%sAddon) => modificator not specified", addon)
+		return fmt.Errorf("source: Modify(%sAddon) => modificator not specified", addon)
 	}
 	return fn(dst, src)
 }
@@ -109,7 +104,7 @@ func commandMutationImplAddon(dst *dst.File, src *dst.File) error {
 	})
 
 	method.Decorations().After = dstlib.EmptyLine
-	index := findRecvByName(dst.Decls, commandMutationSelector)
+	index := findRecvByName(dst.Decls, commandMutationImplSelector)
 
 	if index == 0 {
 		dst.Decls = append(dst.Decls, method)
@@ -145,42 +140,4 @@ func commandMutationAddon(dst *dst.File, src *dst.File) error {
 	})
 
 	return nil
-}
-
-func insertFuncDecl(a []dstlib.Decl, method *dstlib.FuncDecl, index int) []dstlib.Decl {
-	return append(a[:index], append([]dstlib.Decl{method}, a[index:]...)...)
-}
-
-func findRecvByName(decls []dstlib.Decl, recvName string) (index int) {
-	for i, decl := range decls {
-		fn, ok := decl.(*dstlib.FuncDecl)
-		if !ok || fn.Recv == nil {
-			continue
-		}
-		if len(fn.Recv.List) == 0 {
-			continue
-		}
-		name := fn.Recv.List[0].Type.(*dstlib.StarExpr).X.(*dstlib.Ident).Name
-		if name == recvName {
-			index = i
-		}
-	}
-	return
-}
-
-func findFuncDeclByName(file *dstlib.File, name string) (res *dstlib.FuncDecl, err error) {
-	dstlib.Inspect(file, func(node dstlib.Node) bool {
-		switch typ := node.(type) {
-		case *dstlib.FuncDecl:
-			if typ.Name.Name == name {
-				res = typ
-				return false
-			}
-		}
-		return true
-	})
-	if res == nil {
-		err = fmt.Errorf("source: can't find %s func declaration by name", name)
-	}
-	return
 }
