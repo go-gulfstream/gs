@@ -81,6 +81,9 @@ func runApplyCommand(path string) error {
 	statusOk := greenColor("[ADD]")
 	statusSkip := yellowColor("[EXISTS]")
 
+	var successCounter, skipCounter int
+
+	fmt.Printf("APPLY COMMAND MUTATIONS => \n")
 	if err := schema.WalkCommandMutationAddons(path, manifest,
 		func(m schema.CommandMutation, file schema.File) error {
 			status := statusOk
@@ -89,11 +92,13 @@ func runApplyCommand(path string) error {
 				status = statusSkip
 				skip = true
 			}
-			fmt.Printf("%s - CommmandMutation.%s{InCommand: %s, OutEvent: %s}, %s => %s\n", status,
+			fmt.Printf("%s - %s{InCommand: %s, OutEvent: %s}, %s => %s\n", status,
 				m.Mutation, m.Command.Name, m.Event.Name, file.Addon, file.Path)
 			if skip {
+				skipCounter++
 				return nil
 			}
+			successCounter++
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err
@@ -103,6 +108,7 @@ func runApplyCommand(path string) error {
 		return err
 	}
 
+	fmt.Printf("APPLY EVENT MUTATIONS => \n")
 	if err := schema.WalkEventMutationAddons(path, manifest,
 		func(m schema.EventMutation, file schema.File) error {
 			status := statusOk
@@ -111,11 +117,13 @@ func runApplyCommand(path string) error {
 				status = statusSkip
 				skip = true
 			}
-			fmt.Printf("%s - EventMutation.%s{InEvent: %s, OutEvent: %s} => %s\n", status,
+			fmt.Printf("%s - %s{InEvent: %s, OutEvent: %s} => %s\n", status,
 				m.Mutation, m.InEvent.Name, m.OutEvent.Name, file.Path)
 			if skip {
+				skipCounter++
 				return nil
 			}
+			successCounter++
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err
@@ -127,6 +135,14 @@ func runApplyCommand(path string) error {
 
 	if err := source.FlushToDisk(); err != nil {
 		return err
+	}
+
+	fmt.Println("===============================================")
+	if successCounter > 0 {
+		fmt.Printf("ADDED: %d\n", successCounter)
+	}
+	if skipCounter > 0 {
+		fmt.Printf("SKIPPED: %d\n", skipCounter)
 	}
 
 	return nil
