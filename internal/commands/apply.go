@@ -73,16 +73,27 @@ func runApplyCommand(path string) error {
 		return err
 	}
 
-	snapshot, err := source.NewSnapshot(path)
+	info, err := source.Stats(path, manifest)
 	if err != nil {
 		return err
 	}
-	_ = snapshot
+
+	statusOk := greenColor("[ADD]")
+	statusSkip := yellowColor("[EXISTS]")
 
 	if err := schema.WalkCommandMutationAddons(path, manifest,
 		func(m schema.CommandMutation, file schema.File) error {
-			fmt.Printf("%s - CommmandMutation.%s{InCommand: %s, OutEvent: %s}, %s => %s\n", greenColor("[ADD]"),
+			status := statusOk
+			var skip bool
+			if info.CommandMutationExists(m.Mutation) {
+				status = statusSkip
+				skip = true
+			}
+			fmt.Printf("%s - CommmandMutation.%s{InCommand: %s, OutEvent: %s}, %s => %s\n", status,
 				m.Mutation, m.Command.Name, m.Event.Name, file.Addon, file.Path)
+			if skip {
+				return nil
+			}
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err
@@ -94,8 +105,17 @@ func runApplyCommand(path string) error {
 
 	if err := schema.WalkEventMutationAddons(path, manifest,
 		func(m schema.EventMutation, file schema.File) error {
-			fmt.Printf("%s - EventMutation.%s{InEvent: %s, OutEvent: %s} => %s\n", greenColor("[ADD]"),
+			status := statusOk
+			var skip bool
+			if info.EventMutationExists(m.Mutation) {
+				status = statusSkip
+				skip = true
+			}
+			fmt.Printf("%s - EventMutation.%s{InEvent: %s, OutEvent: %s} => %s\n", status,
 				m.Mutation, m.InEvent.Name, m.OutEvent.Name, file.Path)
+			if skip {
+				return nil
+			}
 			dst, err := source.FromFile(file.Path)
 			if err != nil {
 				return err

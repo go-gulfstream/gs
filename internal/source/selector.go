@@ -71,3 +71,15 @@ func findFuncDeclByName(file *dstlib.File, name string) (res *dstlib.FuncDecl, e
 	}
 	return
 }
+
+func findInterfaceMethods(typeSpec *dstlib.TypeSpec) ([]string, error) {
+	spec, ok := typeSpec.Type.(*dstlib.InterfaceType)
+	if !ok {
+		return nil, fmt.Errorf("source: can't find interface methods")
+	}
+	result := make([]string, 0, len(spec.Methods.List))
+	for _, field := range spec.Methods.List {
+		result = append(result, field.Names[0].Name)
+	}
+	return result, nil
+}
