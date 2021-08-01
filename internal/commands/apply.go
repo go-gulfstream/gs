@@ -79,11 +79,11 @@ func runApplyCommand(path string) error {
 	}
 
 	statusOk := greenColor("[ADD]")
-	statusSkip := yellowColor("[EXISTS]")
+	statusSkip := yellowColor("[SKIP]")
 
 	var successCounter, skipCounter int
 
-	fmt.Printf("APPLY COMMAND MUTATIONS => \n")
+	fmt.Printf("Apply command mutations => \n")
 	if err := schema.WalkCommandMutationAddons(path, manifest,
 		func(m schema.CommandMutation, file schema.File) error {
 			status := statusOk
@@ -108,7 +108,7 @@ func runApplyCommand(path string) error {
 		return err
 	}
 
-	fmt.Printf("APPLY EVENT MUTATIONS => \n")
+	fmt.Printf("Apply event mutations => \n")
 	if err := schema.WalkEventMutationAddons(path, manifest,
 		func(m schema.EventMutation, file schema.File) error {
 			status := statusOk
@@ -139,10 +139,10 @@ func runApplyCommand(path string) error {
 
 	fmt.Println("===============================================")
 	if successCounter > 0 {
-		fmt.Printf("ADDED: %d\n", successCounter)
+		fmt.Printf("Added: %d\n", successCounter)
 	}
 	if skipCounter > 0 {
-		fmt.Printf("SKIPPED: %d\n", skipCounter)
+		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
 	return nil

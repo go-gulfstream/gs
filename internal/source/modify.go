@@ -13,13 +13,15 @@ import (
 
 var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	schema.EventsAddon:              eventsAddon,
-	schema.StateAddon:               stateAddon,
+	schema.EventStateAddon:          eventStateAddon,
 	schema.EventControllerAddon:     eventControllerAddon,
 	schema.EventMutationAddon:       eventMutationAddon,
 	schema.CommandsAddon:            commandsAddon,
+	schema.CommandStateAddon:        commandStateAddon,
 	schema.CommandControllerAddon:   commandControllerAddon,
 	schema.CommandMutationAddon:     commandMutationAddon,
 	schema.CommandMutationImplAddon: commandMutationImplAddon,
+	schema.CommandMutationTestAddon: commandMutationTestAddon,
 }
 
 func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
@@ -41,7 +43,13 @@ func eventsAddon(dst *dstlib.File, src *dstlib.File) error {
 	return nil
 }
 
-func stateAddon(dst *dstlib.File, src *dstlib.File) error {
+func eventStateAddon(dst *dstlib.File, src *dstlib.File) error {
+	fmt.Println("state addon")
+	return nil
+}
+
+func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
+	fmt.Println("state addon")
 	return nil
 }
 
@@ -84,6 +92,27 @@ func commandControllerAddon(dst *dst.File, src *dst.File) error {
 		return err
 	}
 	funcDecl.Body.List = append(funcDecl.Body.List, exprStmt)
+
+	return nil
+}
+
+func commandMutationTestAddon(dst *dst.File, src *dst.File) error {
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	var method *dstlib.FuncDecl
+	dstlib.Inspect(src, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.FuncDecl:
+			method = typ
+			return false
+		}
+		return true
+	})
+
+	method.Decorations().After = dstlib.EmptyLine
+	dst.Decls = append(dst.Decls, method)
 
 	return nil
 }

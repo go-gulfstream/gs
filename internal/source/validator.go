@@ -19,7 +19,7 @@ var validationFunc = map[string]func(path string, src *dstlib.File) error{
 	schema.EventMutationImplAddon: eventMutationImplValidation,
 	schema.EventControllerAddon:   eventMutationControllerValidation,
 
-	schema.StateAddon: stateValidation,
+	schema.EventStateAddon: stateValidation,
 }
 
 func Validate(path string, m *schema.Manifest) error {

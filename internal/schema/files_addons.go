@@ -3,15 +3,20 @@ package schema
 import "path/filepath"
 
 const (
-	CommandMutationAddon     = "CommandMutation"
-	CommandMutationImplAddon = "CommandMutationImpl"
-	CommandControllerAddon   = "CommandController"
-	EventMutationAddon       = "EventMutation"
-	EventMutationImplAddon   = "EventMutationImpl"
-	EventControllerAddon     = "EventController"
-	StateAddon               = "State"
-	CommandsAddon            = "Commands"
-	EventsAddon              = "Events"
+	CommandMutationAddon           = "CommandMutation"
+	CommandMutationProjectionAddon = "CommandMutationProjection"
+	CommandMutationImplAddon       = "CommandMutationImpl"
+	CommandMutationTestAddon       = "CommandMutationTest"
+	CommandControllerAddon         = "CommandController"
+	CommandStateAddon              = "CommandState"
+	EventMutationAddon             = "EventMutation"
+	EventMutationProjectionAddon   = "EventMutationProjection"
+	EventMutationTestAddon         = "EventMutationTest"
+	EventMutationImplAddon         = "EventMutationImpl"
+	EventControllerAddon           = "EventController"
+	EventStateAddon                = "EventState"
+	CommandsAddon                  = "Commands"
+	EventsAddon                    = "Events"
 )
 
 var commandMutationAddons = []File{
@@ -30,7 +35,7 @@ var commandMutationAddons = []File{
 	{
 		Path:     "/internal/stream/command_mutation_test.go",
 		Template: "stream_command_mutation_test_addon.go.tpl",
-		Addon:    CommandMutationAddon,
+		Addon:    CommandMutationTestAddon,
 	},
 	{
 		Path:     "/internal/stream/command_controller.go",
@@ -40,8 +45,8 @@ var commandMutationAddons = []File{
 	},
 	{
 		Path:     "/internal/stream/state.go",
-		Template: "stream_state_addon.go.tpl",
-		Addon:    StateAddon,
+		Template: "stream_command_state_addon.go.tpl",
+		Addon:    CommandStateAddon,
 		required: true,
 	},
 	{
@@ -66,7 +71,7 @@ var eventMutationAddons = []File{
 	{
 		Path:     "/internal/stream/event_mutation.go",
 		Template: "stream_event_mutation_test_addon.go.tpl",
-		Addon:    EventMutationAddon,
+		Addon:    EventMutationTestAddon,
 	},
 	{
 		Path:     "/internal/stream/event_controller.go",
@@ -76,8 +81,8 @@ var eventMutationAddons = []File{
 	},
 	{
 		Path:     "/internal/stream/state.go",
-		Template: "stream_state_addon.go.tpl",
-		Addon:    StateAddon,
+		Template: "stream_event_state_addon.go.tpl",
+		Addon:    EventStateAddon,
 	},
 	{
 		Path:     "/pkg/{events_package}/events.go",
