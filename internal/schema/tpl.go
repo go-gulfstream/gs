@@ -54,12 +54,14 @@ func renderEventMutationAddon(fileTpl string, manifest *Manifest, m EventMutatio
 		EventsPkgName   string
 		CommandsPkgName string
 		StreamPkgName   string
+		Imports         []string
 	}{
 		EventMutation:   m,
 		GoModules:       manifest.GoModules,
 		EventsPkgName:   manifest.EventsPkgName,
 		CommandsPkgName: manifest.CommandsPkgName,
 		StreamPkgName:   manifest.StreamPkgName,
+		Imports:         manifest.ImportEvents,
 	}); err != nil {
 		return nil, err
 	}

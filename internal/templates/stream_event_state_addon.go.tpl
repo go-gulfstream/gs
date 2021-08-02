@@ -5,6 +5,10 @@ import (
 
    "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
    "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
+
+   {{range .Imports}}
+       {{.}}
+   {{end}}
 )
 
  {{if .OutEvent.Payload -}}
