@@ -15,6 +15,7 @@ const (
 	makeCommandControllerSelector = "MakeCommandControllers"
 	makeEventControllerSelector   = "MakeEventControllers"
 	stateSelector                 = "root"
+	mutateFuncSelector            = "Mutate"
 )
 
 func insertFuncDecl(a []dstlib.Decl, method *dstlib.FuncDecl, index int) []dstlib.Decl {
@@ -82,4 +83,21 @@ func findInterfaceMethods(typeSpec *dstlib.TypeSpec) ([]string, error) {
 		result = append(result, field.Names[0].Name)
 	}
 	return result, nil
+}
+
+func findSwitchStmt(typeSpec *dstlib.FuncDecl) (switchStmt *dstlib.SwitchStmt, caseClause *dstlib.CaseClause, err error) {
+	dstlib.Inspect(typeSpec, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.SwitchStmt:
+			switchStmt = typ
+		case *dstlib.CaseClause:
+			caseClause = typ
+			return false
+		}
+		return true
+	})
+	if switchStmt == nil {
+		err = fmt.Errorf("source: switchStmt not found")
+	}
+	return
 }

@@ -49,7 +49,36 @@ func eventStateAddon(dst *dstlib.File, src *dstlib.File) error {
 }
 
 func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
-	fmt.Println("state addon")
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	applyFunc := src.Decls[1]
+	applyFunc.Decorations().Before = dstlib.EmptyLine
+	dst.Decls = append(dst.Decls, applyFunc)
+
+	// from template
+	srcMutateFunc, err := findFuncDeclByName(src, mutateFuncSelector)
+	if err != nil {
+		return err
+	}
+	srcSwitch, srcCase, err := findSwitchStmt(srcMutateFunc)
+	if err != nil {
+		return fmt.Errorf("%v from tempate", err)
+	}
+	srcSwitch.Decorations().Before = dstlib.None
+	srcSwitch.Decorations().After = dstlib.None
+
+	dstMutateFunc, err := findFuncDeclByName(dst, mutateFuncSelector)
+	if err != nil {
+		return err
+	}
+	dstSwitch, _, err := findSwitchStmt(dstMutateFunc)
+	if err != nil {
+		dstMutateFunc.Body.List = append(dstMutateFunc.Body.List, srcSwitch)
+	} else {
+		dstSwitch.Body.List = append(dstSwitch.Body.List, srcCase)
+	}
 	return nil
 }
 
