@@ -42,8 +42,8 @@ func New() gulfstream.State {
 }
 
 func (s *root) Mutate(e *gulfstreamevent.Event) {
+    switch e.Name() {
     {{if $.Mutations.HasCommands -}}
-        switch e.Name() {
         {{range $.Mutations.Commands -}}
            case {{$.EventsPkgName}}.{{.Event.Name}}:
               {{if .Event.Payload -}}
@@ -62,6 +62,6 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
                   s.apply{{.OutEvent.Name}}()
                {{end -}}
         {{end -}}
-        }
     {{end -}}
+    }
 }
