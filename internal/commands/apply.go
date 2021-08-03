@@ -92,8 +92,8 @@ func runApplyCommand(path string) error {
 				status = statusSkip
 				skip = true
 			}
-			fmt.Printf("%s %s{InCommand: %s, OutEvent: %s}, %s => %s\n", status,
-				m.Mutation, m.Command.Name, m.Event.Name, file.Addon, file.Path)
+			fmt.Printf("%s %s, %s => %s\n", status,
+				m.Mutation, file.Addon, file.Path)
 			if skip {
 				skipCounter++
 				return nil
@@ -117,8 +117,8 @@ func runApplyCommand(path string) error {
 				status = statusSkip
 				skip = true
 			}
-			fmt.Printf("%s %s{InEvent: %s, OutEvent: %s} => %s\n", status,
-				m.Mutation, m.InEvent.Name, m.OutEvent.Name, file.Path)
+			fmt.Printf("%s %s, %s => %s\n", status,
+				m.Mutation, file.Addon, file.Path)
 			if skip {
 				skipCounter++
 				return nil
