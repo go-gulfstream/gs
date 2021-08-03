@@ -42,6 +42,9 @@ func validateApplyCommandArgs(args []string) error {
 		return err
 	}
 	files = filterDotFiles(files)
+	if len(files) == 1 && files[0].Name() == manifestFilename {
+		return fmt.Errorf("first execute init command\n$ gs init %s", args[0])
+	}
 	manifest := filepath.Join(args[0], manifestFilename)
 	_, err = os.Stat(manifest)
 	if os.IsNotExist(err) {
