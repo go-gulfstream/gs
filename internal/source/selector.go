@@ -16,6 +16,11 @@ const (
 	makeEventControllerSelector   = "MakeEventControllers"
 	stateSelector                 = "root"
 	mutateFuncSelector            = "Mutate"
+	constDeclSelector             = "const"
+	typeDeclSelector              = "type"
+	initDeclSelector              = "init"
+	marshalFuncSelector           = "MarshalBinary"
+	unmarshalFuncSelector         = "UnmarshalBinary"
 )
 
 func insertFuncDecl(a []dstlib.Decl, method *dstlib.FuncDecl, index int) []dstlib.Decl {
@@ -60,7 +65,7 @@ func findFuncDeclByName(file *dstlib.File, name string) (res *dstlib.FuncDecl, e
 	dstlib.Inspect(file, func(node dstlib.Node) bool {
 		switch typ := node.(type) {
 		case *dstlib.FuncDecl:
-			if typ.Name.Name == name {
+			if typ.Name.Name == name || name == "" {
 				res = typ
 				return false
 			}
@@ -98,6 +103,23 @@ func findSwitchStmt(typeSpec *dstlib.FuncDecl) (switchStmt *dstlib.SwitchStmt, c
 	})
 	if switchStmt == nil {
 		err = fmt.Errorf("source: switchStmt not found")
+	}
+	return
+}
+
+func findGenDeclByTok(file *dstlib.File, tok string) (decl *dstlib.GenDecl, err error) {
+	dstlib.Inspect(file, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.GenDecl:
+			if typ.Tok.String() == tok {
+				decl = typ
+				return false
+			}
+		}
+		return true
+	})
+	if decl == nil {
+		err = fmt.Errorf("source: genDecl not found")
 	}
 	return
 }

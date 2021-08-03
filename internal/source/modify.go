@@ -12,11 +12,16 @@ import (
 )
 
 var addonsFunc = map[string]func(dst, src *dstlib.File) error{
-	schema.EventsAddon:              eventsAddon,
-	schema.EventStateAddon:          eventStateAddon,
-	schema.EventControllerAddon:     eventControllerAddon,
-	schema.EventMutationAddon:       eventMutationAddon,
+	// Events
+	schema.EventsAddon:          eventsAddon,
+	schema.EventsEncodingAddon:  eventsEncodingAddon,
+	schema.EventStateAddon:      eventStateAddon,
+	schema.EventControllerAddon: eventControllerAddon,
+	schema.EventMutationAddon:   eventMutationAddon,
+
+	// Commands
 	schema.CommandsAddon:            commandsAddon,
+	schema.CommandsEncodingAddon:    commandsEncodingAddon,
 	schema.CommandStateAddon:        commandStateAddon,
 	schema.CommandControllerAddon:   commandControllerAddon,
 	schema.CommandMutationAddon:     commandMutationAddon,
@@ -32,11 +37,20 @@ func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
 	if err != nil {
 		return err
 	}
+
+	//if addon == schema.CommandsEncodingAddon {
+	//	fmt.Println(string(addonSource))
+	//}
+
 	fn, found := addonsFunc[addon]
 	if !found {
 		return fmt.Errorf("source: Modify(%sAddon) => modificator not specified", addon)
 	}
 	return fn(dst, src)
+}
+
+func eventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
+	return nil
 }
 
 func eventsAddon(dst *dstlib.File, src *dstlib.File) error {
@@ -64,7 +78,7 @@ func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
 	}
 	srcSwitch, srcCase, err := findSwitchStmt(srcMutateFunc)
 	if err != nil {
-		return fmt.Errorf("%v from tempate", err)
+		return fmt.Errorf("%v from template", err)
 	}
 	srcSwitch.Decorations().Before = dstlib.None
 	srcSwitch.Decorations().After = dstlib.None
@@ -91,6 +105,72 @@ func eventMutationAddon(dst *dstlib.File, src *dstlib.File) error {
 }
 
 func commandsAddon(dst *dstlib.File, src *dstlib.File) error {
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	// from template
+	srcConstDecl, err := findGenDeclByTok(src, constDeclSelector)
+	if err != nil {
+		return err
+	}
+	dstConstDecl, err := findGenDeclByTok(dst, constDeclSelector)
+	if err != nil {
+		dst.Decls = append(dst.Decls, srcConstDecl)
+	} else {
+		dstConstDecl.Specs = append(dstConstDecl.Specs, srcConstDecl.Specs[0])
+	}
+
+	srcType, err := findGenDeclByTok(src, typeDeclSelector)
+	if err == nil {
+		dst.Decls = append(dst.Decls, srcType)
+	}
+
+	fn, err := findFuncDeclByName(src, "")
+	if err != nil {
+		return err
+	}
+
+	fn.Decorations().Before = dstlib.EmptyLine
+	dst.Decls = append(dst.Decls, fn)
+
+	return nil
+}
+
+func commandsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	// from template
+	srcInitFn, err := findFuncDeclByName(src, initDeclSelector)
+	if err != nil {
+		return err
+	}
+	srcMarshalFn, err := findFuncDeclByName(src, marshalFuncSelector)
+	if err != nil {
+		return err
+	}
+	srcUnmarshalFn, err := findFuncDeclByName(src, unmarshalFuncSelector)
+	if err != nil {
+		return nil
+	}
+
+	srcMarshalFn.Decorations().Before = dstlib.EmptyLine
+	srcUnmarshalFn.Decorations().Before = dstlib.EmptyLine
+
+	if len(srcInitFn.Body.List) > 0 {
+		dstInitFn, err := findFuncDeclByName(dst, initDeclSelector)
+		if err != nil {
+			dst.Decls = append(dst.Decls, srcInitFn)
+		} else {
+			dstInitFn.Body.List = append(dstInitFn.Body.List, srcInitFn.Body.List[0])
+		}
+	}
+
+	dst.Decls = append(dst.Decls, srcMarshalFn)
+	dst.Decls = append(dst.Decls, srcUnmarshalFn)
+
 	return nil
 }
 

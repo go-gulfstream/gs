@@ -16,7 +16,9 @@ const (
 	EventControllerAddon           = "EventController"
 	EventStateAddon                = "EventState"
 	CommandsAddon                  = "Commands"
+	CommandsEncodingAddon          = "CommandsEncoding"
 	EventsAddon                    = "Events"
+	EventsEncodingAddon            = "EventsEncoding"
 )
 
 var commandMutationAddons = []File{
@@ -55,9 +57,19 @@ var commandMutationAddons = []File{
 		Addon:    CommandsAddon,
 	},
 	{
+		Path:     "/pkg/{commands_package}/commands_encoding.go",
+		Template: "pkg_commands_encoding_addon.go.tpl",
+		Addon:    CommandsEncodingAddon,
+	},
+	{
 		Path:     "/pkg/{events_package}/events.go",
 		Template: "pkg_events_addon.go.tpl",
 		Addon:    EventsAddon,
+	},
+	{
+		Path:     "/pkg/{events_package}/events_encoding.go",
+		Template: "pkg_events_encoding_addon.go.tpl",
+		Addon:    EventsEncodingAddon,
 	},
 }
 

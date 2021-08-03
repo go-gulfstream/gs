@@ -55,6 +55,12 @@ func sanitizeCommands(commands []CommandMutation) {
 		cmd.Command.Payload = sanitizeName(cmd.Command.Payload)
 		cmd.Event.Name = sanitizeName(cmd.Event.Name)
 		cmd.Event.Payload = sanitizeName(cmd.Event.Payload)
+		if cmd.Command.Name == cmd.Command.Payload {
+			cmd.Command.Payload = cmd.Command.Payload + "Payload"
+		}
+		if cmd.Event.Name == cmd.Event.Payload {
+			cmd.Event.Payload = cmd.Event.Payload + "Payload"
+		}
 		commands[i] = cmd
 	}
 }
@@ -70,6 +76,9 @@ func sanitizeEvents(events []EventMutation) {
 		e.InEvent.Payload = trim(e.InEvent.Payload)
 		e.OutEvent.Name = sanitizeName(e.OutEvent.Name)
 		e.OutEvent.Payload = sanitizeName(e.OutEvent.Payload)
+		if e.OutEvent.Name == e.OutEvent.Payload {
+			e.OutEvent.Payload = e.OutEvent.Payload + "Payload"
+		}
 		events[i] = e
 	}
 }
