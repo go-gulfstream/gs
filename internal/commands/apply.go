@@ -148,5 +148,7 @@ func runApplyCommand(path string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
+	runGoTools(path)
+
 	return nil
 }
