@@ -50,7 +50,7 @@ func NewController(p Projection) *gulfstream.Projection {
    {{if .OutEvent.Payload}}
    func {{.OutEvent.LcFirstName}}Controller(p Projection) gulfstream.EventHandlerFunc {
        return func(ctx context.Context, e *gulfstreamevent.Event) error {
-           return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version(), e.Payload().(*{{$.EventsPkgName}}.{{.Event.Payload}}))
+           return p.{{.Mutation}}(ctx, e.StreamID(), e.ID(), e.Version(), e.Payload().(*{{$.EventsPkgName}}.{{.OutEvent.Payload}}))
        }
    }
    {{else}}

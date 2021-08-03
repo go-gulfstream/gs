@@ -16,7 +16,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type manifestFlags struct {
+	numCommands int
+	numEvents   int
+	withData    bool
+}
+
 func manifestCommand() *cobra.Command {
+	var flags manifestFlags
 	command := &cobra.Command{
 		Use:   "manifest [PATH]",
 		Short: "Create empty manifest file for new project",
@@ -37,13 +44,20 @@ func manifestCommand() *cobra.Command {
 				return fmt.Errorf("directory %s not empty. found files: %d",
 					args[0], len(files))
 			}
-			dataFlag := cmd.Flag("data")
-			withData := dataFlag.Value.String() == "true"
-			manifest := blankManifest(withData)
-			return writeManifestFile(args[0], manifest, false)
+			drawBanner()
+			manifest := blankManifest(&flags)
+			if err := writeManifestFile(args[0], manifest, false); err != nil {
+				return err
+			}
+			fmt.Printf("New manifest file created successfully %s/%s\n", args[0], manifestFilename)
+			return nil
 		},
 	}
-	command.Flags().BoolP("data", "d", false, "generate with data example")
+
+	command.Flags().BoolVarP(&flags.withData, "data", "d", false, "with data example")
+	command.Flags().IntVarP(&flags.numCommands, "commands", "c", 1, "number of template commands")
+	command.Flags().IntVarP(&flags.numEvents, "events", "e", 1, "number of template events")
+
 	return command
 }
 
@@ -58,16 +72,47 @@ func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {
 	return filtered
 }
 
-func blankManifest(withData bool) *schema.Manifest {
+func blankManifest(f *manifestFlags) *schema.Manifest {
 	goVersion := goutil.Version()
 
 	manifest := new(schema.Manifest)
 	manifest.GoVersion = goVersion
+	tpl := func(n int, name string) string {
+		return fmt.Sprintf("$template_%d_%s", n, name)
+	}
 
-	if !withData {
+	for i := 0; i < f.numEvents; i++ {
+		manifest.Mutations.Events = append(manifest.Mutations.Events,
+			schema.EventMutation{
+				Mutation: tpl(i, "EventMutation"),
+				InEvent: schema.Event{
+					Name:    tpl(i, "InEvent"),
+					Payload: tpl(i, "InEventPayload"),
+				},
+				OutEvent: schema.Event{
+					Name:    tpl(i, "OutEvent"),
+					Payload: tpl(i, "OutEventPayload"),
+				},
+			})
+	}
+
+	for i := 0; i < f.numCommands; i++ {
+		manifest.Mutations.Commands = append(manifest.Mutations.Commands,
+			schema.CommandMutation{
+				Mutation: tpl(i, "CommandMutation"),
+				Command: schema.Command{
+					Name:    tpl(i, "Command"),
+					Payload: tpl(i, "CommandPayload"),
+				},
+				Event: schema.Event{
+					Name:    tpl(i, "Event"),
+					Payload: tpl(i, "EventPayload"),
+				},
+			})
+	}
+
+	if !f.withData {
 		manifest.Contributors = []schema.Contributor{{}}
-		manifest.Mutations.Commands = []schema.CommandMutation{{}}
-		manifest.Mutations.Events = []schema.EventMutation{{}}
 		return manifest
 	}
 
@@ -85,43 +130,7 @@ func blankManifest(withData bool) *schema.Manifest {
 	manifest.EventsPkgName = "sessionevents"
 	manifest.CommandsPkgName = "sessioncommands"
 	manifest.StreamPkgName = "sessionstream"
-	manifest.Mutations.Commands = []schema.CommandMutation{
-		{
-			Mutation: "CreateSession",
-			Command: schema.Command{
-				Name:    "CreateSession",
-				Payload: "CreateSessionPayload",
-			},
-			Event: schema.Event{
-				Name:    "SessionCreated",
-				Payload: "SessionCreatedPayload",
-			},
-			Create: schema.YesOp,
-		},
-		{
-			Mutation: "UpdateSession",
-			Command: schema.Command{
-				Name:    "UpdateSession",
-				Payload: "UpdateSessionPayload",
-			},
-			Event: schema.Event{
-				Name:    "SessionUpdated",
-				Payload: "SessionUpdatedPayload",
-			},
-		},
-		{
-			Mutation: "RemoveSession",
-			Command: schema.Command{
-				Name:    "RemoveSession",
-				Payload: "RemoveSessionPayload",
-			},
-			Event: schema.Event{
-				Name:    "SessionRemoved",
-				Payload: "SessionRemovedPayload",
-			},
-			Delete: schema.YesOp,
-		},
-	}
+
 	manifest.StreamStorage.Name = schema.RedisStreamStorageAdapter.String()
 	manifest.StreamStorage.AdapterID = schema.RedisStreamStorageAdapter
 	manifest.StreamPublisher.Name = schema.KafkaStreamPublisherAdapter.String()

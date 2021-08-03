@@ -4,6 +4,8 @@ import (
 	"strings"
 )
 
+const tplSymbol = "$"
+
 func SanitizeManifest(m *Manifest) {
 	m.CommandsPkgName = sanitizePackageName(m.CommandsPkgName)
 	m.GoModules = sanitizePackageName(m.GoModules)
@@ -20,6 +22,10 @@ func SanitizeManifest(m *Manifest) {
 	if len(m.CommandsPkgName) == 0 {
 		m.CommandsPkgName = m.PackageName + "commands"
 	}
+
+	m.Mutations.Commands = filterCommandMutations(m.Mutations.Commands)
+	m.Mutations.Events = filterEventMutations(m.Mutations.Events)
+
 	sanitizeCommands(m.Mutations.Commands)
 	sanitizeEvents(m.Mutations.Events)
 }
@@ -42,6 +48,28 @@ func sanitizeName(name string) string {
 
 func trim(name string) string {
 	return strings.ReplaceAll(name, " ", "")
+}
+
+func filterCommandMutations(commands []CommandMutation) []CommandMutation {
+	result := make([]CommandMutation, 0, len(commands))
+	for _, m := range commands {
+		if strings.HasPrefix(m.Mutation, tplSymbol) {
+			continue
+		}
+		result = append(result, m)
+	}
+	return result
+}
+
+func filterEventMutations(events []EventMutation) []EventMutation {
+	result := make([]EventMutation, 0, len(events))
+	for _, m := range events {
+		if strings.HasPrefix(m.Mutation, tplSymbol) {
+			continue
+		}
+		result = append(result, m)
+	}
+	return result
 }
 
 func sanitizeCommands(commands []CommandMutation) {
@@ -67,6 +95,10 @@ func sanitizeCommands(commands []CommandMutation) {
 
 func sanitizeEvents(events []EventMutation) {
 	for i, e := range events {
+		// template data
+		if strings.HasPrefix(e.Mutation, "_") {
+			continue
+		}
 		if e.Delete == YesOp && e.Create == YesOp {
 			events[i].Create = NoOp
 			events[i].Delete = NoOp
