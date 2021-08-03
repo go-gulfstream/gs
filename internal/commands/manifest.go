@@ -17,9 +17,10 @@ import (
 )
 
 type manifestFlags struct {
-	numCommands int
-	numEvents   int
-	withData    bool
+	numCommands  int
+	numEvents    int
+	withData     bool
+	showManifest bool
 }
 
 func manifestCommand() *cobra.Command {
@@ -28,21 +29,8 @@ func manifestCommand() *cobra.Command {
 		Use:   "manifest [PATH]",
 		Short: "Create empty manifest file for new project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			lenArgs := len(args)
-			if lenArgs != 1 {
-				return fmt.Errorf("invalid number of arguments. got %d, expected 1", lenArgs)
-			}
-			if _, err := os.Stat(args[0]); err != nil {
+			if err := validateManifestArgs(args); err != nil {
 				return err
-			}
-			files, err := ioutil.ReadDir(args[0])
-			if err != nil {
-				return err
-			}
-			files = filterDotFiles(files)
-			if len(files) > 0 {
-				return fmt.Errorf("directory %s not empty. found files: %d",
-					args[0], len(files))
 			}
 			drawBanner()
 			manifest := blankManifest(&flags)
@@ -50,15 +38,44 @@ func manifestCommand() *cobra.Command {
 				return err
 			}
 			fmt.Printf("New manifest file created successfully %s/%s\n", args[0], manifestFilename)
+			if flags.showManifest {
+				printManifest(manifest)
+			}
 			return nil
 		},
 	}
 
+	command.Flags().BoolVarP(&flags.showManifest, "print", "p", false, "print manifest")
 	command.Flags().BoolVarP(&flags.withData, "data", "d", false, "with data example")
 	command.Flags().IntVarP(&flags.numCommands, "commands", "c", 1, "number of template commands")
 	command.Flags().IntVarP(&flags.numEvents, "events", "e", 1, "number of template events")
 
 	return command
+}
+
+func printManifest(m *schema.Manifest) {
+	data, _ := schema.EncodeManifest(m)
+	fmt.Printf("\nManifest:\n%s\n", string(data))
+}
+
+func validateManifestArgs(args []string) error {
+	lenArgs := len(args)
+	if lenArgs != 1 {
+		return fmt.Errorf("invalid number of arguments. got %d, expected 1", lenArgs)
+	}
+	if _, err := os.Stat(args[0]); err != nil {
+		return err
+	}
+	files, err := ioutil.ReadDir(args[0])
+	if err != nil {
+		return err
+	}
+	files = filterDotFiles(files)
+	if len(files) > 0 {
+		return fmt.Errorf("directory %s not empty. found files: %d",
+			args[0], len(files))
+	}
+	return nil
 }
 
 func filterDotFiles(files []fs.FileInfo) []fs.FileInfo {

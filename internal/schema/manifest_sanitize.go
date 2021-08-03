@@ -56,6 +56,12 @@ func filterCommandMutations(commands []CommandMutation) []CommandMutation {
 		if strings.HasPrefix(m.Mutation, tplSymbol) {
 			continue
 		}
+		if strings.HasPrefix(m.Command.Name, tplSymbol) {
+			continue
+		}
+		if strings.HasPrefix(m.Event.Name, tplSymbol) {
+			continue
+		}
 		result = append(result, m)
 	}
 	return result
@@ -65,6 +71,12 @@ func filterEventMutations(events []EventMutation) []EventMutation {
 	result := make([]EventMutation, 0, len(events))
 	for _, m := range events {
 		if strings.HasPrefix(m.Mutation, tplSymbol) {
+			continue
+		}
+		if strings.HasPrefix(m.InEvent.Name, tplSymbol) {
+			continue
+		}
+		if strings.HasPrefix(m.OutEvent.Name, tplSymbol) {
 			continue
 		}
 		result = append(result, m)
