@@ -13,20 +13,22 @@ import (
 
 var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	// Events
-	schema.EventsAddon:          eventsAddon,
-	schema.EventsEncodingAddon:  eventsEncodingAddon,
-	schema.EventStateAddon:      eventStateAddon,
-	schema.EventControllerAddon: eventControllerAddon,
-	schema.EventMutationAddon:   eventMutationAddon,
+	schema.EventsEventsAddon:         eventsEventsAddon,
+	schema.EventsEventsEncodingAddon: eventsEventsEncodingAddon,
+	schema.EventStateAddon:           eventStateAddon,
+	schema.EventControllerAddon:      eventControllerAddon,
+	schema.EventMutationAddon:        eventMutationAddon,
 
 	// Commands
-	schema.CommandsAddon:            commandsAddon,
-	schema.CommandsEncodingAddon:    commandsEncodingAddon,
-	schema.CommandStateAddon:        commandStateAddon,
-	schema.CommandControllerAddon:   commandControllerAddon,
-	schema.CommandMutationAddon:     commandMutationAddon,
-	schema.CommandMutationImplAddon: commandMutationImplAddon,
-	schema.CommandMutationTestAddon: commandMutationTestAddon,
+	schema.CommandsAddon:               commandsAddon,
+	schema.CommandsEncodingAddon:       commandsEncodingAddon,
+	schema.CommandStateAddon:           commandStateAddon,
+	schema.CommandControllerAddon:      commandControllerAddon,
+	schema.CommandMutationAddon:        commandMutationAddon,
+	schema.CommandMutationImplAddon:    commandMutationImplAddon,
+	schema.CommandMutationTestAddon:    commandMutationTestAddon,
+	schema.CommandsEventsAddon:         commandsEventsAddon,
+	schema.CommandsEventsEncodingAddon: commandsEventsEncodingAddon,
 }
 
 func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
@@ -49,11 +51,19 @@ func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
 	return fn(dst, src)
 }
 
-func eventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
+func eventsEventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
 	return nil
 }
 
-func eventsAddon(dst *dstlib.File, src *dstlib.File) error {
+func eventsEventsAddon(dst *dstlib.File, src *dstlib.File) error {
+	return nil
+}
+
+func commandsEventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
+	return nil
+}
+
+func commandsEventsAddon(dst *dstlib.File, src *dstlib.File) error {
 	return nil
 }
 

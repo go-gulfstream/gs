@@ -17,8 +17,10 @@ const (
 	EventStateAddon                = "EventState"
 	CommandsAddon                  = "Commands"
 	CommandsEncodingAddon          = "CommandsEncoding"
-	EventsAddon                    = "Events"
-	EventsEncodingAddon            = "EventsEncoding"
+	CommandsEventsAddon            = "CommandEvents"
+	CommandsEventsEncodingAddon    = "CommandEventsEncoding"
+	EventsEventsAddon              = "EventsEventsAddon"
+	EventsEventsEncodingAddon      = "EventsEventsEncodingAddon"
 )
 
 var commandMutationAddons = []File{
@@ -63,13 +65,13 @@ var commandMutationAddons = []File{
 	},
 	{
 		Path:     "/pkg/{events_package}/events.go",
-		Template: "pkg_events_addon.go.tpl",
-		Addon:    EventsAddon,
+		Template: "pkg_events_commands_addon.go.tpl",
+		Addon:    CommandsEventsAddon,
 	},
 	{
 		Path:     "/pkg/{events_package}/events_encoding.go",
-		Template: "pkg_events_encoding_addon.go.tpl",
-		Addon:    EventsEncodingAddon,
+		Template: "pkg_events_commands_encoding_addon.go.tpl",
+		Addon:    CommandsEventsEncodingAddon,
 	},
 }
 
@@ -98,8 +100,15 @@ var eventMutationAddons = []File{
 	},
 	{
 		Path:     "/pkg/{events_package}/events.go",
-		Template: "pkg_events_addon.go.tpl",
-		Addon:    EventsAddon,
+		Template: "pkg_events_events_addon.go.tpl",
+		Addon:    EventsEventsAddon,
+		required: true,
+	},
+	{
+		Path:     "/pkg/{events_package}/events_encoding.go",
+		Template: "pkg_events_events_encoding_addon.go.tpl",
+		Addon:    EventsEventsAddon,
+		required: true,
 	},
 }
 
