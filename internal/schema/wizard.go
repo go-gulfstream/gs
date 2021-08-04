@@ -46,7 +46,7 @@ func (w *Wizard) setupPackageName() error {
 		return err
 	}
 
-	w.manifest.PackageName = sanitizePackageName(res)
+	w.manifest.PackageName = SanitizePackageName(res)
 
 	return nil
 }
@@ -80,7 +80,7 @@ func (w *Wizard) setupGoModules() error {
 		return err
 	}
 
-	w.manifest.GoModules = sanitizeName(res)
+	w.manifest.GoModules = SanitizeName(res)
 
 	return nil
 }
@@ -98,7 +98,7 @@ func (w *Wizard) setupGoEventsPkg() error {
 		return err
 	}
 
-	w.manifest.EventsPkgName = sanitizePackageName(res)
+	w.manifest.EventsPkgName = SanitizePackageName(res)
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (w *Wizard) setupGoCommandsPkg() error {
 		return err
 	}
 
-	w.manifest.CommandsPkgName = sanitizePackageName(res)
+	w.manifest.CommandsPkgName = SanitizePackageName(res)
 
 	return nil
 }
@@ -134,7 +134,7 @@ func (w *Wizard) setupGoStreamPkg() error {
 		return err
 	}
 
-	w.manifest.StreamPkgName = sanitizePackageName(res)
+	w.manifest.StreamPkgName = SanitizePackageName(res)
 
 	return nil
 }

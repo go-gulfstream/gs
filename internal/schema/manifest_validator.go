@@ -129,11 +129,11 @@ func validateCommands(m *Manifest) error {
 			return fmt.Errorf("gulfstream.yml: command mutation too short. index[%d]", i)
 		}
 		if len(cmd.Command.Name) < 2 {
-			return fmt.Errorf("gulfstream.yml: mutations.%s{InCommand.###EMPTY###} => command name too short. index[%d]",
+			return fmt.Errorf("gulfstream.yml: Mutations.%s{InCommand.###EMPTY###} => command name too short. index[%d]",
 				cmd.Mutation, i)
 		}
 		if len(cmd.Event.Name) < 2 {
-			return fmt.Errorf("gulfstream.yml: mutations.%s{InCommand.%s, OutEvent.###EMPTY###} => event name too short. index[%d]",
+			return fmt.Errorf("gulfstream.yml: Mutations.%s{InCommand.%s, OutEvent.###EMPTY###} => event name too short. index[%d]",
 				cmd.Mutation, cmd.Command.Name, i)
 		}
 	}
@@ -149,11 +149,11 @@ func validateEvents(m *Manifest) error {
 			return fmt.Errorf("gulfstream.yml: event mutation too short. index[%d]", i)
 		}
 		if len(e.InEvent.Name) < 2 {
-			return fmt.Errorf("gulfstream.yml: mutations.%s{InEvent.###EMPTY###} => in event name too short. index[%d]",
+			return fmt.Errorf("gulfstream.yml: Mutations.%s{InEvent.###EMPTY###} => in event name too short. index[%d]",
 				e.Mutation, i)
 		}
 		if len(e.OutEvent.Name) < 2 {
-			return fmt.Errorf("gulfstream.yml: mutations.%s{InEvent.%s, OutEvent.###EMPTY} => out event name too short. index[%d]",
+			return fmt.Errorf("gulfstream.yml: Mutations.%s{InEvent.%s, OutEvent.###EMPTY} => out event name too short. index[%d]",
 				e.Mutation, e.InEvent.Name, i)
 		}
 	}

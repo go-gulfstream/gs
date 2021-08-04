@@ -7,11 +7,11 @@ import (
 const tplSymbol = "$"
 
 func SanitizeManifest(m *Manifest) {
-	m.CommandsPkgName = sanitizePackageName(m.CommandsPkgName)
-	m.GoModules = sanitizePackageName(m.GoModules)
-	m.StreamPkgName = sanitizePackageName(m.StreamPkgName)
-	m.EventsPkgName = sanitizePackageName(m.EventsPkgName)
-	m.PackageName = sanitizePackageName(m.PackageName)
+	m.CommandsPkgName = SanitizePackageName(m.CommandsPkgName)
+	m.GoModules = SanitizePackageName(m.GoModules)
+	m.StreamPkgName = SanitizePackageName(m.StreamPkgName)
+	m.EventsPkgName = SanitizePackageName(m.EventsPkgName)
+	m.PackageName = SanitizePackageName(m.PackageName)
 	m.StreamName = sanitizeStreamName(m.StreamName)
 	if len(m.StreamPkgName) == 0 {
 		m.StreamPkgName = m.PackageName + "stream"
@@ -30,7 +30,7 @@ func SanitizeManifest(m *Manifest) {
 	sanitizeEvents(m.Mutations.Events)
 }
 
-func sanitizePackageName(name string) string {
+func SanitizePackageName(name string) string {
 	name = strings.ToLower(name)
 	return strings.ReplaceAll(name, " ", "")
 }
@@ -41,7 +41,7 @@ func sanitizeStreamName(name string) string {
 	return strings.Title(name)
 }
 
-func sanitizeName(name string) string {
+func SanitizeName(name string) string {
 	name = strings.ReplaceAll(name, " ", "")
 	return strings.Title(name)
 }
@@ -90,11 +90,11 @@ func sanitizeCommands(commands []CommandMutation) {
 			commands[i].Create = NoOp
 			commands[i].Delete = NoOp
 		}
-		cmd.Mutation = sanitizeName(cmd.Mutation)
-		cmd.Command.Name = sanitizeName(cmd.Command.Name)
-		cmd.Command.Payload = sanitizeName(cmd.Command.Payload)
-		cmd.Event.Name = sanitizeName(cmd.Event.Name)
-		cmd.Event.Payload = sanitizeName(cmd.Event.Payload)
+		cmd.Mutation = SanitizeName(cmd.Mutation)
+		cmd.Command.Name = SanitizeName(cmd.Command.Name)
+		cmd.Command.Payload = SanitizeName(cmd.Command.Payload)
+		cmd.Event.Name = SanitizeName(cmd.Event.Name)
+		cmd.Event.Payload = SanitizeName(cmd.Event.Payload)
 		if cmd.Command.Name == cmd.Command.Payload {
 			cmd.Command.Payload = cmd.Command.Payload + "Payload"
 		}
@@ -115,11 +115,11 @@ func sanitizeEvents(events []EventMutation) {
 			events[i].Create = NoOp
 			events[i].Delete = NoOp
 		}
-		e.Mutation = sanitizeName(e.Mutation)
+		e.Mutation = SanitizeName(e.Mutation)
 		e.InEvent.Name = trim(e.InEvent.Name)
 		e.InEvent.Payload = trim(e.InEvent.Payload)
-		e.OutEvent.Name = sanitizeName(e.OutEvent.Name)
-		e.OutEvent.Payload = sanitizeName(e.OutEvent.Payload)
+		e.OutEvent.Name = SanitizeName(e.OutEvent.Name)
+		e.OutEvent.Payload = SanitizeName(e.OutEvent.Payload)
 		if e.OutEvent.Name == e.OutEvent.Payload {
 			e.OutEvent.Payload = e.OutEvent.Payload + "Payload"
 		}

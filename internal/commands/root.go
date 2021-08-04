@@ -13,6 +13,7 @@ func New() (*cobra.Command, error) {
 	root.AddCommand(initCommand())
 	root.AddCommand(manifestCommand())
 	root.AddCommand(applyCommand())
+	root.AddCommand(addCommand())
 
 	return root, nil
 }

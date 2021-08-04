@@ -21,7 +21,7 @@ type Manifest struct {
 	CommandsPkgName string        `yaml:"go_commands_pkg_name"`
 	StreamPkgName   string        `yaml:"go_stream_pkg_name"`
 	Description     string        `yaml:"description"`
-	Mutations       mutations     `yaml:"mutations"`
+	Mutations       Mutations     `yaml:"Mutations"`
 	ImportEvents    []string      `yaml:"import_events"`
 	StreamStorage   streamStorage `yaml:"storage_adapter"`
 	StreamPublisher publisher     `yaml:"publisher_adapter"`
@@ -35,16 +35,16 @@ type publisher struct {
 	AdapterID publisherAdapter `yaml:"id"`
 }
 
-type mutations struct {
+type Mutations struct {
 	Commands []CommandMutation `yaml:"from_commands"`
 	Events   []EventMutation   `yaml:"from_events"`
 }
 
-func (m mutations) HasCommands() bool {
+func (m Mutations) HasCommands() bool {
 	return len(m.Commands) > 0
 }
 
-func (m mutations) HasEvents() bool {
+func (m Mutations) HasEvents() bool {
 	return len(m.Events) > 0
 }
 
