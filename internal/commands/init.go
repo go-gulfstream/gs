@@ -84,12 +84,12 @@ func runInitCommand(path string) (err error) {
 		}
 	} else {
 		// from setup wizard
-		wizard := schema.NewSetupWizard()
-		if err := wizard.Run(); err != nil {
-			return err
-		}
-		manifest = wizard.Manifest()
-		manifest.GoVersion = goutil.Version()
+		//wizard := wizard2.NewSetupWizard()
+		//if err := wizard.Run(); err != nil {
+		//	return err
+		//}
+		//manifest = wizard.Manifest()
+		//manifest.GoVersion = goutil.Version()
 	}
 
 	schema.SanitizeManifest(manifest)

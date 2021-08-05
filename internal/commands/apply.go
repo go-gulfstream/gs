@@ -53,30 +53,20 @@ func validateApplyCommandArgs(args []string) error {
 	return nil
 }
 
-func runApplyCommand(path string) error {
-	manifestFile := filepath.Join(path, manifestFilename)
-	data, err := ioutil.ReadFile(manifestFile)
-	if err != nil {
-		return err
-	}
-	manifest, err := schema.DecodeManifest(data)
+func runApplyCommand(projectPath string) error {
+	manifest, err := loadManifestFromFile(projectPath)
 	if err != nil {
 		return err
 	}
 
-	schema.SanitizeManifest(manifest)
-	if err := schema.ValidateManifest(manifest); err != nil {
+	if err := schema.Validate(projectPath, manifest); err != nil {
+		return err
+	}
+	if err := source.Validate(projectPath, manifest); err != nil {
 		return err
 	}
 
-	if err := schema.Validate(path, manifest); err != nil {
-		return err
-	}
-	if err := source.Validate(path, manifest); err != nil {
-		return err
-	}
-
-	info, err := source.Stats(path, manifest)
+	info, err := source.Stats(projectPath, manifest)
 	if err != nil {
 		return err
 	}
@@ -86,8 +76,8 @@ func runApplyCommand(path string) error {
 
 	var successCounter, skipCounter int
 
-	fmt.Printf("Apply command mutations => \n")
-	if err := schema.WalkCommandMutationAddons(path, manifest,
+	fmt.Printf("=> Apply command mutations...\n")
+	if err := schema.WalkCommandMutationAddons(projectPath, manifest,
 		func(m schema.CommandMutation, file schema.File) error {
 			status := statusOk
 			var skip bool
@@ -111,8 +101,8 @@ func runApplyCommand(path string) error {
 		return err
 	}
 
-	fmt.Printf("Apply event mutations => \n")
-	if err := schema.WalkEventMutationAddons(path, manifest,
+	fmt.Printf("=> Apply event mutations...\n")
+	if err := schema.WalkEventMutationAddons(projectPath, manifest,
 		func(m schema.EventMutation, file schema.File) error {
 			status := statusOk
 			var skip bool
@@ -148,7 +138,7 @@ func runApplyCommand(path string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
-	runGoTools(path)
+	runGoTools(projectPath)
 
 	return nil
 }

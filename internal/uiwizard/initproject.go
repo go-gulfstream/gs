@@ -1,18 +1,20 @@
-package schema
+package uiwizard
 
 import (
 	"fmt"
+
+	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/manifoldco/promptui"
 )
 
 type Wizard struct {
-	manifest *Manifest
+	manifest *schema.Manifest
 }
 
 func NewSetupWizard() *Wizard {
 	wiz := &Wizard{
-		manifest: new(Manifest),
+		manifest: new(schema.Manifest),
 	}
 	return wiz
 }
@@ -46,41 +48,41 @@ func (w *Wizard) setupPackageName() error {
 		return err
 	}
 
-	w.manifest.PackageName = SanitizePackageName(res)
+	w.manifest.PackageName = schema.SanitizePackageName(res)
 
 	return nil
 }
 
 func (w *Wizard) setupStreamName() error {
-	prompt := promptui.Prompt{
-		Label:     "GoStreamName [for example: Myproject] :",
-		Templates: inputTpl(),
-		Validate:  validateInput,
-	}
+	//prompt := promptui.Prompt{
+	//	Label:     "GoStreamName [for example: Myproject] :",
+	//	Templates: inputTpl(),
+	//	Validate:  validateInput,
+	//}
 
-	res, err := prompt.Run()
-	if err != nil {
-		return err
-	}
+	//res, err := prompt.Run()
+	//if err != nil {
+	//	return err
+	//}
 
-	w.manifest.StreamName = sanitizeStreamName(res)
+	// w.manifest.StreamName = schema.sanitizeStreamName(res)
 
 	return nil
 }
 
 func (w *Wizard) setupGoModules() error {
-	prompt := promptui.Prompt{
-		Label:     "GoModules [for example: github.com/go-gulfstream/myproject] :",
-		Templates: inputTpl(),
-		Validate:  validateInput,
-	}
+	//prompt := promptui.Prompt{
+	//	Label:     "GoModules [for example: github.com/go-gulfstream/myproject] :",
+	//	Templates: inputTpl(),
+	//	Validate:  validateInput,
+	//}
 
-	res, err := prompt.Run()
-	if err != nil {
-		return err
-	}
+	//res, err := prompt.Run()
+	//if err != nil {
+	//	return err
+	//}
 
-	w.manifest.GoModules = SanitizeName(res)
+	// w.manifest.GoModules = schema.sanitizeName(res)
 
 	return nil
 }
@@ -98,7 +100,7 @@ func (w *Wizard) setupGoEventsPkg() error {
 		return err
 	}
 
-	w.manifest.EventsPkgName = SanitizePackageName(res)
+	w.manifest.EventsPkgName = schema.SanitizePackageName(res)
 
 	return nil
 }
@@ -116,7 +118,7 @@ func (w *Wizard) setupGoCommandsPkg() error {
 		return err
 	}
 
-	w.manifest.CommandsPkgName = SanitizePackageName(res)
+	w.manifest.CommandsPkgName = schema.SanitizePackageName(res)
 
 	return nil
 }
@@ -134,7 +136,7 @@ func (w *Wizard) setupGoStreamPkg() error {
 		return err
 	}
 
-	w.manifest.StreamPkgName = SanitizePackageName(res)
+	w.manifest.StreamPkgName = schema.SanitizePackageName(res)
 
 	return nil
 }
@@ -159,13 +161,13 @@ func (w *Wizard) setupStreamPublisher() error {
 	var adapters []string
 	if w.manifest.StreamStorage.AdapterID.IsPostgreSQL() {
 		adapters = []string{
-			KafkaStreamPublisherAdapter.String(),
-			ConnectorStreamPublisherAdapter.String(),
+			schema.KafkaStreamPublisherAdapter.String(),
+			schema.ConnectorStreamPublisherAdapter.String(),
 		}
 	}
 	if w.manifest.StreamStorage.AdapterID.IsRedis() {
 		adapters = []string{
-			KafkaStreamPublisherAdapter.String(),
+			schema.KafkaStreamPublisherAdapter.String(),
 		}
 	}
 	prompt := promptui.Select{
@@ -178,7 +180,7 @@ func (w *Wizard) setupStreamPublisher() error {
 	}
 	adapterID++
 
-	w.manifest.StreamPublisher.AdapterID = publisherAdapter(adapterID)
+	// w.manifest.StreamPublisher.AdapterID = schema.publisherAdapter(adapterID)
 
 	return nil
 }
@@ -187,8 +189,8 @@ func (w *Wizard) setupStreamStorage() error {
 	prompt := promptui.Select{
 		Label: "Select stream storage adapter",
 		Items: []string{
-			RedisStreamStorageAdapter.String(),
-			PostgresStreamStorageAdapter.String(),
+			schema.RedisStreamStorageAdapter.String(),
+			schema.PostgresStreamStorageAdapter.String(),
 		},
 	}
 	adapterID, adapterName, err := prompt.Run()
@@ -197,7 +199,7 @@ func (w *Wizard) setupStreamStorage() error {
 	}
 	adapterID++
 
-	w.manifest.StreamStorage.AdapterID = storageAdapter(adapterID)
+	// w.manifest.StreamStorage.AdapterID = schema.storageAdapter(adapterID)
 
 	if !w.manifest.StreamStorage.AdapterID.IsPostgreSQL() {
 		return nil
@@ -216,7 +218,7 @@ func (w *Wizard) setupStreamStorage() error {
 	return nil
 }
 
-func (w *Wizard) Manifest() *Manifest {
+func (w *Wizard) Manifest() *schema.Manifest {
 	return w.manifest
 }
 

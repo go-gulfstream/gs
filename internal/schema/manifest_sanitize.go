@@ -13,6 +13,7 @@ func SanitizeManifest(m *Manifest) {
 	m.EventsPkgName = SanitizePackageName(m.EventsPkgName)
 	m.PackageName = SanitizePackageName(m.PackageName)
 	m.StreamName = sanitizeStreamName(m.StreamName)
+	m.ImportEvents = sanitizeImportEvents(m.ImportEvents)
 	if len(m.StreamPkgName) == 0 {
 		m.StreamPkgName = m.PackageName + "stream"
 	}
@@ -41,9 +42,23 @@ func sanitizeStreamName(name string) string {
 	return strings.Title(name)
 }
 
-func SanitizeName(name string) string {
+func sanitizeName(name string) string {
 	name = strings.ReplaceAll(name, " ", "")
 	return strings.Title(name)
+}
+
+func sanitizeImportEvents(events []string) []string {
+	u := make(map[string]struct{})
+	r := make([]string, 0)
+	for _, e := range events {
+		_, ok := u[e]
+		if ok {
+			continue
+		}
+		u[e] = struct{}{}
+		r = append(r, e)
+	}
+	return r
 }
 
 func trim(name string) string {
@@ -90,11 +105,11 @@ func sanitizeCommands(commands []CommandMutation) {
 			commands[i].Create = NoOp
 			commands[i].Delete = NoOp
 		}
-		cmd.Mutation = SanitizeName(cmd.Mutation)
-		cmd.Command.Name = SanitizeName(cmd.Command.Name)
-		cmd.Command.Payload = SanitizeName(cmd.Command.Payload)
-		cmd.Event.Name = SanitizeName(cmd.Event.Name)
-		cmd.Event.Payload = SanitizeName(cmd.Event.Payload)
+		cmd.Mutation = sanitizeName(cmd.Mutation)
+		cmd.Command.Name = sanitizeName(cmd.Command.Name)
+		cmd.Command.Payload = sanitizeName(cmd.Command.Payload)
+		cmd.Event.Name = sanitizeName(cmd.Event.Name)
+		cmd.Event.Payload = sanitizeName(cmd.Event.Payload)
 		if cmd.Command.Name == cmd.Command.Payload {
 			cmd.Command.Payload = cmd.Command.Payload + "Payload"
 		}
@@ -115,11 +130,11 @@ func sanitizeEvents(events []EventMutation) {
 			events[i].Create = NoOp
 			events[i].Delete = NoOp
 		}
-		e.Mutation = SanitizeName(e.Mutation)
+		e.Mutation = sanitizeName(e.Mutation)
 		e.InEvent.Name = trim(e.InEvent.Name)
 		e.InEvent.Payload = trim(e.InEvent.Payload)
-		e.OutEvent.Name = SanitizeName(e.OutEvent.Name)
-		e.OutEvent.Payload = SanitizeName(e.OutEvent.Payload)
+		e.OutEvent.Name = sanitizeName(e.OutEvent.Name)
+		e.OutEvent.Payload = sanitizeName(e.OutEvent.Payload)
 		if e.OutEvent.Name == e.OutEvent.Payload {
 			e.OutEvent.Payload = e.OutEvent.Payload + "Payload"
 		}

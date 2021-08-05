@@ -21,7 +21,7 @@ type Manifest struct {
 	CommandsPkgName string        `yaml:"go_commands_pkg_name"`
 	StreamPkgName   string        `yaml:"go_stream_pkg_name"`
 	Description     string        `yaml:"description"`
-	Mutations       Mutations     `yaml:"Mutations"`
+	Mutations       Mutations     `yaml:"mutations"`
 	ImportEvents    []string      `yaml:"import_events"`
 	StreamStorage   streamStorage `yaml:"storage_adapter"`
 	StreamPublisher publisher     `yaml:"publisher_adapter"`
