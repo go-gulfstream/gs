@@ -16,7 +16,7 @@ import (
 func applyCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "apply [PATH]",
-		Short: "Update a Gulfstream project from manifest file",
+		Short: "Apply manifest file to project",
 		Long:  "Apply a manifest to the current project. The manifest file must be created into project directory \n$ gs manifest [PATH]\n$ gs init [PATH]\n",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := validateApplyCommandArgs(args); err != nil {

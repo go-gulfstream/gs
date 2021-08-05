@@ -15,7 +15,7 @@ func addCommand() *cobra.Command {
 	var flags addFlags
 	command := &cobra.Command{
 		Use:   "add [PATH]",
-		Short: "Mutation manager",
+		Short: "Manage adding",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := validateApplyCommandArgs(args); err != nil {
 				return err
@@ -43,7 +43,7 @@ func runAddCommand(projectPath string, f addFlags) error {
 	}
 	wiz.Apply(manifest)
 
-	if err := writeManifestFile(projectPath, manifest, true); err != nil {
+	if err := writeManifestToFile(projectPath, manifest, true); err != nil {
 		return err
 	}
 	if f.Apply {

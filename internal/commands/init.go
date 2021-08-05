@@ -68,36 +68,13 @@ func validateInitCommandArgs(args []string) error {
 	return nil
 }
 
-func runInitCommand(path string) (err error) {
-	var manifest *schema.Manifest
-
-	// from manifest file
-	manifestFile := filepath.Join(path, manifestFilename)
-	if _, err := os.Stat(manifestFile); err == nil {
-		data, err := ioutil.ReadFile(manifestFile)
-		if err != nil {
-			return err
-		}
-		manifest, err = schema.DecodeManifest(data)
-		if err != nil {
-			return err
-		}
-	} else {
-		// from setup wizard
-		//wizard := wizard2.NewSetupWizard()
-		//if err := wizard.Run(); err != nil {
-		//	return err
-		//}
-		//manifest = wizard.Manifest()
-		//manifest.GoVersion = goutil.Version()
-	}
-
-	schema.SanitizeManifest(manifest)
-	if err := schema.ValidateManifest(manifest); err != nil {
+func runInitCommand(projectPath string) (err error) {
+	manifest, err := loadManifestFromFile(projectPath)
+	if err != nil {
 		return err
 	}
 
-	if err := schema.Walk(path, manifest,
+	if err := schema.Walk(projectPath, manifest,
 		func(file schema.File) (err error) {
 			if file.IsDir {
 				// make dir
@@ -129,15 +106,15 @@ func runInitCommand(path string) (err error) {
 		return err
 	}
 
-	if err := writeManifestFile(path, manifest, true); err != nil {
+	if err := writeManifestToFile(projectPath, manifest, true); err != nil {
 		return err
 	}
 
-	if err := writeSchema(path, manifest); err != nil {
+	if err := writeSchema(projectPath, manifest); err != nil {
 		return err
 	}
 
-	runGoTools(path)
+	runGoTools(projectPath)
 
 	return nil
 }
