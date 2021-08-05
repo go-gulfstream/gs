@@ -15,7 +15,7 @@ func addCommand() *cobra.Command {
 	var flags addFlags
 	command := &cobra.Command{
 		Use:   "add [PATH]",
-		Short: "Add mutation manager",
+		Short: "Mutation manager",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := validateApplyCommandArgs(args); err != nil {
 				return err
