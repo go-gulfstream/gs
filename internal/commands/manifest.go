@@ -4,6 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
+
+	"github.com/go-gulfstream/gs/internal/goutil"
+
+	"github.com/go-gulfstream/gs/internal/uiwizard"
+
+	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/spf13/cobra"
 )
@@ -27,13 +34,53 @@ func manifestCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().BoolVarP(&flags.showManifest, "show", "s", false, "show content of manifest file after creation")
+	command.Flags().BoolVarP(&flags.showManifest, "print", "p", false, "show content of manifest file before creation")
 	command.Flags().BoolVarP(&flags.interactive, "interactive", "i", false, "with enable editor")
 	return command
 }
 
 func runManifestCommand(projectPath string, f manifestFlags) error {
-	return nil
+	manifest := schema.New()
+	manifest.GoVersion = goutil.Version()
+	manifest.CreatedAt = time.Now().UTC()
+	manifest.UpdatedAt = time.Now().UTC()
+
+	var isInteractiveMode bool
+	if f.interactive {
+		isInteractiveMode = true
+		projwiz := uiwizard.NewProject()
+		if err := projwiz.Run(); err != nil {
+			return err
+		}
+		projwiz.Apply(manifest)
+
+		addwiz := uiwizard.NewMutation()
+		if err := addwiz.Run(); err != nil {
+			return err
+		}
+		addwiz.Apply(manifest)
+		if f.showManifest {
+			printManifest(manifest)
+		}
+		next, err := projwiz.Confirm()
+		if err != nil {
+			return err
+		}
+		if !next {
+			return nil
+		}
+	}
+
+	schema.SanitizeManifest(manifest)
+	if err := schema.ValidateManifest(manifest); err != nil {
+		return err
+	}
+
+	if f.showManifest && !isInteractiveMode {
+		printManifest(manifest)
+	}
+
+	return writeManifestToFile(projectPath, manifest, false)
 }
 
 func validateManifestArgs(args []string) error {

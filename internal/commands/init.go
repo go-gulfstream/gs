@@ -23,6 +23,7 @@ var (
 	yellowColor = color.New(color.FgYellow).SprintFunc()
 	redColor    = color.New(color.FgRed).SprintFunc()
 	greenColor  = color.New(color.FgGreen).SprintfFunc()
+	boldStyle   = color.New(color.Bold).SprintFunc()
 )
 
 func initCommand() *cobra.Command {

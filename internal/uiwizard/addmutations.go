@@ -50,17 +50,17 @@ func (a *Mutation) Apply(m *schema.Manifest) {
 }
 
 func (a *Mutation) handleCommandMutation(prefix string) error {
-	name, err := inputControl("mutation", "", true)
+	name, err := inputControl("mutation", "RegisterSession", true)
 	if err != nil {
 		return err
 	}
 	sectionControl(prefix + " incommand")
-	commandInfo, err := a.inputMutationGroup(true)
+	commandInfo, err := a.inputMutationGroup(true, "Session", "SessionPayload")
 	if err != nil {
 		return err
 	}
 	sectionControl(prefix + " outevent")
-	eventInfo, err := a.inputMutationGroup(false)
+	eventInfo, err := a.inputMutationGroup(false, "SessionRegistered", "SessionRegisteredPayload")
 	if err != nil {
 		return err
 	}
@@ -79,21 +79,21 @@ func (a *Mutation) handleCommandMutation(prefix string) error {
 }
 
 func (a *Mutation) handleEventMutation(prefix string) error {
-	name, err := inputControl("mutation", "", true)
+	name, err := inputControl("mutation", "MarkSession", true)
 	if err != nil {
 		return err
 	}
 	sectionControl(prefix + " inevent")
-	inEventInfo, err := a.inputMutationGroup(true)
+	inEventInfo, err := a.inputMutationGroup(true, "userevents.UserRegistered", "userevents.UserRegisteredPayload")
+	if err != nil {
+		return err
+	}
+	pkg, err := inputControl("package", "github.com/myproject/pkg/userevents", false)
 	if err != nil {
 		return err
 	}
 	sectionControl(prefix + " outevent")
-	outEventInfo, err := a.inputMutationGroup(false)
-	if err != nil {
-		return err
-	}
-	pkg, err := inputControl("package", "", false)
+	outEventInfo, err := a.inputMutationGroup(false, "SessionMarked", "SessionMarkedPayload")
 	if err != nil {
 		return err
 	}
@@ -112,12 +112,12 @@ func (a *Mutation) handleEventMutation(prefix string) error {
 	return nil
 }
 
-func (a *Mutation) inputMutationGroup(withOpts bool) (group, error) {
-	name, err := inputControl("name", "", true)
+func (a *Mutation) inputMutationGroup(withOpts bool, defName, defPayload string) (group, error) {
+	name, err := inputControl("name", defName, true)
 	if err != nil {
 		return group{}, err
 	}
-	payload, err := inputControl("payload", "", false)
+	payload, err := inputControl("payload", defPayload, false)
 	if err != nil {
 		return group{}, err
 	}
@@ -180,9 +180,6 @@ func (a *Mutation) selectMutationType() (selectItem, error) {
 func (a *Mutation) Run() error {
 	var mutationNum int
 	for {
-		if mutationNum > 0 {
-			lineControl()
-		}
 		item, err := a.selectMutationType()
 		if err != nil {
 			return err

@@ -93,7 +93,8 @@ func validateProjectName(m *Manifest) error {
 
 func validatePublisherAdapter(m *Manifest) error {
 	switch m.StreamPublisher.AdapterID {
-	case KafkaStreamPublisherAdapter,
+	case DefaultStreamPublisher,
+		KafkaStreamPublisherAdapter,
 		ConnectorStreamPublisherAdapter:
 		return nil
 	default:
@@ -108,7 +109,8 @@ func validatePublisherAdapter(m *Manifest) error {
 
 func validateStorageAdapter(m *Manifest) error {
 	switch m.StreamStorage.AdapterID {
-	case RedisStreamStorageAdapter,
+	case DefaultStreamStorage,
+		RedisStreamStorageAdapter,
 		PostgresStreamStorageAdapter:
 		return nil
 	default:

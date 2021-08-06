@@ -16,11 +16,14 @@ func selectTemplate(label string) *promptui.SelectTemplates {
 	}
 }
 
-func inputTemplate(label string) *promptui.PromptTemplates {
+func inputTemplate(label string, defVal string) *promptui.PromptTemplates {
+	if len(defVal) > 0 {
+		defVal = " (" + defVal + ")"
+	}
 	return &promptui.PromptTemplates{
-		Prompt:  "=> {{ .}}: ",
-		Valid:   "=> {{ . | green }}: ",
-		Invalid: "=> {{ . | red }}: ",
+		Prompt:  fmt.Sprintf("=> {{ .}}%s: ", defVal),
+		Valid:   fmt.Sprintf("=> {{ . | green }}%s: ", defVal),
+		Invalid: fmt.Sprintf("=> {{ . | red }}%s: ", defVal),
 		Success: fmt.Sprintf("=> %s: {{ . }}", label),
 	}
 }
@@ -70,8 +73,7 @@ func inputControl(
 ) (string, error) {
 	control := &promptui.Prompt{
 		Label:     label,
-		Templates: inputTemplate(label),
-		Default:   defValue,
+		Templates: inputTemplate(label, defValue),
 		AllowEdit: true,
 		Validate: func(s string) error {
 			if !validate {

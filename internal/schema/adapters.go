@@ -1,12 +1,22 @@
 package schema
 
 const (
-	RedisStreamStorageAdapter storageAdapter = iota + 1
+	DefaultStreamStorage storageAdapter = iota
+	RedisStreamStorageAdapter
 	PostgresStreamStorageAdapter
 )
 
 const (
-	KafkaStreamPublisherAdapter publisherAdapter = iota + 1
+	DefaultName                         = "mem"
+	RedisStreamStorageAdapterName       = "redis"
+	PostgresStreamStorageAdapterName    = "postgres"
+	KafkaStreamPublisherAdapterName     = "kafka"
+	ConnectorStreamPublisherAdapterName = "wal"
+)
+
+const (
+	DefaultStreamPublisher publisherAdapter = iota
+	KafkaStreamPublisherAdapter
 	ConnectorStreamPublisherAdapter
 )
 
@@ -25,6 +35,8 @@ func (a storageAdapter) IsPostgreSQL() bool {
 
 func (a storageAdapter) String() string {
 	switch a {
+	case DefaultStreamStorage:
+		return "Memory"
 	case PostgresStreamStorageAdapter:
 		return "PostgreSQL"
 	case RedisStreamStorageAdapter:
@@ -35,6 +47,8 @@ func (a storageAdapter) String() string {
 
 func (a publisherAdapter) String() string {
 	switch a {
+	case DefaultStreamPublisher:
+		return "Memory"
 	case KafkaStreamPublisherAdapter:
 		return "Kafka"
 	case ConnectorStreamPublisherAdapter:
@@ -44,11 +58,13 @@ func (a publisherAdapter) String() string {
 }
 
 var StorageAdapters = map[storageAdapter]string{
+	DefaultStreamStorage:         DefaultStreamStorage.String(),
 	RedisStreamStorageAdapter:    RedisStreamStorageAdapter.String(),
 	PostgresStreamStorageAdapter: PostgresStreamStorageAdapter.String(),
 }
 
 var PublisherAdapters = map[publisherAdapter]string{
+	DefaultStreamPublisher:          DefaultStreamPublisher.String(),
 	KafkaStreamPublisherAdapter:     KafkaStreamPublisherAdapter.String(),
 	ConnectorStreamPublisherAdapter: ConnectorStreamPublisherAdapter.String(),
 }

@@ -30,6 +30,53 @@ type Manifest struct {
 	UpdatedAt       time.Time     `yaml:"updated_at"`
 }
 
+func New() *Manifest {
+	return new(Manifest)
+}
+
+func (m *Manifest) SetPublisherFromString(name string) {
+	switch name {
+	case DefaultName:
+		m.StreamPublisher = publisher{
+			Name:      DefaultStreamPublisher.String(),
+			AdapterID: DefaultStreamPublisher,
+		}
+	case KafkaStreamPublisherAdapterName:
+		m.StreamPublisher = publisher{
+			Name:      KafkaStreamPublisherAdapter.String(),
+			AdapterID: KafkaStreamPublisherAdapter,
+		}
+	case ConnectorStreamPublisherAdapterName:
+		m.StreamPublisher = publisher{
+			Name:      ConnectorStreamPublisherAdapter.String(),
+			AdapterID: ConnectorStreamPublisherAdapter,
+		}
+	}
+}
+
+func (m *Manifest) SetStreamStorageFromString(name string, journal bool) {
+	switch name {
+	case DefaultName:
+		m.StreamStorage = streamStorage{
+			Name:          DefaultStreamStorage.String(),
+			AdapterID:     DefaultStreamStorage,
+			EnableJournal: journal,
+		}
+	case RedisStreamStorageAdapterName:
+		m.StreamStorage = streamStorage{
+			Name:          RedisStreamStorageAdapter.String(),
+			AdapterID:     RedisStreamStorageAdapter,
+			EnableJournal: journal,
+		}
+	case PostgresStreamStorageAdapterName:
+		m.StreamStorage = streamStorage{
+			Name:          PostgresStreamStorageAdapter.String(),
+			AdapterID:     PostgresStreamStorageAdapter,
+			EnableJournal: journal,
+		}
+	}
+}
+
 type publisher struct {
 	Name      string           `yaml:"name,omitempty"`
 	AdapterID publisherAdapter `yaml:"id"`
