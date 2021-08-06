@@ -6,12 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
+	source2 "github.com/go-gulfstream/gs/internal/source"
+
 	"github.com/go-gulfstream/gs/internal/goutil"
 
 	storeagepostgres "github.com/go-gulfstream/gulfstream/pkg/storage/postgres"
 
 	"github.com/fatih/color"
-	"github.com/go-gulfstream/gs/internal/format"
 	"github.com/go-gulfstream/gs/internal/schema"
 
 	"github.com/spf13/cobra"
@@ -83,7 +84,7 @@ func runInitCommand(projectPath string) (err error) {
 			} else {
 				// fix imports and code format.
 				if file.IsGo() {
-					source, err := format.Source(file.Path, file.TemplateData)
+					source, err := source2.Format(file.Path, file.TemplateData)
 					if err != nil {
 						return err
 					}

@@ -1,4 +1,4 @@
-package format
+package source
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/tools/imports"
 )
 
-func Source(filepath string, data []byte) ([]byte, error) {
+func Format(filepath string, data []byte) ([]byte, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", data, parser.ParseComments)
 	if err != nil {
@@ -29,18 +29,6 @@ func Source(filepath string, data []byte) ([]byte, error) {
 	return imports.Process(filepath, formatted, &imports.Options{
 		Comments: true,
 	})
-}
-
-func File(filepath string, file *ast.File) ([]byte, error) {
-	fset := token.NewFileSet()
-
-	fixImport(file)
-
-	formatted, err := gofmtFile(file, fset)
-	if err != nil {
-		return nil, err
-	}
-	return imports.Process(filepath, formatted, nil)
 }
 
 func fixImport(file *ast.File) {
