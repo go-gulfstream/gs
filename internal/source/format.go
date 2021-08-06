@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/format"
 	"go/parser"
-	"go/printer"
 	"go/token"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -75,13 +74,4 @@ func gofmtFile(f *ast.File, fset *token.FileSet) ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
-}
-
-func fileToByte(fset *token.FileSet, file *ast.File) ([]byte, error) {
-	var output []byte
-	buffer := bytes.NewBuffer(output)
-	if err := printer.Fprint(buffer, fset, file); err != nil {
-		return nil, err
-	}
-	return buffer.Bytes(), nil
 }
