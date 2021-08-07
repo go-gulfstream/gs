@@ -49,6 +49,9 @@ func ValidateManifest(m *Manifest) error {
 			return err
 		}
 	}
+	if err := validatePkgs(m, idx); err != nil {
+		return err
+	}
 	if err := validateCommands(m, idx); err != nil {
 		return err
 	}
@@ -131,6 +134,25 @@ func validatePublisherAdapter(m *Manifest) error {
 				ConnectorStreamPublisherAdapter.String(),
 			}, " OR "))
 	}
+}
+
+func validatePkgs(m *Manifest, u *unique) error {
+	if ok := u.has(m.StreamPkgName); ok {
+		return fmt.Errorf("gulfstream.yml: go_stream_pkg_name: %s already exists in go_commands_pkg_name or go_events_pkg_name",
+			m.StreamPkgName)
+	}
+	u.add(m.StreamPkgName)
+	if ok := u.has(m.CommandsPkgName); ok {
+		return fmt.Errorf("gulfstream.yml: go_commands_pkg_name: %s already exists in go_stream_pkg_name or go_events_pkg_name",
+			m.CommandsPkgName)
+	}
+	u.add(m.CommandsPkgName)
+	if ok := u.has(m.EventsPkgName); ok {
+		return fmt.Errorf("gulfstream.yml: go_events_pkg_name: %s already exists in go_commands_pkg_name or go_stream_pkg_name",
+			m.EventsPkgName)
+	}
+	u.add(m.EventsPkgName)
+	return nil
 }
 
 func validateStorageAdapter(m *Manifest) error {

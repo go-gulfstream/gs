@@ -2,6 +2,7 @@ package source
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/dave/dst/decorator"
@@ -35,6 +36,7 @@ func FlushToDisk() error {
 		if err := decorator.Fprint(buf, src); err != nil {
 			return err
 		}
+		fmt.Println(buf.String())
 		if err := ioutil.WriteFile(filename, buf.Bytes(), 0755); err != nil {
 			return err
 		}

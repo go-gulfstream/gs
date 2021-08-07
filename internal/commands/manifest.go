@@ -71,16 +71,23 @@ func runManifestCommand(projectPath string, f manifestFlags) error {
 		}
 	}
 
-	schema.SanitizeManifest(manifest)
-	if err := schema.ValidateManifest(manifest); err != nil {
-		return err
+	if f.interactive {
+		schema.SanitizeManifest(manifest)
+		if err := schema.ValidateManifest(manifest); err != nil {
+			return err
+		}
 	}
 
 	if f.showManifest && !isInteractiveMode {
 		printManifest(manifest)
 	}
 
-	return writeManifestToFile(projectPath, manifest, false)
+	if err := writeManifestToFile(projectPath, manifest, false); err != nil {
+		return err
+	}
+
+	fmt.Println(greenColor("Success!"))
+	return nil
 }
 
 func validateManifestArgs(args []string) error {

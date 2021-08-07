@@ -84,6 +84,12 @@ var eventMutationAddons = []File{
 	},
 	{
 		Path:     "/internal/stream/event_mutation.go",
+		Template: "stream_event_mutation_impl_addon.go.tpl",
+		Addon:    EventMutationImplAddon,
+		required: true,
+	},
+	{
+		Path:     "/internal/stream/event_mutation_test.go",
 		Template: "stream_event_mutation_test_addon.go.tpl",
 		Addon:    EventMutationTestAddon,
 	},
@@ -107,7 +113,7 @@ var eventMutationAddons = []File{
 	{
 		Path:     "/pkg/{events_package}/events_encoding.go",
 		Template: "pkg_events_events_encoding_addon.go.tpl",
-		Addon:    EventsEventsAddon,
+		Addon:    EventsEventsEncodingAddon,
 		required: true,
 	},
 }

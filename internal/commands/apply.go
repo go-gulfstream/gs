@@ -97,7 +97,7 @@ func runApplyCommand(projectPath string) error {
 			if err != nil {
 				return err
 			}
-			return source.Modify(dst, file.Addon, file.TemplateData)
+			return source.ApplyAddon(dst, file.Addon, file.TemplateData)
 		}); err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func runApplyCommand(projectPath string) error {
 			if err != nil {
 				return err
 			}
-			return source.Modify(dst, file.Addon, file.TemplateData)
+			return source.ApplyAddon(dst, file.Addon, file.TemplateData)
 		}); err != nil {
 		return err
 	}

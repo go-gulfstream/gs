@@ -4,71 +4,14 @@ import (
 	"fmt"
 
 	"github.com/dave/dst"
-	"github.com/dave/dst/decorator"
-
 	dstlib "github.com/dave/dst"
-
-	"github.com/go-gulfstream/gs/internal/schema"
 )
-
-var addonsFunc = map[string]func(dst, src *dstlib.File) error{
-	// Events
-	schema.EventsEventsAddon:         eventsEventsAddon,
-	schema.EventsEventsEncodingAddon: eventsEventsEncodingAddon,
-	schema.EventStateAddon:           eventStateAddon,
-	schema.EventControllerAddon:      eventControllerAddon,
-	schema.EventMutationAddon:        eventMutationAddon,
-
-	// Commands
-	schema.CommandsAddon:               commandsAddon,
-	schema.CommandsEncodingAddon:       commandsEncodingAddon,
-	schema.CommandStateAddon:           commandStateAddon,
-	schema.CommandControllerAddon:      commandControllerAddon,
-	schema.CommandMutationAddon:        commandMutationAddon,
-	schema.CommandMutationImplAddon:    commandMutationImplAddon,
-	schema.CommandMutationTestAddon:    commandMutationTestAddon,
-	schema.CommandsEventsAddon:         commandsEventsAddon,
-	schema.CommandsEventsEncodingAddon: commandsEventsEncodingAddon,
-}
-
-func Modify(dst *dstlib.File, addon string, addonSource []byte) error {
-	if len(addonSource) == 0 {
-		return nil
-	}
-	src, err := decorator.Parse(addonSource)
-	if err != nil {
-		return err
-	}
-
-	//if addon == schema.CommandsEncodingAddon {
-	//	fmt.Println(string(addonSource))
-	//}
-
-	fn, found := addonsFunc[addon]
-	if !found {
-		return fmt.Errorf("source: Modify(%sAddon) => modificator not specified", addon)
-	}
-	return fn(dst, src)
-}
-
-func eventsEventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
-	return nil
-}
-
-func eventsEventsAddon(dst *dstlib.File, src *dstlib.File) error {
-	return nil
-}
 
 func commandsEventsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
 	return nil
 }
 
 func commandsEventsAddon(dst *dstlib.File, src *dstlib.File) error {
-	return nil
-}
-
-func eventStateAddon(dst *dstlib.File, src *dstlib.File) error {
-	fmt.Println("state addon")
 	return nil
 }
 
@@ -103,14 +46,6 @@ func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
 	} else {
 		dstSwitch.Body.List = append(dstSwitch.Body.List, srcCase)
 	}
-	return nil
-}
-
-func eventControllerAddon(dst *dstlib.File, src *dstlib.File) error {
-	return nil
-}
-
-func eventMutationAddon(dst *dstlib.File, src *dstlib.File) error {
 	return nil
 }
 
@@ -159,10 +94,12 @@ func commandsEncodingAddon(dst *dstlib.File, src *dstlib.File) error {
 	}
 	srcMarshalFn, err := findFuncDeclByName(src, marshalFuncSelector)
 	if err != nil {
-		return err
+		// no payload
+		return nil
 	}
 	srcUnmarshalFn, err := findFuncDeclByName(src, unmarshalFuncSelector)
 	if err != nil {
+		// no payload
 		return nil
 	}
 

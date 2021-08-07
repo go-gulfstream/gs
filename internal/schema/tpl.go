@@ -42,26 +42,42 @@ func renderCommandMutationAddon(fileTpl string, manifest *Manifest, m CommandMut
 	return buf.Bytes(), nil
 }
 
+type pkg struct {
+	Path string
+}
+
 func renderEventMutationAddon(fileTpl string, manifest *Manifest, m EventMutation) ([]byte, error) {
 	tpl, err := templates.Parse(fileTpl)
 	if err != nil {
 		return nil, err
 	}
 	buf := bytes.NewBuffer(nil)
+	var importEvents []pkg
+	if len(manifest.ImportEvents) > 0 {
+		importEvents = make([]pkg, len(manifest.ImportEvents))
+		for i, ep := range manifest.ImportEvents {
+			importEvents[i] = pkg{
+				Path: ep,
+			}
+		}
+	}
+
 	if err := tpl.Execute(buf, struct {
 		EventMutation
 		GoModules       string
 		EventsPkgName   string
 		CommandsPkgName string
 		StreamPkgName   string
-		Imports         []string
+		ImportEvents    []pkg
+		Hello           string
 	}{
 		EventMutation:   m,
 		GoModules:       manifest.GoModules,
 		EventsPkgName:   manifest.EventsPkgName,
 		CommandsPkgName: manifest.CommandsPkgName,
 		StreamPkgName:   manifest.StreamPkgName,
-		Imports:         manifest.ImportEvents,
+		ImportEvents:    importEvents,
+		Hello:           "testDDDD/hhhh",
 	}); err != nil {
 		return nil, err
 	}
