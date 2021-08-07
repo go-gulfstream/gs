@@ -8,8 +8,6 @@ import (
 
 	source2 "github.com/go-gulfstream/gs/internal/source"
 
-	"github.com/go-gulfstream/gs/internal/goutil"
-
 	storeagepostgres "github.com/go-gulfstream/gulfstream/pkg/storage/postgres"
 
 	"github.com/fatih/color"
@@ -127,35 +125,4 @@ func writeSchema(path string, m *schema.Manifest) error {
 		return ioutil.WriteFile(filename, []byte(storeagepostgres.Schema), 0755)
 	}
 	return nil
-}
-
-func runGoTools(path string) {
-	if !goutil.GoInstall() {
-		return
-	}
-
-	fmt.Printf("\n======== go tools ========\n")
-	fmt.Printf("go mod download:\n")
-	out, err := goutil.RunGoMod(path)
-	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
-		return
-	}
-	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
-
-	fmt.Printf("go mod tidy:\n")
-	out, err = goutil.RunGoModTidy(path)
-	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
-		return
-	}
-	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
-
-	fmt.Printf("go test ./...:\n")
-	out, err = goutil.RunGoTest(path)
-	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
-		return
-	}
-	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 }

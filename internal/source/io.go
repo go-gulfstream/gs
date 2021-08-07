@@ -2,7 +2,7 @@ package source
 
 import (
 	"bytes"
-	"fmt"
+	"go/printer"
 	"io/ioutil"
 
 	"github.com/dave/dst/decorator"
@@ -33,11 +33,22 @@ func FlushToDisk() error {
 	buf := &bytes.Buffer{}
 	for filename, src := range modifiedFiles {
 		buf.Reset()
-		if err := decorator.Fprint(buf, src); err != nil {
+
+		fset, asrc, err := decorator.RestoreFile(src)
+		if err != nil {
 			return err
 		}
-		fmt.Println(buf.String())
-		if err := ioutil.WriteFile(filename, buf.Bytes(), 0755); err != nil {
+
+		if err := printer.Fprint(buf, fset, asrc); err != nil {
+			return err
+		}
+
+		data, err := Format(filename, buf.Bytes())
+		if err != nil {
+			return err
+		}
+
+		if err := ioutil.WriteFile(filename, data, 0755); err != nil {
 			return err
 		}
 	}

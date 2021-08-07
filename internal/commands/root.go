@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-gulfstream/gs/internal/goutil"
+
 	"github.com/go-gulfstream/gs/internal/schema"
 	"github.com/spf13/cobra"
 )
@@ -84,4 +86,49 @@ func countProjectFiles(projectPath string) int {
 		return 0
 	}
 	return len(filterDotFiles(files))
+}
+
+func runGoTools(path string) {
+	if !goutil.GoInstall() {
+		return
+	}
+
+	fmt.Printf("\n======== go tools ========\n")
+	fmt.Printf("go mod download:\n")
+	out, err := goutil.RunGoMod(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+
+	fmt.Printf("go mod tidy:\n")
+	out, err = goutil.RunGoModTidy(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+
+	fmt.Printf("go test ./...:\n")
+	out, err = goutil.RunGoTest(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+}
+
+func runGoTest(path string) {
+	if !goutil.GoInstall() {
+		return
+	}
+	fmt.Printf("\n======== go tools ========\n")
+	fmt.Printf("go test ./...:\n")
+	out, err := goutil.RunGoTest(path)
+	if err != nil {
+		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		return
+	}
+	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 }

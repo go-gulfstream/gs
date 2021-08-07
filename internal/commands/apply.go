@@ -77,54 +77,58 @@ func runApplyCommand(projectPath string) error {
 
 	var successCounter, skipCounter int
 
-	fmt.Printf("=> Apply command mutations...\n")
-	if err := schema.WalkCommandMutationAddons(projectPath, manifest,
-		func(m schema.CommandMutation, file schema.File) error {
-			status := statusOk
-			var skip bool
-			if info.CommandMutationExists(m.Mutation) {
-				status = statusSkip
-				skip = true
-			}
-			fmt.Printf("%s %s, %s => %s\n", status,
-				m.Mutation, file.Addon, file.Path)
-			if skip {
-				skipCounter++
-				return nil
-			}
-			successCounter++
-			dst, err := source.FromFile(file.Path)
-			if err != nil {
-				return err
-			}
-			return source.ApplyAddon(dst, file.Addon, file.TemplateData)
-		}); err != nil {
-		return err
+	if manifest.Mutations.HasCommands() {
+		fmt.Printf("=> Apply command mutations...\n")
+		if err := schema.WalkCommandMutationAddons(projectPath, manifest,
+			func(m schema.CommandMutation, file schema.File) error {
+				status := statusOk
+				var skip bool
+				if info.CommandMutationExists(m.Mutation) {
+					status = statusSkip
+					skip = true
+				}
+				fmt.Printf("%s %s, %s => %s\n", status,
+					m.Mutation, file.Addon, file.Path)
+				if skip {
+					skipCounter++
+					return nil
+				}
+				successCounter++
+				dst, err := source.FromFile(file.Path)
+				if err != nil {
+					return err
+				}
+				return source.ApplyAddon(dst, file.Addon, file.TemplateData)
+			}); err != nil {
+			return err
+		}
 	}
 
-	fmt.Printf("=> Apply event mutations...\n")
-	if err := schema.WalkEventMutationAddons(projectPath, manifest,
-		func(m schema.EventMutation, file schema.File) error {
-			status := statusOk
-			var skip bool
-			if info.EventMutationExists(m.Mutation) {
-				status = statusSkip
-				skip = true
-			}
-			fmt.Printf("%s %s, %s => %s\n", status,
-				m.Mutation, file.Addon, file.Path)
-			if skip {
-				skipCounter++
-				return nil
-			}
-			successCounter++
-			dst, err := source.FromFile(file.Path)
-			if err != nil {
-				return err
-			}
-			return source.ApplyAddon(dst, file.Addon, file.TemplateData)
-		}); err != nil {
-		return err
+	if manifest.Mutations.HasEvents() {
+		fmt.Printf("=> Apply event mutations...\n")
+		if err := schema.WalkEventMutationAddons(projectPath, manifest,
+			func(m schema.EventMutation, file schema.File) error {
+				status := statusOk
+				var skip bool
+				if info.EventMutationExists(m.Mutation) {
+					status = statusSkip
+					skip = true
+				}
+				fmt.Printf("%s %s, %s => %s\n", status,
+					m.Mutation, file.Addon, file.Path)
+				if skip {
+					skipCounter++
+					return nil
+				}
+				successCounter++
+				dst, err := source.FromFile(file.Path)
+				if err != nil {
+					return err
+				}
+				return source.ApplyAddon(dst, file.Addon, file.TemplateData)
+			}); err != nil {
+			return err
+		}
 	}
 
 	if err := source.FlushToDisk(); err != nil {
@@ -139,7 +143,7 @@ func runApplyCommand(projectPath string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
-	runGoTools(projectPath)
+	runGoTest(projectPath)
 
 	return nil
 }
