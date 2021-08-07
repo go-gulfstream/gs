@@ -2,8 +2,11 @@ package source
 
 import (
 	"bytes"
+	"fmt"
 	"go/printer"
 	"io/ioutil"
+
+	"github.com/fatih/color"
 
 	"github.com/dave/dst/decorator"
 
@@ -11,6 +14,7 @@ import (
 )
 
 var modifiedFiles = map[string]*dst.File{}
+var redColor = color.New(color.FgRed).SprintFunc()
 
 func FromFile(filename string) (*dst.File, error) {
 	file, found := modifiedFiles[filename]
@@ -30,6 +34,11 @@ func FromFile(filename string) (*dst.File, error) {
 }
 
 func FlushToDisk() error {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("%s FlushToDisk %v\n", redColor("[ERR]"), err)
+		}
+	}()
 	buf := &bytes.Buffer{}
 	for filename, src := range modifiedFiles {
 		buf.Reset()

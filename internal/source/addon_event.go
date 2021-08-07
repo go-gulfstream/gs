@@ -1,7 +1,7 @@
 package source
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/dave/dst"
 	dstlib "github.com/dave/dst"
@@ -72,7 +72,7 @@ func eventsEventsAddon(dst *dstlib.File, src *dstlib.File) error {
 }
 
 func eventStateAddon(dst *dstlib.File, src *dstlib.File) error {
-	fmt.Println("state addon")
+	log.Println("EventState")
 	return nil
 }
 

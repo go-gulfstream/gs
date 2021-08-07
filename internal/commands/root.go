@@ -36,6 +36,9 @@ func loadManifestFromFile(projectPath string) (*schema.Manifest, error) {
 		return nil, err
 	}
 	manifest, err := schema.DecodeManifest(data)
+	if err != nil {
+		return nil, err
+	}
 	schema.SanitizeManifest(manifest)
 	if err := schema.ValidateManifest(manifest); err != nil {
 		return nil, err

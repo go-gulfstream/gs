@@ -76,7 +76,7 @@ func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
 		dst.Imports = append(dst.Imports, src.Imports...)
 	}
 
-	applyFunc := src.Decls[1]
+	applyFunc := src.Decls[2]
 	applyFunc.Decorations().Before = dstlib.EmptyLine
 	dst.Decls = append(dst.Decls, applyFunc)
 
@@ -102,6 +102,7 @@ func commandStateAddon(dst *dstlib.File, src *dstlib.File) error {
 	} else {
 		dstSwitch.Body.List = append(dstSwitch.Body.List, srcCase)
 	}
+
 	return nil
 }
 

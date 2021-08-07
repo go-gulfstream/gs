@@ -7,14 +7,6 @@ import (
    "{{$.GoModules}}/pkg/{{$.EventsPkgName}}"
 )
 
-{{if .Event.Payload -}}
-     func (s *root) apply{{.Event.Name}}(p *{{$.EventsPkgName}}.{{.Event.Payload}}) {
-     }
-  {{else}}
-     func (s *root) apply{{.Event.Name}}() {
-     }
-{{end}}
-
 func (s *root) Mutate(e *gulfstreamevent.Event) {
     switch e.Name() {
          case {{$.EventsPkgName}}.{{.Event.Name}}:
@@ -26,3 +18,11 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
               {{end -}}
     }
 }
+
+{{if .Event.Payload -}}
+     func (s *root) apply{{.Event.Name}}(p *{{$.EventsPkgName}}.{{.Event.Payload}}) {
+     }
+  {{else}}
+     func (s *root) apply{{.Event.Name}}() {
+     }
+{{end}}

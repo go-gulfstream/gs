@@ -12,7 +12,8 @@ import (
 )
 
 type addFlags struct {
-	Apply bool
+	Filename string
+	Apply    bool
 }
 
 func addCommand() *cobra.Command {
@@ -29,6 +30,7 @@ func addCommand() *cobra.Command {
 		},
 	}
 	command.Flags().BoolVarP(&flags.Apply, "apply", "a", false, "add and apply changes to the project")
+	command.Flags().StringVarP(&flags.Filename, "file", "f", "", "name of the gulfstream")
 	return command
 }
 

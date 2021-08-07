@@ -18,25 +18,6 @@ type root struct {
    // domain state
 }
 
-{{range $.Mutations.Commands -}}
-  {{if .Event.Payload -}}
-     func (s *root) apply{{.Event.Name}}(p *{{$.EventsPkgName}}.{{.Event.Payload}}) {
-     }
-  {{else}}
-     func (s *root) apply{{.Event.Name}}() {
-     }
-  {{end}}
-{{end}}
-{{range $.Mutations.Events -}}
-  {{if .OutEvent.Payload -}}
-     func (s *root) apply{{.OutEvent.Name}}(p *{{$.EventsPkgName}}.{{.OutEvent.Payload}}) {
-     }
-  {{else}}
-     func (s *root) apply{{.OutEvent.Name}}() {
-     }
-  {{end}}
-{{end}}
-
 func New() gulfstream.State {
 	return new(root)
 }
@@ -65,3 +46,22 @@ func (s *root) Mutate(e *gulfstreamevent.Event) {
     {{end -}}
     }
 }
+
+{{range $.Mutations.Commands -}}
+  {{if .Event.Payload -}}
+     func (s *root) apply{{.Event.Name}}(p *{{$.EventsPkgName}}.{{.Event.Payload}}) {
+     }
+  {{else}}
+     func (s *root) apply{{.Event.Name}}() {
+     }
+  {{end}}
+{{end}}
+{{range $.Mutations.Events -}}
+  {{if .OutEvent.Payload -}}
+     func (s *root) apply{{.OutEvent.Name}}(p *{{$.EventsPkgName}}.{{.OutEvent.Payload}}) {
+     }
+  {{else}}
+     func (s *root) apply{{.OutEvent.Name}}() {
+     }
+  {{end}}
+{{end}}

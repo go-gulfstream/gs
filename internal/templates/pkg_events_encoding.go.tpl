@@ -3,6 +3,7 @@ package {{$.EventsPkgName}}
 import (
 	"encoding/json"
 	gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
+
 )
 
 func init() {
