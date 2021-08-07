@@ -39,9 +39,9 @@ func render() {
       		},
       		func(ctx context.Context, s *gulfstream.Stream, e *gulfstreamevent.Event) (err error) {
       		    {{if .InEvent.Payload -}}
-                    return m.{{.Mutation}}(ctx, s.StreamID(), e.ID(), s.State(), e.Payload().(*{{.InEvent.Payload}}))
+                    return m.{{.Mutation}}(ctx, s.ID(), e.ID(), s.State(), e.Payload().(*{{.InEvent.Payload}}))
                 {{else -}}
-                    return m.{{.Mutation}}(ctx, s.StreamID(), e.ID(), s.State())
+                    return m.{{.Mutation}}(ctx, s.ID(), e.ID(), s.State())
                 {{end -}}
       		})
       }

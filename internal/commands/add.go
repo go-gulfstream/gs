@@ -42,7 +42,7 @@ func validateAddCommandArgs(args []string) error {
 	manifest := filepath.Join(args[0], manifestFilename)
 	_, err := os.Stat(manifest)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("the manifest file %s/gulfstream.yml does not exist\n$ gs manifest -i %s\n", args[0], args[0])
+		return fmt.Errorf("the manifest file %s/gulfstream.yml does not exist\nFor example:\n$ gs manifest -i %s\n", args[0], args[0])
 	}
 	return nil
 }
