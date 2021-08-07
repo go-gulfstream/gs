@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/go-playground/validator"
 )
 
 var (
@@ -13,15 +11,37 @@ var (
 	streamNameRe  = regexp.MustCompile("^[a-zA-Z]*$")
 )
 
+var uidx = newUnique()
+
+func CheckUnique(s string) bool {
+	return uidx.has(s)
+}
+
+func IndexCommandMutation(c CommandMutation) {
+	uidx.addCommandMutation(c)
+}
+
+func IndexEventMutation(c EventMutation) {
+	uidx.addEventMutation(c)
+}
+
+func Index(m *Manifest) {
+	for _, c := range m.Mutations.Commands {
+		uidx.addCommandMutation(c)
+	}
+	for _, e := range m.Mutations.Events {
+		uidx.addEventMutation(e)
+	}
+}
+
 func ValidateManifest(m *Manifest) error {
+	idx := newUnique()
 	for _, fn := range []func(m *Manifest) error{
 		validatePackageName,
 		validateGoModules,
 		validateGoVersion,
 		validateStreamName,
 		validateProjectName,
-		validateCommands,
-		validateEvents,
 		validatePublisherAdapter,
 		validateStorageAdapter,
 	} {
@@ -29,7 +49,13 @@ func ValidateManifest(m *Manifest) error {
 			return err
 		}
 	}
-	return validator.New().Struct(m)
+	if err := validateCommands(m, idx); err != nil {
+		return err
+	}
+	if err := validateEvents(m, idx); err != nil {
+		return err
+	}
+	return nil
 }
 
 func validateGoModules(m *Manifest) error {
@@ -122,7 +148,7 @@ func validateStorageAdapter(m *Manifest) error {
 	}
 }
 
-func validateCommands(m *Manifest) error {
+func validateCommands(m *Manifest, idx *unique) error {
 	if len(m.Mutations.Commands) == 0 {
 		return nil
 	}
@@ -138,11 +164,15 @@ func validateCommands(m *Manifest) error {
 			return fmt.Errorf("gulfstream.yml: Mutations.%s{InCommand.%s, OutEvent.###EMPTY###} => event name too short. index[%d]",
 				cmd.Mutation, cmd.Command.Name, i)
 		}
+		if ok := idx.hasCommandMutation(cmd); ok {
+			return fmt.Errorf("gulfstream.yml: there are duplicates in command mutations index[%d]", i)
+		}
+		idx.addCommandMutation(cmd)
 	}
 	return nil
 }
 
-func validateEvents(m *Manifest) error {
+func validateEvents(m *Manifest, idx *unique) error {
 	if len(m.Mutations.Events) == 0 {
 		return nil
 	}
@@ -158,6 +188,101 @@ func validateEvents(m *Manifest) error {
 			return fmt.Errorf("gulfstream.yml: Mutations.%s{InEvent.%s, OutEvent.###EMPTY} => out event name too short. index[%d]",
 				e.Mutation, e.InEvent.Name, i)
 		}
+		if ok := idx.hasEventMutation(e); ok {
+			return fmt.Errorf("gulfstream.yml: there are duplicates in event mutations index[%d]", i)
+		}
+		idx.addEventMutation(e)
 	}
 	return nil
+}
+
+type unique struct {
+	mutations map[string]struct{}
+}
+
+func newUnique() *unique {
+	return &unique{
+		mutations: make(map[string]struct{}),
+	}
+}
+
+func (u *unique) add(s string) {
+	u.mutations[s] = struct{}{}
+}
+
+func (u *unique) has(val string) bool {
+	if _, ok := u.mutations[val]; ok {
+		return true
+	}
+	return false
+}
+
+func (u *unique) addCommandMutation(c CommandMutation) {
+	u.mutations[c.Mutation] = struct{}{}
+	u.mutations[c.Command.Name] = struct{}{}
+	if len(c.Command.Payload) > 0 {
+		u.mutations[c.Command.Payload] = struct{}{}
+	}
+	u.mutations[c.Event.Name] = struct{}{}
+	if len(c.Event.Payload) > 0 {
+		u.mutations[c.Event.Payload] = struct{}{}
+	}
+}
+
+func (u *unique) hasCommandMutation(c CommandMutation) bool {
+	if _, ok := u.mutations[c.Mutation]; ok {
+		return true
+	}
+	if _, ok := u.mutations[c.Command.Name]; ok {
+		return true
+	}
+	if len(c.Command.Payload) > 0 {
+		if _, ok := u.mutations[c.Command.Payload]; ok {
+			return true
+		}
+	}
+	if _, ok := u.mutations[c.Event.Name]; ok {
+		return true
+	}
+	if len(c.Event.Payload) > 0 {
+		if _, ok := u.mutations[c.Event.Payload]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *unique) addEventMutation(e EventMutation) {
+	u.mutations[e.Mutation] = struct{}{}
+	u.mutations[e.InEvent.Name] = struct{}{}
+	if len(e.InEvent.Payload) > 0 {
+		u.mutations[e.InEvent.Payload] = struct{}{}
+	}
+	u.mutations[e.OutEvent.Name] = struct{}{}
+	if len(e.InEvent.Payload) > 0 {
+		u.mutations[e.OutEvent.Payload] = struct{}{}
+	}
+}
+
+func (u *unique) hasEventMutation(e EventMutation) bool {
+	if _, ok := u.mutations[e.Mutation]; ok {
+		return true
+	}
+	if _, ok := u.mutations[e.InEvent.Name]; ok {
+		return true
+	}
+	if len(e.InEvent.Payload) > 0 {
+		if _, ok := u.mutations[e.InEvent.Payload]; ok {
+			return true
+		}
+	}
+	if _, ok := u.mutations[e.OutEvent.Name]; ok {
+		return true
+	}
+	if len(e.InEvent.Payload) > 0 {
+		if _, ok := u.mutations[e.OutEvent.Payload]; ok {
+			return true
+		}
+	}
+	return false
 }

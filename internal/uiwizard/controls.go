@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/go-gulfstream/gs/internal/schema"
+
 	"github.com/manifoldco/promptui"
 )
 
@@ -87,6 +89,9 @@ func inputControl(
 			if len(s) < 3 {
 				return fmt.Errorf("%s value too short. got %d, expected > 3",
 					s, len(s))
+			}
+			if schema.CheckUnique(s) {
+				return fmt.Errorf("already exists")
 			}
 			return nil
 		},

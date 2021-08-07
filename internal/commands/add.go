@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-gulfstream/gs/internal/schema"
+
 	"github.com/go-gulfstream/gs/internal/uiwizard"
 	"github.com/spf13/cobra"
 )
@@ -44,6 +46,13 @@ func validateAddCommandArgs(args []string) error {
 }
 
 func runAddCommand(projectPath string, f addFlags) error {
+	manifest, err := loadManifestFromFile(projectPath)
+	if err != nil {
+		return err
+	}
+
+	schema.Index(manifest)
+
 	var projectInit bool
 	if countProjectFiles(projectPath) <= 1 {
 		projectInit = true
@@ -58,10 +67,7 @@ func runAddCommand(projectPath string, f addFlags) error {
 		fmt.Printf("no data to add\n")
 		return nil
 	}
-	manifest, err := loadManifestFromFile(projectPath)
-	if err != nil {
-		return err
-	}
+
 	wiz.Apply(manifest)
 
 	if err := writeManifestToFile(projectPath, manifest, true); err != nil {

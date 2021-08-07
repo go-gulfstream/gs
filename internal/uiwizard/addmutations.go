@@ -69,7 +69,7 @@ func (a *Mutation) handleCommandMutation(prefix string) error {
 	if err != nil {
 		return err
 	}
-	a.commandMutations = append(a.commandMutations, schema.CommandMutation{
+	cm := schema.CommandMutation{
 		Mutation: name,
 		Command: schema.Command{
 			Name:    commandInfo.Name,
@@ -79,7 +79,9 @@ func (a *Mutation) handleCommandMutation(prefix string) error {
 			Name:    eventInfo.Name,
 			Payload: eventInfo.Payload,
 		},
-	})
+	}
+	schema.IndexCommandMutation(cm)
+	a.commandMutations = append(a.commandMutations, cm)
 	return nil
 }
 
@@ -103,7 +105,7 @@ func (a *Mutation) handleEventMutation(prefix string) error {
 		return err
 	}
 	a.importEvents[pkg] = struct{}{}
-	a.eventMutations = append(a.eventMutations, schema.EventMutation{
+	em := schema.EventMutation{
 		Mutation: name,
 		InEvent: schema.Event{
 			Name:    inEventInfo.Name,
@@ -113,7 +115,9 @@ func (a *Mutation) handleEventMutation(prefix string) error {
 			Name:    outEventInfo.Name,
 			Payload: outEventInfo.Payload,
 		},
-	})
+	}
+	a.eventMutations = append(a.eventMutations, em)
+	schema.IndexEventMutation(em)
 	return nil
 }
 
