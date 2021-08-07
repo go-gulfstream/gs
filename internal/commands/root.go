@@ -77,3 +77,11 @@ func printManifest(m *schema.Manifest) {
 	data, _ := schema.EncodeManifest(m)
 	fmt.Printf("\nManifest:\n%s\n", string(data))
 }
+
+func countProjectFiles(projectPath string) int {
+	files, err := ioutil.ReadDir(projectPath)
+	if err != nil {
+		return 0
+	}
+	return len(filterDotFiles(files))
+}

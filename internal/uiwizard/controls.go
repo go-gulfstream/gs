@@ -20,11 +20,16 @@ func inputTemplate(label string, defVal string) *promptui.PromptTemplates {
 	if len(defVal) > 0 {
 		defVal = " (" + defVal + ")"
 	}
+	funcMap := promptui.FuncMap
+	funcMap["fix"] = func(s string) string {
+		return ""
+	}
 	return &promptui.PromptTemplates{
+		FuncMap: funcMap,
 		Prompt:  fmt.Sprintf("=> {{ .}}%s: ", defVal),
 		Valid:   fmt.Sprintf("=> {{ . | green }}%s: ", defVal),
 		Invalid: fmt.Sprintf("=> {{ . | red }}%s: ", defVal),
-		Success: fmt.Sprintf("=> %s: {{ . }}", label),
+		Success: fmt.Sprintf("=> %s: {{ . | fix }}", label),
 	}
 }
 

@@ -2,6 +2,7 @@ package uiwizard
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-gulfstream/gs/internal/schema"
 )
@@ -39,12 +40,16 @@ func (a *Mutation) HasChanges() bool {
 func (a *Mutation) Apply(m *schema.Manifest) {
 	importEvents := make([]string, 0, len(a.importEvents))
 	for ie := range a.importEvents {
+		if len(ie) == 0 {
+			continue
+		}
 		importEvents = append(importEvents, ie)
 	}
 
 	m.Mutations.Commands = append(m.Mutations.Commands, a.commandMutations...)
 	m.Mutations.Events = append(m.Mutations.Events, a.eventMutations...)
 	m.ImportEvents = append(m.ImportEvents, importEvents...)
+	m.UpdatedAt = time.Now().UTC()
 
 	schema.SanitizeManifest(m)
 }
