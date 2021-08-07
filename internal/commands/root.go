@@ -93,7 +93,7 @@ func runGoTools(path string) {
 		return
 	}
 
-	fmt.Printf("\n======== go tools ========\n")
+	fmt.Println("===============================================")
 	fmt.Printf("go mod download:\n")
 	out, err := goutil.RunGoMod(path)
 	if err != nil {
@@ -123,7 +123,7 @@ func runGoTest(path string) {
 	if !goutil.GoInstall() {
 		return
 	}
-	fmt.Printf("\n======== go tools ========\n")
+	fmt.Println("===============================================")
 	fmt.Printf("go test ./...:\n")
 	out, err := goutil.RunGoTest(path)
 	if err != nil {

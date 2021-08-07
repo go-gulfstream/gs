@@ -143,7 +143,9 @@ func runApplyCommand(projectPath string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
-	runGoTest(projectPath)
+	if successCounter > 0 {
+		runGoTest(projectPath)
+	}
 
 	return nil
 }
