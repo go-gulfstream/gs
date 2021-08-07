@@ -28,7 +28,7 @@ func render() {
              {{$.CommandsPkgName}}.{{.Command.Name}},
              {{.ControllerName}}(mutation),
          )
-{{end}}
+{{end -}}
 }
 
 func {{ .ControllerName }}(m CommandMutation) gulfstream.ControllerFunc {
@@ -66,5 +66,5 @@ func {{ .ControllerName }}(m CommandMutation) gulfstream.ControllerFunc {
                         return c.ReplyOk(s.Version()), nil
                     {{end -}}
                 {{end -}}
-         	}
-         }
+      	}
+ }

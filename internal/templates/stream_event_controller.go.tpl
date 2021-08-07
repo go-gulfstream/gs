@@ -6,7 +6,7 @@ import (
 	{{if $.Mutations.HasEvents}}
 	   gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
 	   {{range $.ImportEvents}}
-	       "{{.}}"
+	       "{{.Path}}"
 	   {{end}}
 	{{end}}
 
@@ -39,7 +39,7 @@ func MakeEventControllers(
             )
             {{end -}}
         {{end}}
-    {{end}}
+    {{end -}}
 }
 
 {{if $.Mutations.HasEvents}}
