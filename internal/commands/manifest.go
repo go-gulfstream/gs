@@ -18,6 +18,7 @@ import (
 type manifestFlags struct {
 	interactive  bool
 	showManifest bool
+	testData     bool
 }
 
 func manifestCommand() *cobra.Command {
@@ -33,9 +34,9 @@ func manifestCommand() *cobra.Command {
 			return runManifestCommand(args[0], flags)
 		},
 	}
-
 	command.Flags().BoolVarP(&flags.showManifest, "print", "p", false, "show content of manifest file before creation")
 	command.Flags().BoolVarP(&flags.interactive, "interactive", "i", false, "with enable editor")
+	command.Flags().BoolVarP(&flags.testData, "testdata", "d", false, "test data")
 	return command
 }
 
@@ -46,7 +47,7 @@ func runManifestCommand(projectPath string, f manifestFlags) error {
 	manifest.UpdatedAt = time.Now().UTC()
 
 	var isInteractiveMode bool
-	if f.interactive {
+	if f.interactive && !f.testData {
 		isInteractiveMode = true
 		projwiz := uiwizard.NewProject()
 		if err := projwiz.Run(); err != nil {
@@ -71,11 +72,15 @@ func runManifestCommand(projectPath string, f manifestFlags) error {
 		}
 	}
 
-	if f.interactive {
+	if f.interactive && !f.testData {
 		schema.SanitizeManifest(manifest)
 		if err := schema.ValidateManifest(manifest); err != nil {
 			return err
 		}
+	}
+
+	if f.testData {
+		genTestData(manifest)
 	}
 
 	if f.showManifest && !isInteractiveMode {
@@ -108,4 +113,15 @@ func validateManifestArgs(args []string) error {
 			args[0], len(files))
 	}
 	return nil
+}
+
+func genTestData(m *schema.Manifest) {
+	m.Name = "My project"
+	m.StreamName = "Session"
+	m.PackageName = "session"
+	m.GoModules = "github.com/myproject/session"
+	m.EventsPkgName = "sessionevents"
+	m.CommandsPkgName = "sessioncommands"
+	m.StreamPkgName = "sessionstream"
+	m.Description = "Some description"
 }
