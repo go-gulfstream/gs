@@ -3,24 +3,31 @@ package schema
 import "path/filepath"
 
 const (
-	CommandMutationAddon           = "CommandMutation"
-	CommandMutationProjectionAddon = "CommandMutationProjection"
-	CommandMutationImplAddon       = "CommandMutationImpl"
-	CommandMutationTestAddon       = "CommandMutationTest"
-	CommandControllerAddon         = "CommandController"
-	CommandStateAddon              = "CommandState"
-	EventMutationAddon             = "EventMutation"
-	EventMutationProjectionAddon   = "EventMutationProjection"
-	EventMutationTestAddon         = "EventMutationTest"
-	EventMutationImplAddon         = "EventMutationImpl"
-	EventControllerAddon           = "EventController"
-	EventStateAddon                = "EventState"
-	CommandsAddon                  = "Commands"
-	CommandsEncodingAddon          = "CommandsEncoding"
-	CommandsEventsAddon            = "CommandEvents"
-	CommandsEventsEncodingAddon    = "CommandEventsEncoding"
-	EventsEventsAddon              = "EventsEventsAddon"
-	EventsEventsEncodingAddon      = "EventsEventsEncodingAddon"
+	// Events
+	EventMutationAddon        = "EventMutation"
+	EventMutationTestAddon    = "EventMutationTest"
+	EventMutationImplAddon    = "EventMutationImpl"
+	EventControllerAddon      = "EventController"
+	EventStateAddon           = "EventState"
+	EventsEventsAddon         = "EventsEventsAddon"
+	EventsEventsEncodingAddon = "EventsEventsEncodingAddon"
+
+	// Commands
+	CommandMutationAddon        = "CommandMutation"
+	CommandMutationImplAddon    = "CommandMutationImpl"
+	CommandMutationTestAddon    = "CommandMutationTest"
+	CommandControllerAddon      = "CommandController"
+	CommandStateAddon           = "CommandState"
+	CommandsAddon               = "Commands"
+	CommandsEncodingAddon       = "CommandsEncoding"
+	CommandsEventsAddon         = "CommandEvents"
+	CommandsEventsEncodingAddon = "CommandEventsEncoding"
+
+	// Projection
+	CommandMutationProjectionAddon     = "CommandMutationProjection"
+	CommandMutationImplProjectionAddon = "CommandMutationImplProjection"
+	CommandControllerProjectionAddon   = "CommandControllerProjection"
+	EventMutationProjectionAddon       = "EventMutationProjection"
 )
 
 var commandMutationAddons = []File{
@@ -72,6 +79,21 @@ var commandMutationAddons = []File{
 		Path:     "/pkg/{events_package}/events_encoding.go",
 		Template: "pkg_events_commands_encoding_addon.go.tpl",
 		Addon:    CommandsEventsEncodingAddon,
+	},
+	{
+		Path:     "/internal/projection/projection.go",
+		Template: "projection_projection_commands_addon.go.tpl",
+		Addon:    CommandMutationProjectionAddon,
+	},
+	{
+		Path:     "/internal/projection/projection.go",
+		Template: "projection_projection_impl_commands_addon.go.tpl",
+		Addon:    CommandMutationImplProjectionAddon,
+	},
+	{
+		Path:     "/internal/projection/controller.go",
+		Template: "projection_controller_commands_addon.go.tpl",
+		Addon:    CommandControllerProjectionAddon,
 	},
 }
 

@@ -11,6 +11,7 @@ const (
 	commandMutationSelector       = "CommandMutation"
 	eventMutationSelector         = "EventMutation"
 	commandMutationImplSelector   = "commandMutation"
+	projectionImplSelector        = "projection"
 	eventMutationImplSelector     = "eventMutation"
 	makeCommandControllerSelector = "MakeCommandControllers"
 	makeEventControllerSelector   = "MakeEventControllers"

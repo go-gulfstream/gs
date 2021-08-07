@@ -131,6 +131,13 @@ func runApplyCommand(projectPath string) error {
 		}
 	}
 
+	if successCounter == 0 {
+		if skipCounter > 0 {
+			fmt.Printf("Skipped: %d\n", skipCounter)
+		}
+		return nil
+	}
+
 	if err := source.FlushToDisk(); err != nil {
 		return err
 	}
@@ -143,9 +150,7 @@ func runApplyCommand(projectPath string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
-	if successCounter > 0 {
-		runGoTest(projectPath)
-	}
+	runGoTest(projectPath)
 
 	return nil
 }
