@@ -12,13 +12,15 @@ import (
 
 var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	// Events
-	schema.EventsEventsAddon:         eventsEventsAddon,
-	schema.EventsEventsEncodingAddon: eventsEventsEncodingAddon,
-	schema.EventStateAddon:           eventStateAddon,
-	schema.EventControllerAddon:      eventControllerAddon,
-	schema.EventMutationAddon:        eventMutationAddon,
-	schema.EventMutationImplAddon:    eventMutationImplAddon,
-	schema.EventMutationTestAddon:    eventMutationTestAddon,
+	schema.EventsEventsAddon:                eventsEventsAddon,
+	schema.EventsEventsEncodingAddon:        eventsEventsEncodingAddon,
+	schema.EventStateAddon:                  eventStateAddon,
+	schema.EventControllerAddon:             eventControllerAddon,
+	schema.EventMutationAddon:               eventMutationAddon,
+	schema.EventMutationImplAddon:           eventMutationImplAddon,
+	schema.EventMutationTestAddon:           eventMutationTestAddon,
+	schema.EventMutationProjectionAddon:     eventMutationProjectionAddon,
+	schema.EventMutationImplProjectionAddon: eventMutationImplProjectionAddon,
 
 	// Commands
 	schema.CommandsAddon:                      commandsAddon,
@@ -33,6 +35,7 @@ var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	schema.CommandMutationProjectionAddon:     commandMutationProjectionAddon,
 	schema.CommandMutationImplProjectionAddon: commandMutationImplProjectionAddon,
 	schema.CommandControllerProjectionAddon:   commandControllerProjectionAddon,
+	schema.ProjectionTestAddon:                projectionTestAddon,
 }
 
 func ApplyAddon(dst *dstlib.File, addon string, addonSource []byte) error {

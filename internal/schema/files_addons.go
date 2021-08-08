@@ -24,10 +24,12 @@ const (
 	CommandsEventsEncodingAddon = "CommandEventsEncoding"
 
 	// Projection
+	ProjectionTestAddon                = "ProjectionTest"
 	CommandMutationProjectionAddon     = "CommandMutationProjection"
 	CommandMutationImplProjectionAddon = "CommandMutationImplProjection"
 	CommandControllerProjectionAddon   = "CommandControllerProjection"
 	EventMutationProjectionAddon       = "EventMutationProjection"
+	EventMutationImplProjectionAddon   = "EventMutationImplProjection"
 )
 
 var commandMutationAddons = []File{
@@ -86,6 +88,11 @@ var commandMutationAddons = []File{
 		Addon:    CommandMutationProjectionAddon,
 	},
 	{
+		Path:     "/internal/projection/projection_test.go",
+		Template: "projection_projection_test_addon.go.tpl",
+		Addon:    ProjectionTestAddon,
+	},
+	{
 		Path:     "/internal/projection/projection.go",
 		Template: "projection_projection_impl_commands_addon.go.tpl",
 		Addon:    CommandMutationImplProjectionAddon,
@@ -131,6 +138,21 @@ var eventMutationAddons = []File{
 		Template: "pkg_events_events_addon.go.tpl",
 		Addon:    EventsEventsAddon,
 		required: true,
+	},
+	{
+		Path:     "/internal/projection/projection.go",
+		Template: "projection_projection_events_addon.go.tpl",
+		Addon:    EventMutationProjectionAddon,
+	},
+	{
+		Path:     "/internal/projection/projection.go",
+		Template: "projection_projection_impl_events_addon.go.tpl",
+		Addon:    EventMutationImplProjectionAddon,
+	},
+	{
+		Path:     "/internal/projection/projection_test.go",
+		Template: "projection_projection_test_addon.go.tpl",
+		Addon:    ProjectionTestAddon,
 	},
 	{
 		Path:     "/pkg/{events_package}/events_encoding.go",

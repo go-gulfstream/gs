@@ -121,6 +121,10 @@ var files = []File{
 		Template: "projection_types.go.tpl",
 	},
 	{
+		Path:     "/internal/projection/projection_test.go",
+		Template: "projection_projection_test.go.tpl",
+	},
+	{
 		Path:  "/internal/config",
 		IsDir: true,
 	},

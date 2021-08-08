@@ -342,3 +342,24 @@ func commandControllerProjectionAddon(dst *dst.File, src *dst.File) error {
 	fmt.Println("commandControllerProjectionAddon")
 	return nil
 }
+
+func projectionTestAddon(dst *dst.File, src *dst.File) error {
+	if len(src.Imports) > 0 {
+		dst.Imports = append(dst.Imports, src.Imports...)
+	}
+
+	var method *dstlib.FuncDecl
+	dstlib.Inspect(src, func(node dstlib.Node) bool {
+		switch typ := node.(type) {
+		case *dstlib.FuncDecl:
+			method = typ
+			return false
+		}
+		return true
+	})
+
+	method.Decorations().After = dstlib.EmptyLine
+	dst.Decls = append(dst.Decls, method)
+
+	return nil
+}
