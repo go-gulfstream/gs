@@ -24,7 +24,6 @@ func NewController(p Projection) *gulfstream.Projection {
            {{$.EventsPkgName}}.{{.OutEvent.Name}},
            {{.OutEvent.LcFirstName}}Controller(p),
         )
-
     {{end}}
 
 	return projection

@@ -15,6 +15,7 @@ const (
 	eventMutationImplSelector     = "eventMutation"
 	makeCommandControllerSelector = "MakeCommandControllers"
 	makeEventControllerSelector   = "MakeEventControllers"
+	newControllerSelector         = "NewController"
 	stateSelector                 = "root"
 	mutateFuncSelector            = "Mutate"
 	constDeclSelector             = "const"
@@ -26,6 +27,10 @@ const (
 
 func insertFuncDecl(a []dstlib.Decl, method *dstlib.FuncDecl, index int) []dstlib.Decl {
 	return append(a[:index], append([]dstlib.Decl{method}, a[index:]...)...)
+}
+
+func insertExprStmt(a []dstlib.Stmt, expr *dstlib.ExprStmt, index int) []dstlib.Stmt {
+	return append(a[:index], append([]dstlib.Stmt{expr}, a[index:]...)...)
 }
 
 func findRecvByName(decls []dstlib.Decl, recvName string) (index int) {

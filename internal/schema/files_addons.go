@@ -30,6 +30,7 @@ const (
 	CommandControllerProjectionAddon   = "CommandControllerProjection"
 	EventMutationProjectionAddon       = "EventMutationProjection"
 	EventMutationImplProjectionAddon   = "EventMutationImplProjection"
+	EventControllerProjectionAddon     = "EventControllerProjection"
 )
 
 var commandMutationAddons = []File{
@@ -153,6 +154,11 @@ var eventMutationAddons = []File{
 		Path:     "/internal/projection/projection_test.go",
 		Template: "projection_projection_test_addon.go.tpl",
 		Addon:    ProjectionTestAddon,
+	},
+	{
+		Path:     "/internal/projection/controller.go",
+		Template: "projection_controller_events_addon.go.tpl",
+		Addon:    EventControllerProjectionAddon,
 	},
 	{
 		Path:     "/pkg/{events_package}/events_encoding.go",

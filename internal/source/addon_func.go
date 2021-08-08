@@ -21,6 +21,7 @@ var addonsFunc = map[string]func(dst, src *dstlib.File) error{
 	schema.EventMutationTestAddon:           eventMutationTestAddon,
 	schema.EventMutationProjectionAddon:     eventMutationProjectionAddon,
 	schema.EventMutationImplProjectionAddon: eventMutationImplProjectionAddon,
+	schema.EventControllerProjectionAddon:   eventControllerProjectionAddon,
 
 	// Commands
 	schema.CommandsAddon:                      commandsAddon,
