@@ -124,4 +124,32 @@ func genTestData(m *schema.Manifest) {
 	m.CommandsPkgName = "sessioncommands"
 	m.StreamPkgName = "sessionstream"
 	m.Description = "Some description"
+	m.GoGetPackages = []string{
+		"github.com/go-gulfstream/tmpevents",
+	}
+	m.ImportEvents = []string{
+		"github.com/go-gulfstream/tmpevents/pkg/tmpevents",
+	}
+	m.Mutations.Commands = append(m.Mutations.Commands, schema.CommandMutation{
+		Mutation: "UpdateCounter",
+		Command: schema.Command{
+			Name:    "CounterInfo",
+			Payload: "CounterInfoPayload",
+		},
+		Event: schema.Event{
+			Name:    "CounterUpdated",
+			Payload: "CounterUpdatedPayload",
+		},
+	})
+	m.Mutations.Events = append(m.Mutations.Events, schema.EventMutation{
+		Mutation: "RegisterSession",
+		InEvent: schema.Event{
+			Name:    "tmpevents.SessionRegistered",
+			Payload: "tmpevents.SessionRegisteredPayload",
+		},
+		OutEvent: schema.Event{
+			Name:    "Confirmed",
+			Payload: "ConfirmedPayload",
+		},
+	})
 }

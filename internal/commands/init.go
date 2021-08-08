@@ -114,7 +114,7 @@ func runInitCommand(projectPath string) (err error) {
 		return err
 	}
 
-	runGoTools(projectPath)
+	runGoTools(projectPath, manifest.GoGetPackages)
 
 	return nil
 }

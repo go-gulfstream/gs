@@ -6,7 +6,7 @@ import (
 	{{if $.Mutations.HasEvents}}
 	   gulfstreamevent "github.com/go-gulfstream/gulfstream/pkg/event"
 	   {{range $.ImportEvents}}
-	       "{{.Path}}"
+	       "{{.}}"
 	   {{end}}
 	{{end}}
 

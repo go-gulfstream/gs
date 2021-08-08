@@ -91,14 +91,25 @@ func countProjectFiles(projectPath string) int {
 	return len(filterDotFiles(files))
 }
 
-func runGoTools(path string) {
+func runGoTools(path string, packages []string) {
 	if !goutil.GoInstall() {
 		return
 	}
 
 	fmt.Println("===============================================")
+	if len(packages) > 0 {
+		for _, pkg := range packages {
+			out, err := goutil.Get(path, pkg)
+			if err != nil {
+				fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+				return
+			}
+			fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
+		}
+	}
+
 	fmt.Printf("go mod download:\n")
-	out, err := goutil.RunGoMod(path)
+	out, err := goutil.Mod(path)
 	if err != nil {
 		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
 		return
@@ -106,7 +117,7 @@ func runGoTools(path string) {
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 
 	fmt.Printf("go mod tidy:\n")
-	out, err = goutil.RunGoModTidy(path)
+	out, err = goutil.Tidy(path)
 	if err != nil {
 		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
 		return
@@ -114,7 +125,7 @@ func runGoTools(path string) {
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 
 	fmt.Printf("go test ./...:\n")
-	out, err = goutil.RunGoTest(path)
+	out, err = goutil.Test(path)
 	if err != nil {
 		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
 		return
@@ -128,7 +139,7 @@ func runGoTest(path string) {
 	}
 	fmt.Println("===============================================")
 	fmt.Printf("go test ./...:\n")
-	out, err := goutil.RunGoTest(path)
+	out, err := goutil.Test(path)
 	if err != nil {
 		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
 		return
