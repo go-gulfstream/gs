@@ -69,7 +69,6 @@ func renderEventMutationAddon(fileTpl string, manifest *Manifest, m EventMutatio
 		CommandsPkgName string
 		StreamPkgName   string
 		ImportEvents    []pkg
-		Hello           string
 	}{
 		EventMutation:   m,
 		GoModules:       manifest.GoModules,
@@ -77,7 +76,6 @@ func renderEventMutationAddon(fileTpl string, manifest *Manifest, m EventMutatio
 		CommandsPkgName: manifest.CommandsPkgName,
 		StreamPkgName:   manifest.StreamPkgName,
 		ImportEvents:    importEvents,
-		Hello:           "testDDDD/hhhh",
 	}); err != nil {
 		return nil, err
 	}

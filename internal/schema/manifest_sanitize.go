@@ -7,11 +7,11 @@ import (
 const tplSymbol = "$"
 
 func SanitizeManifest(m *Manifest) {
-	m.CommandsPkgName = SanitizePackageName(m.CommandsPkgName)
-	m.GoModules = SanitizePackageName(m.GoModules)
-	m.StreamPkgName = SanitizePackageName(m.StreamPkgName)
-	m.EventsPkgName = SanitizePackageName(m.EventsPkgName)
-	m.PackageName = SanitizePackageName(m.PackageName)
+	m.CommandsPkgName = sanitizePackageName(m.CommandsPkgName)
+	m.GoModules = sanitizePackageName(m.GoModules)
+	m.StreamPkgName = sanitizePackageName(m.StreamPkgName)
+	m.EventsPkgName = sanitizePackageName(m.EventsPkgName)
+	m.PackageName = sanitizePackageName(m.PackageName)
 	m.StreamName = sanitizeStreamName(m.StreamName)
 	m.ImportEvents = sanitizeImportEvents(m.ImportEvents)
 	if len(m.StreamPkgName) == 0 {
@@ -31,7 +31,7 @@ func SanitizeManifest(m *Manifest) {
 	sanitizeEvents(m.Mutations.Events)
 }
 
-func SanitizePackageName(name string) string {
+func sanitizePackageName(name string) string {
 	name = strings.ToLower(name)
 	return strings.ReplaceAll(name, " ", "")
 }
