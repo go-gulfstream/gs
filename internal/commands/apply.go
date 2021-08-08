@@ -138,6 +138,7 @@ func runApplyCommand(projectPath string) error {
 		return nil
 	}
 
+	fmt.Printf("%s Save changes...\n", greenColor("[INFO]"))
 	if err := source.FlushToDisk(); err != nil {
 		return err
 	}
