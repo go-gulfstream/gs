@@ -135,7 +135,7 @@ func (a *Mutation) handleEventMutation(prefix string) error {
 func (a *Mutation) inputGoModules() error {
 	for i := 0; ; i++ {
 		sectionControl(fmt.Sprintf("%d. go modules", i))
-		gomod, err := inputControl("gomod", "", false)
+		gomod, err := inputControl("go get", "", false)
 		if err != nil {
 			return err
 		}
