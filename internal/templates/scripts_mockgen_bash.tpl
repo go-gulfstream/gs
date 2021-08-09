@@ -4,6 +4,7 @@ declare -a mocks=(
     "internal/stream/command_mutation"
     "internal/stream/event_mutation"
     "internal/projection/projection"
+    "internal/projection/storage"
 )
 for i in "${mocks[@]}"
 do
