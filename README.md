@@ -1,7 +1,7 @@
 # gs generator
 Standard Tooling for Go-Gulfstream Development
 
-Make microservices based on event-driven architecture
+Make golang microservices based on event-driven architecture
 
 ## Table of contents
 - [Requirements](#requirements)
