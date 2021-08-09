@@ -137,12 +137,28 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:  "/internal/api/grpc",
-		IsDir: true,
+		Path:     "/internal/api/service.go",
+		Template: "api_service.go.tpl",
 	},
 	{
-		Path:  "/internal/api/http",
-		IsDir: true,
+		Path:     "/internal/api/service_test.go",
+		Template: "api_service_test.go.tpl",
+	},
+	{
+		Path:     "/internal/api/endpoints.go",
+		Template: "api_endpoints.go.tpl",
+	},
+	{
+		Path:     "/internal/api/middleware.go",
+		Template: "api_middleware.go.tpl",
+	},
+	{
+		Path:     "/internal/api/http.go",
+		Template: "api_http.go.tpl",
+	},
+	{
+		Path:     "/internal/api/grpc.go",
+		Template: "api_grpc.go.tpl",
 	},
 	{
 		Path:  "/docs",
@@ -212,6 +228,18 @@ var files = []File{
 	{
 		Path:  "/pkg/proto",
 		IsDir: true,
+	},
+	{
+		Path:  "/pkg/client",
+		IsDir: true,
+	},
+	{
+		Path:     "/pkg/client/http.go",
+		Template: "pkg_client_http.go.tpl",
+	},
+	{
+		Path:     "/pkg/client/grpc.go",
+		Template: "pkg_client_grpc.go.tpl",
 	},
 	{
 		Path:     "/pkg/proto/service.proto",

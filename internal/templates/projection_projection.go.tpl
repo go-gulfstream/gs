@@ -26,7 +26,7 @@ type Projection interface {
 }
 
 func New(
-	storage *Storage,
+	storage Storage,
 ) Projection {
 	return &projection{
 		storage: storage,
@@ -34,7 +34,7 @@ func New(
 }
 
 type projection struct {
-	storage *Storage
+	storage Storage
 }
 
 {{range $.Mutations.Commands -}}
