@@ -137,6 +137,14 @@ var files = []File{
 		IsDir: true,
 	},
 	{
+		Path:  "/internal/api/grpc",
+		IsDir: true,
+	},
+	{
+		Path:  "/internal/api/http",
+		IsDir: true,
+	},
+	{
 		Path:  "/docs",
 		IsDir: true,
 	},
@@ -202,6 +210,14 @@ var files = []File{
 		required: true,
 	},
 	{
+		Path:  "/pkg/proto",
+		IsDir: true,
+	},
+	{
+		Path:     "/pkg/proto/service.proto",
+		Template: "pkg_proto_service.tpl",
+	},
+	{
 		Path:  "/docker",
 		IsDir: true,
 	},
@@ -218,12 +234,20 @@ var files = []File{
 		Template: "docker_mockgen.tpl",
 	},
 	{
+		Path:     "/docker/protoc.dockerfile",
+		Template: "docker_protoc.tpl",
+	},
+	{
 		Path:  "/scripts",
 		IsDir: true,
 	},
 	{
 		Path:     "/scripts/mockgen.bash",
 		Template: "scripts_mockgen_bash.tpl",
+	},
+	{
+		Path:     "/scripts/protoc.bash",
+		Template: "scripts_protoc_bash.tpl",
 	},
 	{
 		Path:  "/mocks",
