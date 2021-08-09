@@ -46,6 +46,8 @@ func runManifestCommand(projectPath string, f manifestFlags) error {
 	manifest.CreatedAt = time.Now().UTC()
 	manifest.UpdatedAt = time.Now().UTC()
 
+	schema.SetDefaultGoModules(manifest)
+
 	var isInteractiveMode bool
 	if f.interactive && !f.testData {
 		isInteractiveMode = true
@@ -124,9 +126,11 @@ func genTestData(m *schema.Manifest) {
 	m.CommandsPkgName = "sessioncommands"
 	m.StreamPkgName = "sessionstream"
 	m.Description = "Some description"
-	m.GoGetPackages = []string{
-		"github.com/go-gulfstream/tmpevents",
-	}
+
+	schema.SetGoModules(m, []string{
+		"github.com/go-gulfstream/tmpevents/pkg/tmpevents",
+	})
+
 	m.ImportEvents = []string{
 		"github.com/go-gulfstream/tmpevents/pkg/tmpevents",
 	}

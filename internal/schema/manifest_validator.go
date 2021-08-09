@@ -9,6 +9,7 @@ import (
 var (
 	packageNameRe = regexp.MustCompile("^[a-zA-Z0-9]*$")
 	streamNameRe  = regexp.MustCompile("^[a-zA-Z]*$")
+	urlRe         = regexp.MustCompile(`^(?:[^%]|%[0-9A-Fa-f]{2})*$`)
 )
 
 var uidx = newUnique()
@@ -48,6 +49,9 @@ func ValidateManifest(m *Manifest) error {
 		if err := fn(m); err != nil {
 			return err
 		}
+	}
+	if err := validateGoGetPackages(m, idx); err != nil {
+		return err
 	}
 	if err := validatePkgs(m, idx); err != nil {
 		return err
@@ -134,6 +138,22 @@ func validatePublisherAdapter(m *Manifest) error {
 				ConnectorStreamPublisherAdapter.String(),
 			}, " OR "))
 	}
+}
+
+func validateGoGetPackages(m *Manifest, u *unique) error {
+	if len(m.GoGetPackages) == 0 {
+		return nil
+	}
+	for _, pkg := range m.GoGetPackages {
+		if !urlRe.MatchString(pkg) {
+			return fmt.Errorf("gulfstream.yml: invalid package url %s", pkg)
+		}
+		if u.has(pkg) {
+			return fmt.Errorf("gulfstream.yml: package url %s already exists", pkg)
+		}
+		u.add(pkg)
+	}
+	return nil
 }
 
 func validatePkgs(m *Manifest, u *unique) error {

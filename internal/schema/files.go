@@ -214,6 +214,22 @@ var files = []File{
 		Template: "docker_projection.go.tpl",
 	},
 	{
+		Path:     "/docker/mockgen.dockerfile",
+		Template: "docker_mockgen.tpl",
+	},
+	{
+		Path:  "/scripts",
+		IsDir: true,
+	},
+	{
+		Path:     "/scripts/mockgen.bash",
+		Template: "scripts_mockgen_bash.tpl",
+	},
+	{
+		Path:  "/mocks",
+		IsDir: true,
+	},
+	{
 		Path:     "/.gitignore",
 		Template: "gitignore.tpl",
 	},

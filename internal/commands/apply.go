@@ -151,7 +151,7 @@ func runApplyCommand(projectPath string) error {
 		fmt.Printf("Skipped: %d\n", skipCounter)
 	}
 
-	runGoTest(projectPath)
+	runGoTestAndGet(projectPath, manifest.GoGetPackages)
 
 	return nil
 }

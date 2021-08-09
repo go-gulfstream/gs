@@ -14,6 +14,7 @@ const (
 
 type Mutation struct {
 	importEvents     map[string]struct{}
+	goModules        map[string]struct{}
 	commandMutations []schema.CommandMutation
 	eventMutations   []schema.EventMutation
 }
@@ -30,6 +31,7 @@ func NewMutation() *Mutation {
 		importEvents:     make(map[string]struct{}),
 		commandMutations: make([]schema.CommandMutation, 0),
 		eventMutations:   make([]schema.EventMutation, 0),
+		goModules:        make(map[string]struct{}),
 	}
 }
 
@@ -46,9 +48,18 @@ func (a *Mutation) Apply(m *schema.Manifest) {
 		importEvents = append(importEvents, ie)
 	}
 
+	gomods := make([]string, 0, len(a.goModules))
+	for mod := range a.goModules {
+		if len(mod) == 0 {
+			continue
+		}
+		gomods = append(gomods, mod)
+	}
+
 	m.Mutations.Commands = append(m.Mutations.Commands, a.commandMutations...)
 	m.Mutations.Events = append(m.Mutations.Events, a.eventMutations...)
 	m.ImportEvents = append(m.ImportEvents, importEvents...)
+	m.GoGetPackages = append(m.GoGetPackages, gomods...)
 	m.UpdatedAt = time.Now().UTC()
 
 	schema.SanitizeManifest(m)
@@ -118,6 +129,29 @@ func (a *Mutation) handleEventMutation(prefix string) error {
 	}
 	a.eventMutations = append(a.eventMutations, em)
 	schema.IndexEventMutation(em)
+	return nil
+}
+
+func (a *Mutation) inputGoModules() error {
+	for i := 0; ; i++ {
+		sectionControl(fmt.Sprintf("%d. go modules", i))
+		gomod, err := inputControl("gomod", "", false)
+		if err != nil {
+			return err
+		}
+		// skip if empty
+		if len(gomod) == 0 {
+			return nil
+		}
+		a.goModules[gomod] = struct{}{}
+		next, err := confirmControl("add more?")
+		if err != nil {
+			return err
+		}
+		if !next {
+			break
+		}
+	}
 	return nil
 }
 
@@ -213,5 +247,10 @@ func (a *Mutation) Run() error {
 		}
 		mutationNum++
 	}
+
+	if err := a.inputGoModules(); err != nil {
+		return err
+	}
+
 	return nil
 }
