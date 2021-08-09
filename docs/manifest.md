@@ -1,4 +1,4 @@
-# Gulstream.yml
+# gulfstream.yml
 
 ```yaml
 name: My project
