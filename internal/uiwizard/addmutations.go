@@ -59,7 +59,9 @@ func (a *Mutation) Apply(m *schema.Manifest) {
 	m.Mutations.Commands = append(m.Mutations.Commands, a.commandMutations...)
 	m.Mutations.Events = append(m.Mutations.Events, a.eventMutations...)
 	m.ImportEvents = append(m.ImportEvents, importEvents...)
-	m.GoGetPackages = append(m.GoGetPackages, gomods...)
+	if len(gomods) > 0 {
+		m.GoGetPackages = append(m.GoGetPackages, gomods...)
+	}
 	m.UpdatedAt = time.Now().UTC()
 
 	schema.SanitizeManifest(m)
@@ -248,8 +250,10 @@ func (a *Mutation) Run() error {
 		mutationNum++
 	}
 
-	if err := a.inputGoModules(); err != nil {
-		return err
+	if len(a.eventMutations) > 0 {
+		if err := a.inputGoModules(); err != nil {
+			return err
+		}
 	}
 
 	return nil

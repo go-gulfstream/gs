@@ -149,7 +149,15 @@ func runGoTestAndGet(path string, packages []string) {
 			}
 			fmt.Printf("%s - %s %s\n", greenColor("[OK]"), pkg, string(out))
 		}
+		fmt.Printf("go mod tidy:\n")
+		out, err := goutil.Tidy(path)
+		if err != nil {
+			fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+			return
+		}
+		fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
 	}
+
 	fmt.Printf("go test ./...:\n")
 	out, err := goutil.Test(path)
 	if err != nil {
