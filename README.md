@@ -14,7 +14,7 @@ Make golang microservices based on event-driven architecture
 - [Manifest](docs/manifest.md)
 
 ### Requirements
-Install golang is recommended
+[Install](https://golang.org/doc/install) golang is recommended 
 
 ### Installation
 work in progress...
