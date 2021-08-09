@@ -2,11 +2,19 @@
 Standard Tooling for Go-Gulfstream Development
 
 ## Table of contents
+- [Requirements](#requirements)
+- [Installation](#installation)
 - [Create a new manifest file](#1-create-a-new-manifest-file-for-project)
 - [Initialize a new project](#2-initialize-a-new-project)
 - [Add mutations](#3-add-mutations)
 - [Apply changes](#4-apply-changes-to-the-project)
 - [Example manifest file](docs/manifest.md)
+
+### Requirements
+Install golang is recommended
+
+### Installation
+work in progress...
 
 ### 1. Create a new manifest file for project
 With empty manifest file
