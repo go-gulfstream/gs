@@ -7,11 +7,11 @@ import (
 )
 
 type Storage interface {
-	Insert(ctx context.Context, stream *Session) error
-	FindOne(ctx context.Context, id uuid.UUID, version int) (*Session, error)
-	Find(ctx context.Context, f *Filter) ([]*Session, error)
+	Insert(ctx context.Context, stream {{$.StreamName}}) error
+	FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error)
+	Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	Update(ctx context.Context, stream *Session) error
+	Update(ctx context.Context, stream {{$.StreamName}}) error
 }
 
 type storage struct{}
@@ -20,17 +20,17 @@ func NewStorage() Storage {
 	return &storage{}
 }
 
-func (s *storage) Insert(ctx context.Context, stream *Session) error {
+func (s *storage) Insert(ctx context.Context, stream {{$.StreamName}}) error {
 	panic("not implemented")
 	return nil
 }
 
-func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) (*Session, error) {
+func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error) {
 	panic("not implemented")
-	return nil, nil
+	return {{$.StreamName}}{}, nil
 }
 
-func (s *storage) Find(ctx context.Context, f *Filter) ([]*Session, error) {
+func (s *storage) Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error) {
 	panic("not implemented")
 	return nil, nil
 }
@@ -40,7 +40,7 @@ func (s *storage) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (s *storage) Update(ctx context.Context, stream *Session) error {
+func (s *storage) Update(ctx context.Context, stream {{$.StreamName}}) error {
 	panic("not implemented")
 	return nil
 }
