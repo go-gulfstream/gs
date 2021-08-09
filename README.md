@@ -10,7 +10,8 @@ Make microservices based on event-driven architecture
 - [Initialize a new project](#2-initialize-a-new-project)
 - [Add mutations](#3-add-mutations)
 - [Apply changes](#4-apply-changes-to-the-project)
-- [Example manifest file](docs/manifest.md)
+- [A short example](#a-short-example)
+- [Manifest](docs/manifest.md)
 
 ### Requirements
 Install golang is recommended
@@ -54,4 +55,12 @@ $ gs apply path/to/project
 With interactive mode
 ```shell script
 $ gs apply -i path/to/project  
+```
+
+### A short example
+```shell script
+$ mkdir ~/myproject
+$ gs manifest -d ~/myproject
+$ gs init ~/myproject
+$ gs add -a ~/myproject
 ```
