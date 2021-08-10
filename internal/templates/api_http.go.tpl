@@ -5,13 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
+    "github.com/google/uuid"
 	"github.com/go-kit/kit/transport"
 	"github.com/gorilla/mux"
+	"{{$.GoModules}}/internal/projection"
 
 	transporthttp "github.com/go-kit/kit/transport/http"
 	"github.com/go-kit/log"
 )
+
+var ErrBadRouting = errors.New("api: inconsistent mapping between route and handler")
 
 func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
@@ -36,15 +41,41 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 }
 
 func decodeFindOneRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-    // TODO:
-    panic("TODO")
-	return nil, nil
+	vars := mux.Vars(r)
+	pstr, ok := vars["projection_id"]
+	if !ok {
+		return nil, ErrBadRouting
+	}
+	id, err := uuid.Parse(pstr)
+	if err != nil {
+		return nil, ErrBadRouting
+	}
+	req := findOneRequest{ProjectionID: id}
+	vstr, ok := vars["version"]
+	if ok {
+		req.Version, err = strconv.Atoi(vstr)
+		if err != nil {
+			return nil, ErrBadRouting
+		}
+	}
+	return req, nil
 }
 
 func decodeFindRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	// TODO:
-	panic("TODO")
-	return nil, nil
+	vars := mux.Vars(r)
+	vstr, ok := vars["version"]
+	var version int
+	if ok {
+		version, err = strconv.Atoi(vstr)
+		if err != nil {
+			return nil, ErrBadRouting
+		}
+	}
+	return findRequest{
+		Filter: &projection.Filter{
+			Version: version,
+		},
+	}, nil
 }
 
 type errorer interface {
@@ -75,6 +106,8 @@ func codeFrom(err error) int {
 	switch err {
 	case ErrNotFound:
 		return http.StatusNotFound
+	case ErrBadRouting:
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}

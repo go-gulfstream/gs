@@ -133,6 +133,14 @@ var files = []File{
 		Template: "config_config.go.tpl",
 	},
 	{
+		Path:     "/internal/config/stream.go",
+		Template: "config_stream.go.tpl",
+	},
+	{
+		Path:     "/internal/config/projection.go",
+		Template: "config_projection.go.tpl",
+	},
+	{
 		Path:  "/internal/api",
 		IsDir: true,
 	},
@@ -169,12 +177,12 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:     "/config/config.yml",
-		Template: "config_yml.tpl",
+		Path:     "/config/stream.config.yml",
+		Template: "config_stream.config.yml.tpl",
 	},
 	{
-		Path:     "/config/config.env",
-		Template: "config_env.tpl",
+		Path:     "/config/projection.config.yml",
+		Template: "config_projection.config.yml.tpl",
 	},
 	{
 		Path:     "/docs/README.md",

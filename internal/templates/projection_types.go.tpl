@@ -9,6 +9,8 @@ import (
 type {{$.StreamName}} struct {
    ID        uuid.UUID
    Version   int
+   Limit         int
+   NextPage      string
 }
 
 type Filter struct {

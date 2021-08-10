@@ -21,26 +21,21 @@ func NewStorage() Storage {
 }
 
 func (s *storage) Insert(ctx context.Context, stream {{$.StreamName}}) error {
-	panic("not implemented")
 	return nil
 }
 
 func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error) {
-	panic("not implemented")
 	return {{$.StreamName}}{}, nil
 }
 
 func (s *storage) Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error) {
-	panic("not implemented")
-	return nil, nil
+	return []{{$.StreamName}}{}, nil
 }
 
 func (s *storage) Delete(ctx context.Context, id uuid.UUID) error {
-	panic("not implemented")
 	return nil
 }
 
 func (s *storage) Update(ctx context.Context, stream {{$.StreamName}}) error {
-	panic("not implemented")
 	return nil
 }

@@ -102,7 +102,7 @@ func runGoTools(path string, packages []string) {
 		for _, pkg := range packages {
 			out, err := goutil.Get(path, pkg)
 			if err != nil {
-				fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+				fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 				return
 			}
 			fmt.Printf("%s - %s %s\n", greenColor("[OK]"), pkg, string(out))
@@ -112,7 +112,7 @@ func runGoTools(path string, packages []string) {
 	fmt.Printf("go mod download:\n")
 	out, err := goutil.Mod(path)
 	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 		return
 	}
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
@@ -120,7 +120,7 @@ func runGoTools(path string, packages []string) {
 	fmt.Printf("go mod tidy:\n")
 	out, err = goutil.Tidy(path)
 	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 		return
 	}
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
@@ -128,7 +128,7 @@ func runGoTools(path string, packages []string) {
 	fmt.Printf("go test ./...:\n")
 	out, err = goutil.Test(path)
 	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 		return
 	}
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
@@ -144,7 +144,7 @@ func runGoTestAndGet(path string, packages []string) {
 		for _, pkg := range packages {
 			out, err := goutil.Get(path, pkg)
 			if err != nil {
-				fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+				fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 				return
 			}
 			fmt.Printf("%s - %s %s\n", greenColor("[OK]"), pkg, string(out))
@@ -152,7 +152,7 @@ func runGoTestAndGet(path string, packages []string) {
 		fmt.Printf("go mod tidy:\n")
 		out, err := goutil.Tidy(path)
 		if err != nil {
-			fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+			fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 			return
 		}
 		fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
@@ -161,7 +161,7 @@ func runGoTestAndGet(path string, packages []string) {
 	fmt.Printf("go test ./...:\n")
 	out, err := goutil.Test(path)
 	if err != nil {
-		fmt.Printf("%s - %s\n", redColor("[ERR]"), err)
+		fmt.Printf("%s - %s => %s\n", redColor("[ERR]"), err, string(out))
 		return
 	}
 	fmt.Printf("%s - %s\n", greenColor("[OK]"), string(out))
