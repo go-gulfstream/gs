@@ -16,6 +16,8 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=gulstream/gs
+          VTAG=v$(echo $GITHUB_REF | grep -o "[0-9][\.].*")
+          echo Imag teg is: $TAG
           VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
@@ -28,6 +30,7 @@ jobs:
             TAGS="$TAGS,${DOCKER_IMAGE}:latest"
           fi
           echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=vtag::${VTAG}
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
@@ -44,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           build-args: |
-             BUILD_VERSION=${{ steps.prep.outputs.tags }}
+             BUILD_VERSION=${{ steps.prep.outputs.vtag }}
           context: .
           file: docker/gs.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
