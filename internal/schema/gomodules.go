@@ -10,6 +10,8 @@ var gomodules = []string{
 	"github.com/go-gulfstream/tmpevents@latest",
 	"github.com/go-gulfstream/gulfstream@latest",
 	"github.com/go-kit/log@v0.1.0",
+	"github.com/jackc/pgx/v4@v4.11.0",
+	"github.com/go-redis/redis/v8@v8.11.0",
 }
 
 func SetDefaultGoModules(manifest *Manifest) {

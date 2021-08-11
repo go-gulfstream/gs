@@ -128,9 +128,33 @@ type streamStorage struct {
 	EnableJournal bool           `yaml:"enable_journal"`
 }
 
+func (s streamStorage) IsDefault() bool {
+	return s.AdapterID == DefaultStreamStorage
+}
+
+func (s streamStorage) IsRedis() bool {
+	return s.AdapterID == RedisStreamStorage
+}
+
+func (s streamStorage) IsPostgres() bool {
+	return s.AdapterID == PostgresStreamStorage
+}
+
 type commandBus struct {
 	Name      string            `yaml:"name,omitempty"`
 	AdapterID commandBusAdapter `yaml:"id"`
+}
+
+func (c commandBus) IsNATS() bool {
+	return c.AdapterID == NATSCommandBus
+}
+
+func (c commandBus) IsHTTP() bool {
+	return c.AdapterID == HTTPCommandBus
+}
+
+func (c commandBus) IsGRPC() bool {
+	return c.AdapterID == GRPCCommandBus
 }
 
 type CommandMutation struct {

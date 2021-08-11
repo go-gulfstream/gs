@@ -35,7 +35,7 @@ func main() {
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 		logger = log.With(logger, "caller", log.DefaultCaller)
-		logger = log.WithPrefix(logger, "projection", "{{$.StreamName}}")
+		logger = log.WithPrefix(logger, "projection", {{$.StreamPkgName}}.Name)
 	}
 
 	storage := projection.NewStorage()
