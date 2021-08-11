@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func New() (*cobra.Command, error) {
+func New(version string) (*cobra.Command, error) {
 	root := &cobra.Command{
 		Use:   "gs",
 		Short: "Standard Tooling for Go-Gulfstream Development",
@@ -25,6 +25,7 @@ func New() (*cobra.Command, error) {
 	root.AddCommand(manifestCommand())
 	root.AddCommand(applyCommand())
 	root.AddCommand(addCommand())
+	root.AddCommand(versionCommand(version))
 
 	return root, nil
 }
