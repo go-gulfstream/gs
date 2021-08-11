@@ -25,7 +25,10 @@ func (s *storage) Insert(ctx context.Context, stream {{$.StreamName}}) error {
 }
 
 func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error) {
-	return {{$.StreamName}}{}, nil
+	return {{$.StreamName}}{
+        ID:      id,
+        Version: version,
+	}, nil
 }
 
 func (s *storage) Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error) {

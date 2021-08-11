@@ -25,7 +25,7 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		transporthttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
 		transporthttp.ServerErrorEncoder(encodeError),
 	}
-	r.Methods(http.MethodGet).Path("/projection/{projection_id}").Handler(transporthttp.NewServer(
+	r.Methods(http.MethodGet).Path("/projections/{projection_id}").Handler(transporthttp.NewServer(
 		e.FindOneEndpoint,
 		decodeFindOneRequest,
 		encodeResponse,
