@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           build-args:
-            - BUILD_VERSION=steps.prep.outputs.tags
+            - BUILD_VERSION=${{ steps.prep.outputs.tags }}
           context: .
           file: gs.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
