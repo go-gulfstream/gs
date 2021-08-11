@@ -26,6 +26,7 @@ type Manifest struct {
 	ImportEvents    []string      `yaml:"import_events"`
 	StreamStorage   streamStorage `yaml:"storage_adapter"`
 	StreamPublisher publisher     `yaml:"publisher_adapter"`
+	CommandBus      commandBus    `yaml:"commandbus_adapter"`
 	Contributors    []Contributor `yaml:"contributors"`
 	CreatedAt       time.Time     `yaml:"created_at"`
 	UpdatedAt       time.Time     `yaml:"updated_at"`
@@ -42,15 +43,15 @@ func (m *Manifest) SetPublisherFromString(name string) {
 			Name:      DefaultStreamPublisher.String(),
 			AdapterID: DefaultStreamPublisher,
 		}
-	case KafkaStreamPublisherAdapterName:
+	case KafkaStreamPublisherName:
 		m.StreamPublisher = publisher{
-			Name:      KafkaStreamPublisherAdapter.String(),
-			AdapterID: KafkaStreamPublisherAdapter,
+			Name:      KafkaStreamPublisher.String(),
+			AdapterID: KafkaStreamPublisher,
 		}
-	case ConnectorStreamPublisherAdapterName:
+	case ConnectorStreamPublisherName:
 		m.StreamPublisher = publisher{
-			Name:      ConnectorStreamPublisherAdapter.String(),
-			AdapterID: ConnectorStreamPublisherAdapter,
+			Name:      ConnectorStreamPublisher.String(),
+			AdapterID: ConnectorStreamPublisher,
 		}
 	}
 }
@@ -63,17 +64,37 @@ func (m *Manifest) SetStreamStorageFromString(name string, journal bool) {
 			AdapterID:     DefaultStreamStorage,
 			EnableJournal: journal,
 		}
-	case RedisStreamStorageAdapterName:
+	case RedisStreamStorageName:
 		m.StreamStorage = streamStorage{
-			Name:          RedisStreamStorageAdapter.String(),
-			AdapterID:     RedisStreamStorageAdapter,
+			Name:          RedisStreamStorage.String(),
+			AdapterID:     RedisStreamStorage,
 			EnableJournal: journal,
 		}
-	case PostgresStreamStorageAdapterName:
+	case PostgresStreamStorageName:
 		m.StreamStorage = streamStorage{
-			Name:          PostgresStreamStorageAdapter.String(),
-			AdapterID:     PostgresStreamStorageAdapter,
+			Name:          PostgresStreamStorage.String(),
+			AdapterID:     PostgresStreamStorage,
 			EnableJournal: journal,
+		}
+	}
+}
+
+func (m *Manifest) SetCommandBusFromString(name string) {
+	switch name {
+	case HTTPCommandBusName:
+		m.CommandBus = commandBus{
+			Name:      HTTPCommandBus.String(),
+			AdapterID: HTTPCommandBus,
+		}
+	case GRPCCommandBusName:
+		m.CommandBus = commandBus{
+			Name:      GRPCCommandBus.String(),
+			AdapterID: GRPCCommandBus,
+		}
+	case NATSCommandBusName:
+		m.CommandBus = commandBus{
+			Name:      NATSCommandBus.String(),
+			AdapterID: NATSCommandBus,
 		}
 	}
 }
@@ -105,6 +126,11 @@ type streamStorage struct {
 	Name          string         `yaml:"name,omitempty"`
 	AdapterID     storageAdapter `yaml:"id"`
 	EnableJournal bool           `yaml:"enable_journal"`
+}
+
+type commandBus struct {
+	Name      string            `yaml:"name,omitempty"`
+	AdapterID commandBusAdapter `yaml:"id"`
 }
 
 type CommandMutation struct {

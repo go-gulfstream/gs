@@ -61,9 +61,13 @@ func writeManifestToFile(path string, manifest *schema.Manifest, force bool) err
 	for id, adapter := range schema.PublisherAdapters {
 		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
 	}
+	buf.WriteString("\n# available commandbus adapters:\n")
+	for id, adapter := range schema.CommandBusAdapters {
+		buf.WriteString(fmt.Sprintf("# id:%d, name: %s\n", id, adapter))
+	}
 	manifestFile := filepath.Join(path, manifestFilename)
 	if _, err := os.Stat(manifestFile); err == nil && !force {
-		return fmt.Errorf("manifest file already exists")
+		return fmt.Errorf("gulfstream.yml: manifest file already exists")
 	}
 	return ioutil.WriteFile(manifestFile, buf.Bytes(), 0755)
 }

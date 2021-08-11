@@ -45,6 +45,7 @@ func ValidateManifest(m *Manifest) error {
 		validateProjectName,
 		validatePublisherAdapter,
 		validateStorageAdapter,
+		validateCommandBusAdapter,
 	} {
 		if err := fn(m); err != nil {
 			return err
@@ -127,15 +128,15 @@ func validateProjectName(m *Manifest) error {
 func validatePublisherAdapter(m *Manifest) error {
 	switch m.StreamPublisher.AdapterID {
 	case DefaultStreamPublisher,
-		KafkaStreamPublisherAdapter,
-		ConnectorStreamPublisherAdapter:
+		KafkaStreamPublisher,
+		ConnectorStreamPublisher:
 		return nil
 	default:
 		return fmt.Errorf("gulfstream.yml: invalid publisher adapter id. got %s, expected %v",
 			m.StreamPublisher.AdapterID,
 			strings.Join([]string{
-				KafkaStreamPublisherAdapter.String(),
-				ConnectorStreamPublisherAdapter.String(),
+				KafkaStreamPublisher.String(),
+				ConnectorStreamPublisher.String(),
 			}, " OR "))
 	}
 }
@@ -178,14 +179,30 @@ func validatePkgs(m *Manifest, u *unique) error {
 func validateStorageAdapter(m *Manifest) error {
 	switch m.StreamStorage.AdapterID {
 	case DefaultStreamStorage,
-		RedisStreamStorageAdapter,
-		PostgresStreamStorageAdapter:
+		RedisStreamStorage,
+		PostgresStreamStorage:
 		return nil
 	default:
 		return fmt.Errorf("gulfstream.yml: invalid stream storage adapter id. got %s, expected %v",
 			m.StreamStorage.AdapterID, strings.Join([]string{
-				RedisStreamStorageAdapter.String(),
-				PostgresStreamStorageAdapter.String(),
+				RedisStreamStorage.String(),
+				PostgresStreamStorage.String(),
+			}, " OR "))
+	}
+}
+
+func validateCommandBusAdapter(m *Manifest) error {
+	switch m.CommandBus.AdapterID {
+	case HTTPCommandBus,
+		GRPCCommandBus,
+		NATSCommandBus:
+		return nil
+	default:
+		return fmt.Errorf("gulfstream.yml: invalid command bus adapter id. got %s, expected %v",
+			m.CommandBus.AdapterID, strings.Join([]string{
+				HTTPCommandBus.String(),
+				GRPCCommandBus.String(),
+				NATSCommandBus.String(),
 			}, " OR "))
 	}
 }

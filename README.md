@@ -25,6 +25,11 @@ With empty manifest file
 $ gs manifest path/to/project
 ```
 
+With interactive mode 
+```shell script
+$ gs manifest -i path/to/project
+```
+
 With data example
 ```shell script
 $ gs manifest -d path/to/project 
@@ -34,6 +39,7 @@ $ gs manifest -d path/to/project
 ```shell script
 $ gs init path/to/project
 ```
+
 
 ### 3. Add mutations
 Update manifest file
