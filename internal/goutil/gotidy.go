@@ -11,7 +11,7 @@ func Tidy(path string) ([]byte, error) {
 		return nil, err
 	}
 	defer func() {
-		os.Chdir(oldPath)
+		_ = os.Chdir(oldPath)
 	}()
 	if err := os.Chdir(path); err != nil {
 		return nil, err

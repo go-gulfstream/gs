@@ -15,11 +15,10 @@ func init() {
 }
 
 func GoInstall() bool {
-	_, err := exec.Command(bin(), "version").CombinedOutput()
-	if err != nil {
-		return false
+	if _, err := exec.Command(bin(), "version").CombinedOutput(); err == nil {
+		return true
 	}
-	return true
+	return false
 }
 
 func Version() string {

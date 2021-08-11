@@ -12,7 +12,7 @@ func versionCommand(version string) *cobra.Command {
 		Short: "Show the gs version information",
 		Run: func(cmd *cobra.Command, args []string) {
 			drawBanner()
-			fmt.Printf("%s %s\n", greenColor("[INFO]"), version)
+			fmt.Printf("BuildVersion: %s\n", version)
 		},
 	}
 	return command

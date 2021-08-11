@@ -7,10 +7,10 @@ import (
 	"github.com/go-gulfstream/gs/internal/commands"
 )
 
-const version = "v0.0.0"
+var buildVersion = "v0.0.0"
 
 func main() {
-	app, err := commands.New(version)
+	app, err := commands.New(buildVersion)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		os.Exit(1)

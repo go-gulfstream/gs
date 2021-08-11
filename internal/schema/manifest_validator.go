@@ -78,7 +78,7 @@ func validateGoModules(m *Manifest) error {
 }
 
 func validateGoVersion(m *Manifest) error {
-	if len(m.GoVersion) < 0 {
+	if len(m.GoVersion) == 0 {
 		return fmt.Errorf("gulfstream.yml: undefined go version")
 	}
 	return nil

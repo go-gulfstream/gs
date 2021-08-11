@@ -54,10 +54,6 @@ func sectionControl(label string) {
 	fmt.Printf("%s:\n", strings.ToUpper(label))
 }
 
-func lineControl() {
-	fmt.Println("")
-}
-
 func confirmControl(
 	label string,
 ) (bool, error) {
