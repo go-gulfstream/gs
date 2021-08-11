@@ -46,13 +46,18 @@ OR short entry
 $ gs add -a path/to/project 
 ```
 
-### 4. Apply changes to the project
-Edit the ```path/to/project/gulfstream.yml``` manifest file and then execute the command:
+### 4. Apply changes to the project 
+#### Manual
+Edit the ```path/to/project/gulfstream.yml``` manifest file 
+
+Add [command mutations](docs/add_command_mutation.md) OR/AND [event mutations](docs/add_event_mutation.md) 
+
+Then execute apply command:
 ```shell script
 $ gs apply path/to/project  
 ```
-
-With interactive mode
+#### Interactive
+OR use the interactive mode without editing the manifest file:
 ```shell script
 $ gs apply -i path/to/project  
 ```
