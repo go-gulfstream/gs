@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
     "syscall"
+    "net"
+    "net/http"
 
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
@@ -30,9 +32,9 @@ import (
 	{{if $.CommandBus.IsGRPC -}}
 	    commandbusgrpc "github.com/go-gulfstream/gulfstream/pkg/commandbus/grpc"
 	    "google.golang.org/grpc"
-	    "net"
     {{else if $.CommandBus.IsNATS -}}
     {{else if $.CommandBus.IsHTTP -}}
+        commandbushttp "github.com/go-gulfstream/gulfstream/pkg/commandbus/http"
     {{end}}
 )
 
@@ -88,6 +90,18 @@ func main() {
     stream.MakeEventControllers(eventMutations, controller)
 
     var g group.Group
+    {
+    		debugListener, err := net.Listen("tcp", "")
+    		if err != nil {
+    			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
+    			os.Exit(1)
+    		}
+    		g.Add(func() error {
+    			logger.Log("transport", "debug/HTTP", "addr", "")
+    			return http.Serve(debugListener, http.DefaultServeMux)
+    		}, func(error) {
+    			_ = debugListener.Close()
+    		})
     {{if $.CommandBus.IsGRPC -}}
     {
                 grpcListener, err := net.ListenTCP("tcp", nil)
@@ -97,7 +111,7 @@ func main() {
         		}
         		grpcServer := grpc.NewServer(/* interceptors */)
         		g.Add(func() error {
-        			_ = logger.Log("transport", "gRPC", "addr", "")
+        			_ = logger.Log("transport", "commandbus/gRPC", "addr", "")
         			commandBus := commandbusgrpc.NewServer(controller,
         				commandbusgrpc.WithServerErrorHandler(
         					func(err error) {
@@ -116,7 +130,21 @@ func main() {
     }
     {{else if $.CommandBus.IsHTTP -}}
     {
-
+        httpListener, err := net.Listen("tcp", "")
+		if err != nil {
+			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
+			os.Exit(1)
+		}
+		g.Add(func() error {
+			_ = logger.Log("transport", "commandbus/HTTP", "addr", "")
+			handler := commandbushttp.NewServer(controller, commandbushttp.WithServerErrorHandler(
+				func(err error) {
+					_ = logger.Log("transport", "commandbus/HTTP", "err", err)
+				}))
+			return http.Serve(httpListener, handler)
+		}, func(error) {
+			_ = httpListener.Close()
+		})
     }
     {{end -}}
     {
