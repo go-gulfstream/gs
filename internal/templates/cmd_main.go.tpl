@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+    "syscall"
 
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
@@ -24,11 +26,22 @@ import (
 	{{if $.StreamPublisher.IsKafka }}
         eventbuskafka "github.com/go-gulfstream/gulfstream/pkg/eventbus/kafka"
 	{{end}}
+
+	{{if $.CommandBus.IsGRPC -}}
+	    commandbusgrpc "github.com/go-gulfstream/gulfstream/pkg/commandbus/grpc"
+	    "google.golang.org/grpc"
+	    "net"
+    {{else if $.CommandBus.IsNATS -}}
+    {{else if $.CommandBus.IsHTTP -}}
+    {{end}}
 )
 
 func main() {
     cfg := loadConfig()
     ctx := context.Background()
+
+    _ = cfg
+	_ = ctx
 
    	var logger log.Logger
    	{
@@ -47,11 +60,11 @@ func main() {
            os.Exit(1)
         }
         defer pool.Close()
-        {{if $.StreamStorage.EnableJournal}}
+        {{if $.StreamStorage.EnableJournal -}}
         storage := storagepostgres.New(pool, {{$.StreamPkgName}}.Name, newEmptyStream, storagepostgres.WithJournal())
         {{else -}}
         storage := storagepostgres.New(pool, {{$.StreamPkgName}}.Name, newEmptyStream)
-        {{end}}
+        {{end -}}
     {{else if $.StreamStorage.IsRedis -}}
         rdb := redis.NewClient(&redis.Options{Addr: ""})
         if err := rdb.Ping(ctx).Err(); err != nil && err != redis.Nil {
@@ -61,8 +74,7 @@ func main() {
         defer rdb.Close()
         storage := storageredis.New(rdb, {{$.StreamPkgName}}.Name, newEmptyStream)
     {{end -}}
-
-    {{if $.StreamPublisher.IsKafka }}
+    {{if $.StreamPublisher.IsKafka -}}
         publisher := eventbuskafka.NewPublisher([]string{}, eventbuskafka.DefaultConfig())
     {{else if $.StreamPublisher.IsConnector -}}
         publisher := gulfstream.NewConnectorPublisher()
@@ -75,10 +87,55 @@ func main() {
     stream.MakeCommandControllers(commandMutations, controller)
     stream.MakeEventControllers(eventMutations, controller)
 
-   	_ = logger
-    _ = ctx
-    _ = cfg
-    _ = storage
+    var g group.Group
+    {{if $.CommandBus.IsGRPC -}}
+    {
+                grpcListener, err := net.ListenTCP("tcp", nil)
+        		if err != nil {
+        			_ = logger.Log("transport", "gRPC", "during", "Listen", "err", err)
+        			os.Exit(1)
+        		}
+        		grpcServer := grpc.NewServer(/* interceptors */)
+        		g.Add(func() error {
+        			_ = logger.Log("transport", "gRPC", "addr", "")
+        			commandBus := commandbusgrpc.NewServer(controller,
+        				commandbusgrpc.WithServerErrorHandler(
+        					func(err error) {
+        						_ = logger.Log("transport", "commandbus/GRPC", "err", err)
+        					}))
+        			commandBus.Register(grpcServer)
+        			return grpcServer.Serve(grpcListener)
+        		}, func(error) {
+        			grpcServer.GracefulStop()
+        			_ = grpcListener.Close()
+        		})
+    }
+    {{else if $.CommandBus.IsNATS -}}
+    {
+
+    }
+    {{else if $.CommandBus.IsHTTP -}}
+    {
+
+    }
+    {{end -}}
+    {
+    		cancelInterrupt := make(chan struct{})
+    		g.Add(func() error {
+    			c := make(chan os.Signal, 1)
+    			signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+    			select {
+    			case sig := <-c:
+    				return fmt.Errorf("received signal %s", sig)
+    			case <-cancelInterrupt:
+    				return nil
+    			}
+    		}, func(err error) {
+    			close(cancelInterrupt)
+    		})
+    }
+
+    logger.Log("exit", g.Run())
 }
 
 func loadConfig() *config.Stream {
@@ -100,5 +157,5 @@ func loadConfig() *config.Stream {
 }
 
 func newEmptyStream() *gulfstream.Stream {
-	return nil
+	return gulfstream.Blank({{$.StreamPkgName}}.Name, stream.New())
 }
