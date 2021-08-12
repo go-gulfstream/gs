@@ -29,11 +29,12 @@ import (
         eventbuskafka "github.com/go-gulfstream/gulfstream/pkg/eventbus/kafka"
 	{{end}}
 
-	{{if $.CommandBus.IsGRPC -}}
+	{{if $.CommandBus.IsGRPC }}
 	    commandbusgrpc "github.com/go-gulfstream/gulfstream/pkg/commandbus/grpc"
 	    "google.golang.org/grpc"
-    {{else if $.CommandBus.IsNATS -}}
-    {{else if $.CommandBus.IsHTTP -}}
+    {{else if $.CommandBus.IsNATS }}
+        commandbusnats "github.com/go-gulfstream/gulfstream/pkg/commandbus/nats"
+    {{else if $.CommandBus.IsHTTP }}
         commandbushttp "github.com/go-gulfstream/gulfstream/pkg/commandbus/http"
     {{end}}
 )
@@ -102,6 +103,7 @@ func main() {
     		}, func(error) {
     			_ = debugListener.Close()
     		})
+    }
     {{if $.CommandBus.IsGRPC -}}
     {
                 grpcListener, err := net.ListenTCP("tcp", nil)
@@ -126,7 +128,29 @@ func main() {
     }
     {{else if $.CommandBus.IsNATS -}}
     {
-
+        wait := make(chan struct{}, 0)
+		opts := []nats.Option{nats.Name("name")}
+		conn, err := nats.Connect("", opts...)
+		if err != nil {
+			_ = logger.Log("transport", "commandbus/NATS", "during", "Connect", "err", err)
+			os.Exit(1)
+		}
+		g.Add(func() error {
+			_ = logger.Log("transport", "commandBus/NATS", "addr", "")
+			commandBus := commandbusnats.NewServer({{$.StreamPkgName}}.Name, controller,
+				commandbusnats.WithServerErrorHandler(
+					func(msg *nats.Msg, err error) {
+						_ = logger.Log("transport", "commandBus/NATS", "subj", msg.Subject, "err", err)
+					}))
+			if err := commandBus.Listen(conn); err != nil {
+				return err
+			}
+			<-wait
+			return nil
+		}, func(error) {
+			close(wait)
+			conn.Close()
+		})
     }
     {{else if $.CommandBus.IsHTTP -}}
     {

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	source2 "github.com/go-gulfstream/gs/internal/source"
+	"github.com/go-gulfstream/gs/internal/source"
 
 	storeagepostgres "github.com/go-gulfstream/gulfstream/pkg/storage/postgres"
 
@@ -82,11 +82,11 @@ func runInitCommand(projectPath string) (err error) {
 			} else {
 				// fix imports and code format.
 				if file.IsGo() {
-					source, err := source2.Format(file.Path, file.TemplateData)
+					src, err := source.Format(file.Path, file.TemplateData)
 					if err != nil {
 						return err
 					}
-					file.TemplateData = source
+					file.TemplateData = src
 				}
 				// make file
 				err = ioutil.WriteFile(file.Path, file.TemplateData, 0755)
@@ -107,11 +107,11 @@ func runInitCommand(projectPath string) (err error) {
 	}
 
 	if err := writeManifestToFile(projectPath, manifest, true); err != nil {
-		return err
+		return fmt.Errorf("writeManifestToFile %v", err)
 	}
 
 	if err := writeSchema(projectPath, manifest); err != nil {
-		return err
+		return fmt.Errorf("writeSchema %s", err)
 	}
 
 	runGoTools(projectPath, manifest.GoGetPackages)
