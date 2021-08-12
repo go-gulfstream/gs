@@ -38,11 +38,6 @@ func New() *Manifest {
 
 func (m *Manifest) SetPublisherFromString(name string) {
 	switch name {
-	case DefaultName:
-		m.StreamPublisher = publisher{
-			Name:      DefaultStreamPublisher.String(),
-			AdapterID: DefaultStreamPublisher,
-		}
 	case KafkaStreamPublisherName:
 		m.StreamPublisher = publisher{
 			Name:      KafkaStreamPublisher.String(),
@@ -102,6 +97,14 @@ func (m *Manifest) SetCommandBusFromString(name string) {
 type publisher struct {
 	Name      string           `yaml:"name,omitempty"`
 	AdapterID publisherAdapter `yaml:"id"`
+}
+
+func (p publisher) IsKafka() bool {
+	return p.AdapterID.IsKafka()
+}
+
+func (p publisher) IsConnector() bool {
+	return p.AdapterID.IsConnector()
 }
 
 type Mutations struct {

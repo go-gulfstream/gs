@@ -1,8 +1,7 @@
 package schema
 
 const (
-	DefaultStreamPublisher publisherAdapter = iota
-	KafkaStreamPublisher
+	KafkaStreamPublisher publisherAdapter = iota
 	ConnectorStreamPublisher
 )
 
@@ -12,17 +11,22 @@ const (
 )
 
 var PublisherAdapters = map[publisherAdapter]string{
-	DefaultStreamPublisher:   DefaultStreamPublisher.String(),
 	KafkaStreamPublisher:     KafkaStreamPublisher.String(),
 	ConnectorStreamPublisher: ConnectorStreamPublisher.String(),
 }
 
 type publisherAdapter int
 
+func (a publisherAdapter) IsKafka() bool {
+	return KafkaStreamPublisher == a
+}
+
+func (a publisherAdapter) IsConnector() bool {
+	return ConnectorStreamPublisher == a
+}
+
 func (a publisherAdapter) String() string {
 	switch a {
-	case DefaultStreamPublisher:
-		return "Memory"
 	case KafkaStreamPublisher:
 		return "Kafka"
 	case ConnectorStreamPublisher:

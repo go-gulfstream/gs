@@ -39,11 +39,3 @@ func (a storageAdapter) String() string {
 	}
 	return "Unknown"
 }
-
-func (a publisherAdapter) IsKafka() bool {
-	return KafkaStreamPublisher == a
-}
-
-func (a publisherAdapter) IsConnector() bool {
-	return ConnectorStreamPublisher == a
-}

@@ -11,6 +11,7 @@ import (
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
 	"github.com/go-kit/log"
 	"{{$.GoModules}}/internal/config"
+    "{{$.GoModules}}/internal/stream"
 
 	{{if $.StreamStorage.IsPostgres}}
 	    storagepostgres "github.com/go-gulfstream/gulfstream/pkg/storage/postgres"
@@ -18,6 +19,10 @@ import (
 	{{else if $.StreamStorage.IsRedis}}
 	    "github.com/go-redis/redis/v8"
 	    storageredis "github.com/go-gulfstream/gulfstream/pkg/storage/redis"
+	{{end}}
+
+	{{if $.StreamPublisher.IsKafka }}
+        eventbuskafka "github.com/go-gulfstream/gulfstream/pkg/eventbus/kafka"
 	{{end}}
 )
 
@@ -33,9 +38,9 @@ func main() {
    		logger = log.WithPrefix(logger, "stream", {{$.StreamPkgName}}.Name)
    	}
 
-    {{if $.StreamStorage.IsDefault}}
+    {{if $.StreamStorage.IsDefault -}}
         storage := gulfstream.NewStorage({{$.StreamPkgName}}.Name, newEmptyStream)
-    {{else if $.StreamStorage.IsPostgres}}
+    {{else if $.StreamStorage.IsPostgres -}}
         pool, err := pgxpool.Connect(ctx, "")
         if err != nil {
            _ = logger.Log("db", "postgres", "err", err)
@@ -47,7 +52,7 @@ func main() {
         {{else -}}
         storage := storagepostgres.New(pool, {{$.StreamPkgName}}.Name, newEmptyStream)
         {{end}}
-    {{else if $.StreamStorage.IsRedis}}
+    {{else if $.StreamStorage.IsRedis -}}
         rdb := redis.NewClient(&redis.Options{Addr: ""})
         if err := rdb.Ping(ctx).Err(); err != nil && err != redis.Nil {
         	_ = logger.Log("db", "redis", "method", "ping", "err", err)
@@ -55,7 +60,20 @@ func main() {
         }
         defer rdb.Close()
         storage := storageredis.New(rdb, {{$.StreamPkgName}}.Name, newEmptyStream)
-    {{end}}
+    {{end -}}
+
+    {{if $.StreamPublisher.IsKafka }}
+        publisher := eventbuskafka.NewPublisher([]string{}, eventbuskafka.DefaultConfig())
+    {{else if $.StreamPublisher.IsConnector -}}
+        publisher := gulfstream.NewConnectorPublisher()
+    {{end -}}
+
+    controller := gulfstream.NewMutator(storage, publisher)
+    commandMutations := stream.NewCommandMutation( /* deps */ )
+    eventMutations := stream.NewEventMutation( /* deps */ )
+
+    stream.MakeCommandControllers(commandMutations, controller)
+    stream.MakeEventControllers(eventMutations, controller)
 
    	_ = logger
     _ = ctx

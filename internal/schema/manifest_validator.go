@@ -127,8 +127,7 @@ func validateProjectName(m *Manifest) error {
 
 func validatePublisherAdapter(m *Manifest) error {
 	switch m.StreamPublisher.AdapterID {
-	case DefaultStreamPublisher,
-		KafkaStreamPublisher,
+	case KafkaStreamPublisher,
 		ConnectorStreamPublisher:
 		return nil
 	default:
