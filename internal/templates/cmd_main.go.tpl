@@ -43,9 +43,6 @@ func main() {
     cfg := loadConfig()
     ctx := context.Background()
 
-    _ = cfg
-	_ = ctx
-
    	var logger log.Logger
    	{
    		logger = log.NewLogfmtLogger(os.Stderr)
@@ -57,7 +54,7 @@ func main() {
     {{if $.StreamStorage.IsDefault -}}
         storage := gulfstream.NewStorage({{$.StreamPkgName}}.Name, newEmptyStream)
     {{else if $.StreamStorage.IsPostgres -}}
-        pool, err := pgxpool.Connect(ctx, "")
+        pool, err := pgxpool.Connect(ctx, cfg.Postgres.Addr)
         if err != nil {
            _ = logger.Log("db", "postgres", "err", err)
            os.Exit(1)
@@ -69,7 +66,7 @@ func main() {
         storage := storagepostgres.New(pool, {{$.StreamPkgName}}.Name, newEmptyStream)
         {{end -}}
     {{else if $.StreamStorage.IsRedis -}}
-        rdb := redis.NewClient(&redis.Options{Addr: ""})
+        rdb := redis.NewClient(&redis.Options{Addr: cfg.Redis.Addr})
         if err := rdb.Ping(ctx).Err(); err != nil && err != redis.Nil {
         	_ = logger.Log("db", "redis", "method", "ping", "err", err)
             os.Exit(1)
@@ -78,7 +75,7 @@ func main() {
         storage := storageredis.New(rdb, {{$.StreamPkgName}}.Name, newEmptyStream)
     {{end -}}
     {{if $.StreamPublisher.IsKafka -}}
-        publisher := eventbuskafka.NewPublisher([]string{}, eventbuskafka.DefaultConfig())
+        publisher := eventbuskafka.NewPublisher(cfg.Kafka.Brokers, eventbuskafka.DefaultConfig())
     {{else if $.StreamPublisher.IsConnector -}}
         publisher := gulfstream.NewConnectorPublisher()
     {{end -}}
@@ -92,13 +89,13 @@ func main() {
 
     var g group.Group
     {
-    		debugListener, err := net.Listen("tcp", "")
+    		debugListener, err := net.Listen("tcp", cfg.InternalHTTP.Addr)
     		if err != nil {
     			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
     			os.Exit(1)
     		}
     		g.Add(func() error {
-    			logger.Log("transport", "debug/HTTP", "addr", "")
+    			logger.Log("transport", "debug/HTTP", "addr", cfg.InternalHTTP.Addr)
     			return http.Serve(debugListener, http.DefaultServeMux)
     		}, func(error) {
     			_ = debugListener.Close()
@@ -106,14 +103,14 @@ func main() {
     }
     {{if $.CommandBus.IsGRPC -}}
     {
-                grpcListener, err := net.ListenTCP("tcp", nil)
+                grpcListener, err := net.Listen("tcp", cfg.CommandBusGRPC.Addr)
         		if err != nil {
         			_ = logger.Log("transport", "gRPC", "during", "Listen", "err", err)
         			os.Exit(1)
         		}
         		grpcServer := grpc.NewServer(/* interceptors */)
         		g.Add(func() error {
-        			_ = logger.Log("transport", "commandbus/gRPC", "addr", "")
+        			_ = logger.Log("transport", "commandbus/gRPC", "addr", cfg.CommandBusGRPC.Addr)
         			commandBus := commandbusgrpc.NewServer(controller,
         				commandbusgrpc.WithServerErrorHandler(
         					func(err error) {
@@ -130,7 +127,7 @@ func main() {
     {
         wait := make(chan struct{}, 0)
 		opts := []nats.Option{nats.Name("name")}
-		conn, err := nats.Connect("", opts...)
+		conn, err := nats.Connect(cfg.CommandBusNATS.Addr, opts...)
 		if err != nil {
 			_ = logger.Log("transport", "commandbus/NATS", "during", "Connect", "err", err)
 			os.Exit(1)
@@ -154,13 +151,13 @@ func main() {
     }
     {{else if $.CommandBus.IsHTTP -}}
     {
-        httpListener, err := net.Listen("tcp", "")
+        httpListener, err := net.Listen("tcp", cfg.CommandBusHTTP.Addr)
 		if err != nil {
 			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
 			os.Exit(1)
 		}
 		g.Add(func() error {
-			_ = logger.Log("transport", "commandbus/HTTP", "addr", "")
+			_ = logger.Log("transport", "commandbus/HTTP", "addr", cfg.CommandBusHTTP.Addr)
 			handler := commandbushttp.NewServer(controller, commandbushttp.WithServerErrorHandler(
 				func(err error) {
 					_ = logger.Log("transport", "commandbus/HTTP", "err", err)

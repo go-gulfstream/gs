@@ -25,7 +25,7 @@ With empty manifest file
 $ gs manifest path/to/project
 ```
 
-With interactive mode 
+With interactive mode  
 ```shell script
 $ gs manifest -i path/to/project
 ```

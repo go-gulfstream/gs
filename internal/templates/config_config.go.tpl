@@ -35,6 +35,18 @@ type grpc struct {
 	Addr string `yml:"addr"`
 }
 
+type nats struct {
+	Addr string `yaml:"addr"`
+}
+
+type redis struct {
+	Addr string `yaml:"addr"`
+}
+
+type postgres struct {
+	Addr string `yaml:"addr"`
+}
+
 func parse(filename string, cfg interface{}) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {

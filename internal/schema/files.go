@@ -294,6 +294,10 @@ var files = []File{
 		Template: "gitignore.tpl",
 	},
 	{
+		Path:     "/cheatsheet",
+		Template: "cheatsheet.tpl",
+	},
+	{
 		Path:     "/Makefile",
 		Template: "makefile.tpl",
 	},
