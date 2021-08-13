@@ -14,8 +14,15 @@ import (
 
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
+     metricsprometheus "github.com/go-gulfstream/gulfstream/pkg/metrics/prometheus"
+
+	"github.com/prometheus/client_golang/prometheus"
+    "github.com/prometheus/client_golang/prometheus/collectors"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/go-gulfstream/gulfstream/pkg/event"
 	eventbuskafka "github.com/go-gulfstream/gulfstream/pkg/eventbus/kafka"
+	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
 
 	"github.com/oklog/oklog/pkg/group"
 
@@ -40,9 +47,14 @@ func main() {
 		logger = log.WithPrefix(logger, "projection", {{$.StreamPkgName}}.Name)
 	}
 
+	promReg := prometheus.NewRegistry()
+    promReg.MustRegister(collectors.NewGoCollector())
+
 	storage := projection.NewStorage()
 	handler := projection.New(storage)
 	controller := projection.NewController(handler)
+    controllerWithInterceptor := gulfstream.WithEventHandlerInterceptor(controller,
+		metricsprometheus.NewEventHandlerMetrics(promReg))
 
 	var service api.Service
 	{
@@ -57,16 +69,17 @@ func main() {
 		// The debug listener mounts the http.DefaultServeMux, and serves up
 		// stuff like the Prometheus metrics route, the Go debug and profiling
 		// routes, and so on.
-		debugListener, err := net.Listen("tcp", cfg.Internal.Addr)
+		internalListener, err := net.Listen("tcp", cfg.Internal.Addr)
 		if err != nil {
-			logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
+			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
 			os.Exit(1)
 		}
 		g.Add(func() error {
-			logger.Log("transport", "debug/HTTP", "addr", cfg.Internal.Addr)
-			return http.Serve(debugListener, http.DefaultServeMux)
+			_ = logger.Log("transport", "debug/HTTP", "addr", cfg.Internal.Addr)
+			http.Handle("/metrics", promhttp.HandlerFor(promReg, promhttp.HandlerOpts{}))
+			return http.Serve(internalListener, http.DefaultServeMux)
 		}, func(error) {
-			_ = debugListener.Close()
+			_ = internalListener.Close()
 		})
 	}
 	{
@@ -75,7 +88,7 @@ func main() {
 			eventbuskafka.DefaultConfig(),
 			eventbuskafka.WithSubscriberGroupName({{$.StreamPkgName}}.Name),
 			eventbuskafka.WithSubscriberExitFunc(func() {
-				logger.Log("component", "subscriber", "method", "exit")
+				_ = logger.Log("component", "subscriber", "method", "exit")
 			}),
 			eventbuskafka.WithSubscriberErrorHandler(
 				func(e *event.Event, err error) {
@@ -86,8 +99,8 @@ func main() {
 						"err", err)
 				}))
 		g.Add(func() error {
-			logger.Log("transport", "kafka", "brokers", cfg.Kafka)
-			subscriber.Subscribe({{$.StreamPkgName}}.Name, controller)
+			_ = logger.Log("transport", "kafka", "brokers", cfg.Kafka)
+			subscriber.Subscribe({{$.StreamPkgName}}.Name, controllerWithInterceptor)
 			if err := subscriber.Listen(ctx); err != nil {
 				return err
 			}
@@ -101,11 +114,11 @@ func main() {
 	{
 		httpListener, err := net.Listen("tcp", cfg.HTTP.Addr)
 		if err != nil {
-			logger.Log("transport", "HTTP", "during", "Listen", "err", err)
+			_ = logger.Log("transport", "HTTP", "during", "Listen", "err", err)
 			os.Exit(1)
 		}
 		g.Add(func() error {
-			logger.Log("transport", "HTTP", "addr", cfg.HTTP.Addr)
+			_ = logger.Log("transport", "HTTP", "addr", cfg.HTTP.Addr)
 			return http.Serve(httpListener, httpHandler)
 		}, func(error) {
 			_ = httpListener.Close()
@@ -127,7 +140,7 @@ func main() {
 		})
 	}
 
-	logger.Log("exit", g.Run())
+	_ = logger.Log("exit", g.Run())
 }
 
 func loadConfig() *config.Projection {

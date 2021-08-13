@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kit/kit/metrics"
-
 	"github.com/go-kit/log"
 	"{{$.GoModules}}/internal/projection"
 	"github.com/google/uuid"
@@ -48,13 +46,4 @@ func (m loggingMiddleware) Find(ctx context.Context, f *projection.Filter) (p []
 	}(time.Now())
 	p, err = m.next.Find(ctx, f)
 	return
-}
-
-type metricMiddleware struct {
-	logger               log.Logger
-	next                 Service
-	findOneCounter       metrics.Counter
-	findOneHistogram     metrics.Histogram
-	findCounter          metrics.Counter
-	findCounterHistogram metrics.Histogram
 }

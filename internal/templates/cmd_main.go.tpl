@@ -14,6 +14,12 @@ import (
 
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
+     metricsprometheus "github.com/go-gulfstream/gulfstream/pkg/metrics/prometheus"
+
+	"github.com/prometheus/client_golang/prometheus"
+    "github.com/prometheus/client_golang/prometheus/collectors"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
+
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
 	"github.com/go-kit/log"
 	"{{$.GoModules}}/internal/config"
@@ -55,6 +61,9 @@ func main() {
    		logger = log.WithPrefix(logger, "stream", {{$.StreamPkgName}}.Name)
    	}
 
+   	promReg := prometheus.NewRegistry()
+    promReg.MustRegister(collectors.NewGoCollector())
+
     {{if $.StreamStorage.IsDefault -}}
         storage := gulfstream.NewStorage({{$.StreamPkgName}}.Name, newEmptyStream)
     {{else if $.StreamStorage.IsPostgres -}}
@@ -93,16 +102,20 @@ func main() {
 
     var g group.Group
     {
-    		debugListener, err := net.Listen("tcp", cfg.InternalHTTP.Addr)
+    		// The debug listener mounts the http.DefaultServeMux, and serves up
+            // stuff like the Prometheus metrics route, the Go debug and profiling
+            // routes, and so on.
+    		internalListener, err := net.Listen("tcp", cfg.InternalHTTP.Addr)
     		if err != nil {
     			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
     			os.Exit(1)
     		}
     		g.Add(func() error {
     			logger.Log("transport", "debug/HTTP", "addr", cfg.InternalHTTP.Addr)
-    			return http.Serve(debugListener, http.DefaultServeMux)
+    			http.Handle("/metrics", promhttp.HandlerFor(promReg, promhttp.HandlerOpts{}))
+    			return http.Serve(internalListener, http.DefaultServeMux)
     		}, func(error) {
-    			_ = debugListener.Close()
+    			_ = internalListener.Close()
     		})
     }
     {{if $.CommandBus.IsGRPC -}}
@@ -115,7 +128,9 @@ func main() {
         		grpcServer := grpc.NewServer(/* interceptors */)
         		g.Add(func() error {
         			_ = logger.Log("transport", "commandbus/gRPC", "addr", cfg.CommandBusGRPC.Addr)
-        			commandBus := commandbusgrpc.NewServer(controller,
+        			controllerWithInterceptors := gulfstream.WithCommandSinkerInterceptor(controller,
+                    				metricsprometheus.NewCommandSinkerMetrics(promReg))
+        			commandBus := commandbusgrpc.NewServer(controllerWithInterceptors,
         				commandbusgrpc.WithServerErrorHandler(
         					func(err error) {
         						_ = logger.Log("transport", "commandbus/GRPC", "err", err)
@@ -138,7 +153,9 @@ func main() {
 		}
 		g.Add(func() error {
 			_ = logger.Log("transport", "commandBus/NATS", "addr", "")
-			commandBus := commandbusnats.NewServer({{$.StreamPkgName}}.Name, controller,
+			controllerWithInterceptors := gulfstream.WithCommandSinkerInterceptor(controller,
+                                				metricsprometheus.NewCommandSinkerMetrics(promReg))
+			commandBus := commandbusnats.NewServer({{$.StreamPkgName}}.Name, controllerWithInterceptors,
 				commandbusnats.WithServerErrorHandler(
 					func(msg *nats.Msg, err error) {
 						_ = logger.Log("transport", "commandBus/NATS", "subj", msg.Subject, "err", err)
@@ -162,7 +179,9 @@ func main() {
 		}
 		g.Add(func() error {
 			_ = logger.Log("transport", "commandbus/HTTP", "addr", cfg.CommandBusHTTP.Addr)
-			handler := commandbushttp.NewServer(controller, commandbushttp.WithServerErrorHandler(
+			controllerWithInterceptors := gulfstream.WithCommandSinkerInterceptor(controller,
+                                            				metricsprometheus.NewCommandSinkerMetrics(promReg))
+			handler := commandbushttp.NewServer(controllerWithInterceptors, commandbushttp.WithServerErrorHandler(
 				func(err error) {
 					_ = logger.Log("transport", "commandbus/HTTP", "err", err)
 				}))
@@ -188,7 +207,7 @@ func main() {
     		})
     }
 
-    logger.Log("exit", g.Run())
+    _ = logger.Log("exit", g.Run())
 }
 
 func loadConfig() *config.Stream {

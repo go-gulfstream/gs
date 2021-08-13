@@ -17,9 +17,7 @@ commandbus_nats:
 commandbus_http:
     addr: 127.0.0.1:7092
 {{end -}}
-{{if $.StreamPublisher.IsKafka -}}
  kafka:
     brokers:
        - kafka: 9092
-{{end}}
 
