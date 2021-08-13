@@ -173,15 +173,15 @@ var files = []File{
 		IsDir: true,
 	},
 	{
-		Path:  "/config",
+		Path:  "/configs",
 		IsDir: true,
 	},
 	{
-		Path:     "/config/stream.config.yml",
+		Path:     "/configs/stream.config.yml",
 		Template: "config_stream.config.yml.tpl",
 	},
 	{
-		Path:     "/config/projection.config.yml",
+		Path:     "/configs/projection.config.yml",
 		Template: "config_projection.config.yml.tpl",
 	},
 	{
@@ -284,6 +284,14 @@ var files = []File{
 	{
 		Path:     "/scripts/protoc.bash",
 		Template: "scripts_protoc_bash.tpl",
+	},
+	{
+		Path:  "/deployments",
+		IsDir: true,
+	},
+	{
+		Path:     "/deployments/docker-compose.yml",
+		Template: "deployments_docker_compose.yml.tpl",
 	},
 	{
 		Path:  "/mocks",

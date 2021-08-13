@@ -121,7 +121,7 @@ func runInitCommand(projectPath string) (err error) {
 
 func writeSchema(path string, m *schema.Manifest) error {
 	if m.StreamStorage.AdapterID.IsPostgreSQL() {
-		filename := filepath.Join(path, "gulfstream-schema.sql")
+		filename := filepath.Join(path, "/deployments/gulfstream-schema.sql")
 		return ioutil.WriteFile(filename, []byte(storeagepostgres.Schema), 0755)
 	}
 	return nil
