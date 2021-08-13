@@ -1,7 +1,7 @@
 {{if $.StreamPublisher.IsKafka -}}
  kafka:
     brokers:
-       - kafka: 9092
+       - kafka:9092
 {{end -}}
 http:
     addr: 127.0.0.1:8088

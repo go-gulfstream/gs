@@ -107,7 +107,7 @@ func main() {
             // routes, and so on.
     		internalListener, err := net.Listen("tcp", cfg.InternalHTTP.Addr)
     		if err != nil {
-    			_ = logger.Log("transport", "debug/HTTP", "during", "Listen", "err", err)
+    			_ = logger.Log("transport", "internal/HTTP", "during", "Listen", "err", err)
     			os.Exit(1)
     		}
     		g.Add(func() error {

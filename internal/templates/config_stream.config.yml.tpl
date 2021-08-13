@@ -19,5 +19,5 @@ commandbus_http:
 {{end -}}
  kafka:
     brokers:
-       - kafka: 9092
+       - kafka:9092
 
