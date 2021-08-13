@@ -7,11 +7,9 @@ type Stream struct {
  {{else if $.StreamStorage.IsRedis -}}
  Redis redis `yaml:"redis"`
  {{end -}}
-
  {{if $.StreamPublisher.IsKafka -}}
  Kafka kafka `yaml:"kafka"`
  {{end}}
-
   {{if $.CommandBus.IsGRPC -}}
   CommandBusGRPC grpc `yaml:"commandbus_grpc"`
   {{else if $.CommandBus.IsNATS -}}
