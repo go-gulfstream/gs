@@ -10,6 +10,8 @@ import (
     "net"
     "net/http"
 
+    _ "net/http/pprof"
+
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
 	gulfstream "github.com/go-gulfstream/gulfstream/pkg/stream"
@@ -41,7 +43,9 @@ import (
 
 func main() {
     cfg := loadConfig()
+    {{if or $.StreamStorage.IsPostgres $.StreamStorage.IsRedis -}}
     ctx := context.Background()
+    {{end}}
 
    	var logger log.Logger
    	{

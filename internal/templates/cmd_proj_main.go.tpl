@@ -10,6 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "net/http/pprof"
+
 	"{{$.GoModules}}/pkg/{{$.StreamPkgName}}"
 
 	"github.com/go-gulfstream/gulfstream/pkg/event"
