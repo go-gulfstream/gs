@@ -77,12 +77,12 @@ func main() {
         }
         defer rdb.Close()
         storage := storageredis.New(rdb, {{$.StreamPkgName}}.Name, newEmptyStream)
-    {{end -}}
+    {{end}}
     {{if $.StreamPublisher.IsKafka -}}
         publisher := eventbuskafka.NewPublisher(cfg.Kafka.Brokers, eventbuskafka.DefaultConfig())
     {{else if $.StreamPublisher.IsConnector -}}
         publisher := gulfstream.NewConnectorPublisher()
-    {{end -}}
+    {{end}}
 
     controller := gulfstream.NewMutator(storage, publisher)
     commandMutations := stream.NewCommandMutation( /* deps */ )
