@@ -31,6 +31,7 @@ import (
 	"{{$.GoModules}}/internal/api"
 
 	"{{$.GoModules}}/internal/projection"
+	"{{$.GoModules}}/pkg/{{$.PackageName}}query"
 
 	"github.com/go-kit/log"
 )
@@ -56,7 +57,7 @@ func main() {
     controllerWithInterceptor := gulfstream.WithEventHandlerInterceptor(controller,
 		metricsprometheus.NewEventHandlerMetrics(promReg))
 
-	var service api.Service
+	var service {{$.PackageName}}query.Service
 	{
 		service = api.NewService(storage)
 		service = api.LoggingMiddleware(logger)(service)
