@@ -42,7 +42,6 @@ $ gs init path/to/project
 
 
 ### 3. Add mutations
-Update manifest file
 ```shell script
 $ gs add path/to/project
 $ gs apply path/to/project
@@ -51,6 +50,7 @@ OR short entry
 ```shell script
 $ gs add -a path/to/project 
 ```
+OR [See step 4](#4-apply-changes-to-the-project)
 
 ### 4. Apply changes to the project 
 Edit the ```path/to/project/gulfstream.yml``` manifest file 
