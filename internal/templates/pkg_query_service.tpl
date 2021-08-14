@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package proto;
+package {{$.PackageName}}query;
 
-option go_package = "pkg/proto";
+option go_package = "pkg/{{$.PackageName}}query";
 
 service {{$.StreamName}}Service {
     rpc Find(FindRequest) returns (FindResponse);

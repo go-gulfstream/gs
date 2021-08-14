@@ -9,10 +9,17 @@ import (
 type Storage interface {
 	Insert(ctx context.Context, stream {{$.StreamName}}) error
 	FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error)
-	Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error)
+	Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, stream {{$.StreamName}}) error
 }
+
+type {{$.StreamName}} struct {
+	ID      uuid.UUID
+	Version int
+}
+
+type Filter map[string]string
 
 type storage struct{}
 
@@ -31,7 +38,7 @@ func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.S
 	}, nil
 }
 
-func (s *storage) Find(ctx context.Context, f *Filter) ([]{{$.StreamName}}, error) {
+func (s *storage) Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, error) {
 	return []{{$.StreamName}}{}, nil
 }
 

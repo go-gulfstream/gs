@@ -6,29 +6,25 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"{{$.GoModules}}/internal/projection"
 	"github.com/google/uuid"
+	"{{$.GoModules}}/pkg/{{$.PackageName}}query"
 )
 
-type Endpoints struct {
-	FindOneEndpoint endpoint.Endpoint
-	FindEndpoint    endpoint.Endpoint
-}
-
-func MakeServerEndpoints(s Service) Endpoints {
-	return Endpoints{
+func MakeServerEndpoints(s {{$.PackageName}}query.Service) {{$.PackageName}}query.Endpoints {
+	return {{$.PackageName}}query.Endpoints{
 		FindEndpoint:    makeFindEndpoint(s),
 		FindOneEndpoint: makeFindOneEndpoint(s),
 	}
 }
 
-func makeFindEndpoint(s Service) endpoint.Endpoint {
+func makeFindEndpoint(s {{$.PackageName}}query.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(findRequest)
-		p, err := s.Find(ctx, req.Filter)
+		p, err := s.Find(ctx, req.Limit, req.NextPage, req.Filter)
 		return findResponse{Err: err, Results: p}, nil
 	}
 }
 
-func makeFindOneEndpoint(s Service) endpoint.Endpoint {
+func makeFindOneEndpoint(s {{$.PackageName}}query.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(findOneRequest)
 		p, err := s.FindOne(ctx, req.ProjectionID, req.Version)
@@ -37,12 +33,14 @@ func makeFindOneEndpoint(s Service) endpoint.Endpoint {
 }
 
 type findRequest struct {
-	Filter *projection.Filter
+    Limit int
+    NextPage string
+	Filter {{$.PackageName}}query.Filter
 }
 
 type findResponse struct {
 	Err     error
-	Results []projection.{{$.StreamName}}
+	Results []{{$.PackageName}}query.{{$.StreamName}}
 }
 
 func (r findResponse) error() error { return r.Err }
@@ -54,7 +52,7 @@ type findOneRequest struct {
 
 type findOneResponse struct {
 	Err    error
-	Result projection.{{$.StreamName}}
+	Result {{$.PackageName}}query.{{$.StreamName}}
 }
 
 func (r findOneResponse) error() error { return r.Err }

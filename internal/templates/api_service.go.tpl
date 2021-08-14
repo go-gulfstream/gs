@@ -4,33 +4,31 @@ import (
 	"context"
 	"errors"
 
+    "{{$.GoModules}}/pkg/{{$.PackageName}}query"
 	"{{$.GoModules}}/internal/projection"
 	"github.com/google/uuid"
 )
 
-var ErrNotFound = errors.New("api: projection not found")
+var errNotFound = errors.New("api: projection not found")
 
-type Service interface {
-	FindOne(ctx context.Context, projectionID uuid.UUID, version int) (projection.{{$.StreamName}}, error)
-	Find(ctx context.Context, f *projection.Filter) ([]projection.{{$.StreamName}}, error)
-}
+var _ {{$.PackageName}}query.Service = (*Service)(nil)
 
-type service struct {
+type Service struct {
 	storage projection.Storage
 }
 
 func NewService(
 	storage projection.Storage,
-) Service {
-	return &service{
+) *Service {
+	return &Service{
 		storage: storage,
 	}
 }
 
-func (s *service) FindOne(ctx context.Context, projectionID uuid.UUID, version int) (projection.{{$.StreamName}}, error) {
-	return s.storage.FindOne(ctx, projectionID, version)
+func (s *Service) FindOne(ctx context.Context, projectionID uuid.UUID, version int) ({{$.PackageName}}query.{{$.StreamName}}, error) {
+	return {{$.PackageName}}query.{{$.StreamName}}{}, nil
 }
 
-func (s *service) Find(ctx context.Context, f *projection.Filter) ([]projection.{{$.StreamName}}, error) {
-	return s.storage.Find(ctx, f)
+func (s *Service) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) ([]{{$.PackageName}}query.{{$.StreamName}}, error) {
+	return []{{$.PackageName}}query.{{$.StreamName}}{}, nil
 }

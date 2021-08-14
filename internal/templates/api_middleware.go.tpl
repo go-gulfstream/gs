@@ -6,23 +6,22 @@ import (
 
 	"github.com/go-kit/log"
 	"{{$.GoModules}}/internal/projection"
+	"{{$.GoModules}}/pkg/{{$.PackageName}}query"
 	"github.com/google/uuid"
 )
 
-type Middleware func(Service) Service
-
 type loggingMiddleware struct {
 	logger log.Logger
-	next   Service
+	next   {{$.PackageName}}query.Service
 }
 
-func LoggingMiddleware(logger log.Logger) Middleware {
-	return func(next Service) Service {
+func LoggingMiddleware(logger log.Logger) {{$.PackageName}}query.Middleware {
+	return func(next {{$.PackageName}}query.Service) {{$.PackageName}}query.Service {
 		return loggingMiddleware{logger, next}
 	}
 }
 
-func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, version int) (p projection.{{$.StreamName}}, err error) {
+func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, version int) (p {{$.PackageName}}query.{{$.StreamName}}, err error) {
 	defer func(startTime time.Time) {
 		m.logger.Log(
 			"method", "FindOne",
@@ -35,7 +34,7 @@ func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, 
 	return
 }
 
-func (m loggingMiddleware) Find(ctx context.Context, f *projection.Filter) (p []projection.{{$.StreamName}}, err error) {
+func (m loggingMiddleware) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) (p []{{$.PackageName}}query.{{$.StreamName}}, err error) {
 	defer func(startTime time.Time) {
 		m.logger.Log(
 			"method", "Find",
@@ -44,6 +43,6 @@ func (m loggingMiddleware) Find(ctx context.Context, f *projection.Filter) (p []
 			"took", time.Since(startTime),
 			"err", err)
 	}(time.Now())
-	p, err = m.next.Find(ctx, f)
+	p, err = m.next.Find(ctx, limit, nextPage, f)
 	return
 }

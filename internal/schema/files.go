@@ -117,10 +117,6 @@ var files = []File{
 		Template: "projection_storage.go.tpl",
 	},
 	{
-		Path:     "/internal/projection/types.go",
-		Template: "projection_types.go.tpl",
-	},
-	{
 		Path:     "/internal/projection/projection_test.go",
 		Template: "projection_projection_test.go.tpl",
 	},
@@ -234,24 +230,24 @@ var files = []File{
 		required: true,
 	},
 	{
-		Path:  "/pkg/proto",
+		Path:  "/pkg/{package}query",
 		IsDir: true,
 	},
 	{
-		Path:  "/pkg/client",
-		IsDir: true,
+		Path:     "/pkg/{package}query/http.go",
+		Template: "pkg_query_http.go.tpl",
 	},
 	{
-		Path:     "/pkg/client/http.go",
-		Template: "pkg_client_http.go.tpl",
+		Path:     "/pkg/{package}query/grpc.go",
+		Template: "pkg_query_grpc.go.tpl",
 	},
 	{
-		Path:     "/pkg/client/grpc.go",
-		Template: "pkg_client_grpc.go.tpl",
+		Path:     "/pkg/{package}query/service.proto",
+		Template: "pkg_query_service.tpl",
 	},
 	{
-		Path:     "/pkg/proto/service.proto",
-		Template: "pkg_proto_service.tpl",
+		Path:     "/pkg/{package}query/service.go",
+		Template: "pkg_query_service.go.tpl",
 	},
 	{
 		Path:  "/docker",
