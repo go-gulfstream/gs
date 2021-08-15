@@ -32,12 +32,15 @@ $ make build-mc
 [Repository](https://hub.docker.com/r/gulstream/gs)
 ```shell script
 $ docker pull gulstream/gs:latest
+$ docker run --rm docker.io/gulstream/gs:latest version
 ```
 
 ### 1. Create a new manifest file for project
 With empty manifest file
 ```shell script
 $ gs manifest path/to/project
+
+$ docker run -v path/to/project:/gs -w /gs docker.io/gulstream/gs:latest manifest /gs
 ```
 
 With interactive mode  
@@ -48,11 +51,15 @@ $ gs manifest -i path/to/project
 With data example
 ```shell script
 $ gs manifest -d path/to/project 
+
+$ docker run -v path/to/project:/gs -w /gs docker.io/gulstream/gs:latest manifest -d /gs
 ```
 
 ### 2. Initialize a new project
 ```shell script
 $ gs init path/to/project
+
+$ docker run -v path/to/project:/gs -w /gs docker.io/gulstream/gs:latest init /gs
 ```
 
 ### 3. Add mutations
@@ -74,6 +81,8 @@ Add [command mutations](docs/add_command_mutation.md) OR/AND [event mutations](d
 Then execute apply command:
 ```shell script
 $ gs apply path/to/project  
+
+$ docker run -v path/to/project:/gs -w /gs docker.io/gulstream/gs:latest apply /gs
 ```
 
 ### A short example
