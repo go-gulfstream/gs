@@ -111,7 +111,7 @@ func main() {
     			os.Exit(1)
     		}
     		g.Add(func() error {
-    			logger.Log("transport", "debug/HTTP", "addr", cfg.InternalHTTP.Addr)
+    			_ = logger.Log("transport", "debug/HTTP", "addr", cfg.InternalHTTP.Addr)
     			http.Handle("/metrics", promhttp.HandlerFor(promReg, promhttp.HandlerOpts{}))
     			return http.Serve(internalListener, http.DefaultServeMux)
     		}, func(error) {

@@ -23,7 +23,7 @@ func LoggingMiddleware(logger log.Logger) {{$.PackageName}}query.Middleware {
 
 func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, version int) (p {{$.PackageName}}query.{{$.StreamName}}, err error) {
 	defer func(startTime time.Time) {
-		m.logger.Log(
+		_ = m.logger.Log(
 			"method", "FindOne",
 			"projectionID", projectionID,
 			"version", version,
@@ -36,7 +36,7 @@ func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, 
 
 func (m loggingMiddleware) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) (p []{{$.PackageName}}query.{{$.StreamName}}, np string, err error) {
 	defer func(startTime time.Time) {
-		m.logger.Log(
+		_ = m.logger.Log(
 			"method", "Find",
 			"filter", f,
 			"found", len(p),

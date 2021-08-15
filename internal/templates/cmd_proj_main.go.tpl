@@ -93,7 +93,7 @@ func main() {
 			}),
 			eventbuskafka.WithSubscriberErrorHandler(
 				func(e *event.Event, err error) {
-					logger.Log(
+				     _ = logger.Log(
 						"transport", "kafka",
 						"method", "errorHandler",
 						"event", e,
