@@ -4,7 +4,7 @@ VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null 
 
 .PHONY: docker
 docker:
-	@docker build --build-arg BUILD_VERSION=$(VERSION) -t gulstream/gs:$(VERSION) -f ./docker/gs.dockerfile .
+	@docker build --build-arg BUILD_VERSION=$(VERSION) -t gulstream/gs:latest -f ./docker/gs.dockerfile .
 	@docker image prune --filter label=stage=builder
 
 .PHONE: clean

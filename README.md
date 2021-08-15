@@ -17,7 +17,22 @@ Make golang microservices based on event-driven architecture
 [Install](https://golang.org/doc/install) golang is recommended 
 
 ### Installation
-work in progress...
+#### From source
+```shell script
+$ git clone git@github.com:go-gulfstream/gs.git
+$ cd gs 
+$ make build-linux 
+$ make build-mc
+```
+
+#### Binary
+
+
+#### Docker 
+[Repository](https://hub.docker.com/r/gulstream/gs)
+```shell script
+$ docker pull gulstream/gs
+```
 
 ### 1. Create a new manifest file for project
 With empty manifest file
@@ -39,7 +54,6 @@ $ gs manifest -d path/to/project
 ```shell script
 $ gs init path/to/project
 ```
-
 
 ### 3. Add mutations
 ```shell script
