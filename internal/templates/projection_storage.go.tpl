@@ -9,7 +9,7 @@ import (
 type Storage interface {
 	Insert(ctx context.Context, stream {{$.StreamName}}) error
 	FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.StreamName}}, error)
-	Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, error)
+	Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, string, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, stream {{$.StreamName}}) error
 }
@@ -19,7 +19,11 @@ type {{$.StreamName}} struct {
 	Version int
 }
 
-type Filter map[string]string
+type Filter struct {
+   Limit int
+   NextPage string
+   Sort int
+}
 
 type storage struct{}
 
@@ -38,8 +42,8 @@ func (s *storage) FindOne(ctx context.Context, id uuid.UUID, version int) ({{$.S
 	}, nil
 }
 
-func (s *storage) Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, error) {
-	return []{{$.StreamName}}{}, nil
+func (s *storage) Find(ctx context.Context, f Filter) ([]{{$.StreamName}}, string, error) {
+	return []{{$.StreamName}}{}, "", nil
 }
 
 func (s *storage) Delete(ctx context.Context, id uuid.UUID) error {

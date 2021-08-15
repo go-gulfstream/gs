@@ -26,9 +26,31 @@ func NewService(
 }
 
 func (s *Service) FindOne(ctx context.Context, projectionID uuid.UUID, version int) ({{$.PackageName}}query.{{$.StreamName}}, error) {
-	return {{$.PackageName}}query.{{$.StreamName}}{}, nil
+	item, err := s.storage.FindOne(ctx, projectionID, version)
+    	if err != nil {
+    		return {{$.PackageName}}query.{{$.StreamName}}{}, err
+    	}
+    	return {{$.PackageName}}query.{{$.StreamName}}{
+    		ID:      item.ID,
+    		Version: item.Version,
+    	}, nil
 }
 
 func (s *Service) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) ([]{{$.PackageName}}query.{{$.StreamName}}, string, error) {
-	return []{{$.PackageName}}query.{{$.StreamName}}{}, "", nil
+	filter := projection.Filter{
+	   Limit: limit,
+	   NextPage: nextPage,
+	}
+	items, nextPage, err := s.storage.Find(ctx, filter)
+	if err != nil {
+	     return nil, "", err
+	}
+    results := make([]{{$.PackageName}}query.{{$.StreamName}}, len(items))
+    for i, r := range items {
+       results[i] = {{$.PackageName}}query.{{$.StreamName}}{
+          ID: r.ID,
+          Version: r.Version,
+       }
+    }
+	return results, nextPage, nil
 }
