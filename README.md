@@ -31,7 +31,7 @@ $ make build-mc
 #### Docker 
 [Repository](https://hub.docker.com/r/gulstream/gs)
 ```shell script
-$ docker pull gulstream/gs
+$ docker pull gulstream/gs:latest
 ```
 
 ### 1. Create a new manifest file for project
