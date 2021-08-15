@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
-    "github.com/google/uuid"
 	"github.com/go-kit/kit/transport"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"{{$.GoModules}}/pkg/{{$.PackageName}}query"
 
 	transporthttp "github.com/go-kit/kit/transport/http"
 	"github.com/go-kit/log"
@@ -49,19 +51,20 @@ func decodeFindOneRequest(_ context.Context, r *http.Request) (request interface
 	if err != nil {
 		return nil, errBadRouting
 	}
-	req := findOneRequest{ProjectionID: id}
-	vstr, ok := vars["version"]
-	if ok {
-		req.Version, err = strconv.Atoi(vstr)
+	req := {{$.PackageName}}query.FindOneRequest{ProjectionID: id}
+	var version int
+	if len(r.URL.Query().Get("version")) > 0 {
+		version, err = strconv.Atoi(r.URL.Query().Get("version"))
 		if err != nil {
-			return nil, errBadRouting
+			return nil, fmt.Errorf("%v version param", errBadRouting)
 		}
 	}
+	req.Version = version
 	return req, nil
 }
 
 func decodeFindRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	return findRequest{
+	return {{$.PackageName}}query.FindRequest{
 		Filter: map[string]string{},
 	}, nil
 }

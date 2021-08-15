@@ -10,7 +10,7 @@ import (
 
 type Service interface {
 	FindOne(ctx context.Context, projectionID uuid.UUID, version int) ({{$.StreamName}}, error)
-	Find(ctx context.Context, limit int, nextPage string, f Filter) ([]{{$.StreamName}}, error)
+	Find(ctx context.Context, limit int, nextPage string, f Filter) ([]{{$.StreamName}}, string, error)
 }
 
 type Middleware func(Service) Service

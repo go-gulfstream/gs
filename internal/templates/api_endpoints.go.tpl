@@ -18,41 +18,23 @@ func MakeServerEndpoints(s {{$.PackageName}}query.Service) {{$.PackageName}}quer
 
 func makeFindEndpoint(s {{$.PackageName}}query.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(findRequest)
-		p, err := s.Find(ctx, req.Limit, req.NextPage, req.Filter)
-		return findResponse{Err: err, Results: p}, nil
+		req := request.({{$.PackageName}}query.FindRequest)
+		p, np, err := s.Find(ctx, req.Limit, req.NextPage, req.Filter)
+		return {{$.PackageName}}query.FindResponse{Err: err2str(err),  NextPage: np, Results: p}, nil
 	}
 }
 
 func makeFindOneEndpoint(s {{$.PackageName}}query.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(findOneRequest)
+		req := request.({{$.PackageName}}query.FindOneRequest)
 		p, err := s.FindOne(ctx, req.ProjectionID, req.Version)
-		return findOneResponse{Err: err, Result: p}, nil
+		return {{$.PackageName}}query.FindOneResponse{Err: err2str(err), Result: p}, nil
 	}
 }
 
-type findRequest struct {
-    Limit int
-    NextPage string
-	Filter {{$.PackageName}}query.Filter
+func err2str(err error) string {
+	if err != nil {
+		return err.Error()
+	}
+	return ""
 }
-
-type findResponse struct {
-	Err     error
-	Results []{{$.PackageName}}query.{{$.StreamName}}
-}
-
-func (r findResponse) error() error { return r.Err }
-
-type findOneRequest struct {
-	ProjectionID uuid.UUID
-	Version      int
-}
-
-type findOneResponse struct {
-	Err    error
-	Result {{$.PackageName}}query.{{$.StreamName}}
-}
-
-func (r findOneResponse) error() error { return r.Err }

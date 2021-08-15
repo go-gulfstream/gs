@@ -29,6 +29,6 @@ func (s *Service) FindOne(ctx context.Context, projectionID uuid.UUID, version i
 	return {{$.PackageName}}query.{{$.StreamName}}{}, nil
 }
 
-func (s *Service) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) ([]{{$.PackageName}}query.{{$.StreamName}}, error) {
-	return []{{$.PackageName}}query.{{$.StreamName}}{}, nil
+func (s *Service) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) ([]{{$.PackageName}}query.{{$.StreamName}}, string, error) {
+	return []{{$.PackageName}}query.{{$.StreamName}}{}, "", nil
 }

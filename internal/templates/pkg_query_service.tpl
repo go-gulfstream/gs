@@ -9,7 +9,7 @@ service {{$.StreamName}}Service {
     rpc FindOne(FindOneRequest) returns (FindOneResponse);
 }
 
-message {{$.StreamName}} {
+message Instance {
 }
 
 message FindRequest {
@@ -24,5 +24,5 @@ message FindOneRequest {
 }
 
 message FindOneResponse {
-   {{$.StreamName}} result = 1;
+   Instance result = 1;
 }

@@ -34,15 +34,16 @@ func (m loggingMiddleware) FindOne(ctx context.Context, projectionID uuid.UUID, 
 	return
 }
 
-func (m loggingMiddleware) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) (p []{{$.PackageName}}query.{{$.StreamName}}, err error) {
+func (m loggingMiddleware) Find(ctx context.Context, limit int, nextPage string, f {{$.PackageName}}query.Filter) (p []{{$.PackageName}}query.{{$.StreamName}}, np string, err error) {
 	defer func(startTime time.Time) {
 		m.logger.Log(
 			"method", "Find",
 			"filter", f,
 			"found", len(p),
+			"nextPage", np,
 			"took", time.Since(startTime),
 			"err", err)
 	}(time.Now())
-	p, err = m.next.Find(ctx, limit, nextPage, f)
+	p, np, err = m.next.Find(ctx, limit, nextPage, f)
 	return
 }
