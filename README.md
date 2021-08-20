@@ -22,7 +22,7 @@ Make golang microservices based on event-driven architecture
 $ git clone git@github.com:go-gulfstream/gs.git
 $ cd gs 
 $ make build-linux 
-$ make build-mc
+$ make build-mac
 ```
 
 #### Binary
