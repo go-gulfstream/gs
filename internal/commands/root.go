@@ -26,6 +26,7 @@ func New(version string) (*cobra.Command, error) {
 	root.AddCommand(applyCommand())
 	root.AddCommand(addCommand())
 	root.AddCommand(versionCommand(version))
+	root.AddCommand(modCommand())
 
 	return root, nil
 }

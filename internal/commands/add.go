@@ -19,7 +19,7 @@ func addCommand() *cobra.Command {
 	var flags addFlags
 	command := &cobra.Command{
 		Use:   "add [PATH]",
-		Short: "Manage adding",
+		Short: "Add stream mutations from commands or events",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := validateAddCommandArgs(args); err != nil {
 				return err
