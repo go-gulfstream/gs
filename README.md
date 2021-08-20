@@ -27,7 +27,7 @@ $ make build-mc
 
 #### Binary
 ```shell script
-$ go install github.com/go-gulfstream/gs/cmd/gs
+$ go install github.com/go-gulfstream/gs/cmd/gs@latest
 ```
 
 #### Docker 
