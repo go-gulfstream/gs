@@ -17,7 +17,6 @@ import (
 )
 
 func modCommand() *cobra.Command {
-	var flags addFlags
 	command := &cobra.Command{
 		Use:   "mod [PATH]",
 		Short: "Check go modules dependencies",
@@ -29,7 +28,6 @@ func modCommand() *cobra.Command {
 			return runModCommand(args[0])
 		},
 	}
-	command.Flags().BoolVarP(&flags.Apply, "apply", "a", false, "add and apply changes to the project")
 	return command
 }
 
