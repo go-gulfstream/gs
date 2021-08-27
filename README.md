@@ -3,6 +3,10 @@ Standard Tooling for Go-Gulfstream Development
 
 Make golang microservices based on event-driven architecture
 
+# Status
+*Not ready for production. 
+In the process of testing and fixing in internal projects.*
+
 ## Table of contents
 - [Requirements](#requirements)
 - [Installation](#installation)

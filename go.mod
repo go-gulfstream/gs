@@ -1,9 +1,9 @@
 module github.com/go-gulfstream/gs
 
-go 1.16
+go 1.17
 
 require (
-	github.com/PuerkitoBio/goquery v1.7.1 // indirect
+	github.com/PuerkitoBio/goquery v1.7.1
 	github.com/dave/dst v0.26.2
 	github.com/fatih/color v1.12.0
 	github.com/go-gulfstream/gulfstream v0.0.0-20210715014739-f99b1e78fe31
